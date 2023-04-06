@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bluetooth_navigation"
+    app:startDestination="@id/bluetoothDevicesScan">
+
+    <fragment
+        android:id="@+id/bluetoothDevicesScan"
+        android:name="com.penguino.bluetooth.fragments.BluetoothDevicesScan"
+        android:label="fragment_bluetooth_devices_scan"
+        tools:layout="@layout/fragment_bluetooth_devices_scan" />
+</navigation>

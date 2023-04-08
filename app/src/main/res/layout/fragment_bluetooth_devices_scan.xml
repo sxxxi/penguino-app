@@ -1,14 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     tools:context=".bluetooth.fragments.BluetoothDevicesScan">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
 
-</FrameLayout>
+    <Button
+        android:id="@+id/button_scan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Scan" />
+
+    <Button
+        android:id="@+id/connect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Connect" />
+
+    <Button
+        android:id="@+id/button_disconnect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Disconnect" />
+
+    <Button
+        android:id="@+id/button_services"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Services" />
+
+    <Button
+        android:id="@+id/led_on"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="ON" />
+
+    <Button
+        android:id="@+id/led_off"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="OFF" />
+
+</LinearLayout>

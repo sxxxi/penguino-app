@@ -49,7 +49,6 @@ class BluetoothLeService(): Service() {
                 broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED)
         }
 
-
         override fun onCharacteristicWrite(
             gatt: BluetoothGatt?,
             characteristic: BluetoothGattCharacteristic?,
@@ -129,9 +128,7 @@ class BluetoothLeService(): Service() {
             Log.e(TAG, "Device with provided address not found")
             return false
         }
-
         return true
-
     }
 
     fun getGattServices(): List<BluetoothGattService?>? {
@@ -193,10 +190,8 @@ class BluetoothLeService(): Service() {
         const val ACTION_GATT_SERVICES_DISCOVERED =
             "sheridan.bautisse.ble.BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED"
 
-
         private const val STATE_DISCONNECTED = 0
         private const val STATE_CONNECTED = 2
-
     }
 
 

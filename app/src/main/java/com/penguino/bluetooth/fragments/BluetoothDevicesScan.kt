@@ -140,9 +140,11 @@ class BluetoothDevicesScan : Fragment() {
     override fun onResume() {
         super.onResume()
         requireActivity().registerReceiver(gattUpdateCallback, makeGattUpdateIntentFilter())
-        if (bluetoothLeService != null) {
-            val result = bluetoothLeService?.connect(device!!.address)
-            Log.d(DTAG, "Connect request result=$result")
+        bluetoothLeService?.let { bleService ->
+            device?.address?.let { btDevAddress ->
+                val result = bleService.connect(btDevAddress)
+                Log.d(DTAG, "Connect request result=$result")
+            }
         }
     }
 

@@ -11,6 +11,9 @@
         android:label="fragment_bluetooth_devices_scan"
         tools:layout="@layout/fragment_bluetooth_devices_scan" >
         <action
+            android:id="@+id/action_bluetoothDevicesScan_to_fragment_register_name"
+            app:destination="@id/fragment_register_name" />
+        <action
             android:id="@+id/action_bluetoothDevicesScan_to_penguinoScanFragment"
             app:destination="@id/penguinoScanFragment" />
     </fragment>
@@ -45,5 +48,10 @@
         android:name="com.penguino.bluetooth.fragments.FinalCheckFragment"
         android:label="fragment_final_check"
         tools:layout="@layout/fragment_final_check" />
+    <fragment
+        android:id="@+id/fragment_register_name"
+        android:name="com.penguino.RegisterName"
+        android:label="fragment_register_name"
+        tools:layout="@layout/fragment_register_name" />
 
 </navigation>

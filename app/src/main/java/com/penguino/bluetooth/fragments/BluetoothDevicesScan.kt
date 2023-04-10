@@ -25,6 +25,13 @@ import androidx.navigation.fragment.findNavController
 import com.penguino.R
 import com.penguino.bluetooth.services.BluetoothLeService
 import com.penguino.databinding.FragmentBluetoothDevicesScanBinding
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.HttpURLConnection
+import java.net.URL
 import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
@@ -76,6 +83,8 @@ class BluetoothDevicesScan : Fragment() {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+
+
     }
 
     override fun onCreateView(
@@ -135,6 +144,10 @@ class BluetoothDevicesScan : Fragment() {
 
         binding.ledOff.setOnClickListener {
             bluetoothLeService?.writeToPengu("OFF")
+        }
+        //Nav to Register Name Page
+        binding.buttonRegisterName.setOnClickListener {view : View ->
+            view.findNavController().navigate(R.id.action_bluetoothDevicesScan_to_fragment_register_name)
         }
 
         return binding.root

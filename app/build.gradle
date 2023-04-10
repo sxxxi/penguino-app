@@ -1,11 +1,16 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt'
 }
 
 android {
     namespace 'com.penguino'
     compileSdk 33
+
+    dataBinding {
+        enabled = true
+    }
 
     defaultConfig {
         applicationId "com.penguino"
@@ -22,6 +27,8 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+
+
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -46,8 +53,14 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
+
     def fragment_version = "1.5.6"
 
     // Kotlin
     implementation "androidx.fragment:fragment-ktx:$fragment_version"
+
+    //OKHttp
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+
+
 }

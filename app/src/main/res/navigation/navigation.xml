@@ -2,19 +2,16 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/bluetooth_navigation"
-    app:startDestination="@id/bluetoothDevicesScan">
+    app:startDestination="@id/homeFragment"
+    android:id="@+id/bluetooth_navigation">
 
     <fragment
-        android:id="@+id/bluetoothDevicesScan"
-        android:name="com.penguino.bluetooth.fragments.BluetoothDevicesScan"
-        android:label="fragment_bluetooth_devices_scan"
-        tools:layout="@layout/fragment_bluetooth_devices_scan" >
+        android:id="@+id/homeFragment"
+        android:name="com.penguino.HomeFragment"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home" >
         <action
-            android:id="@+id/action_bluetoothDevicesScan_to_fragment_register_name"
-            app:destination="@id/fragment_register_name" />
-        <action
-            android:id="@+id/action_bluetoothDevicesScan_to_penguinoScanFragment"
+            android:id="@+id/action_homeFragment_to_penguinoScanFragment"
             app:destination="@id/penguinoScanFragment" />
     </fragment>
     <fragment
@@ -22,13 +19,12 @@
         android:name="com.penguino.bluetooth.fragments.PenguinoScanFragment"
         android:label="fragment_penguino_scan"
         tools:layout="@layout/fragment_penguino_scan" >
-
-        <action
-            android:id="@+id/action_penguinoScanFragment_to_bluetoothDevicesScan"
-            app:destination="@id/bluetoothDevicesScan" />
         <action
             android:id="@+id/action_penguinoScanFragment_to_devicesFoundFragment"
             app:destination="@id/devicesFoundFragment" />
+        <action
+            android:id="@+id/action_penguinoScanFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
     </fragment>
     <fragment
         android:id="@+id/devicesFoundFragment"
@@ -36,22 +32,31 @@
         android:label="fragment_devices_found"
         tools:layout="@layout/fragment_devices_found" >
         <action
-            android:id="@+id/action_devicesFoundFragment_to_finalCheckFragment"
-            app:destination="@id/finalCheckFragment">
-            <argument
-                android:name="device"
-                app:argType="android.bluetooth.BluetoothDevice" />
-        </action>
+            android:id="@+id/action_devicesFoundFragment_to_registerNameFragment"
+            app:destination="@id/registerNameFragment" />
     </fragment>
     <fragment
-        android:id="@+id/finalCheckFragment"
-        android:name="com.penguino.bluetooth.fragments.FinalCheckFragment"
-        android:label="fragment_final_check"
-        tools:layout="@layout/fragment_final_check" />
-    <fragment
-        android:id="@+id/fragment_register_name"
-        android:name="com.penguino.RegisterName"
+        android:id="@+id/registerNameFragment"
+        android:name="com.penguino.RegisterNameFragment"
         android:label="fragment_register_name"
-        tools:layout="@layout/fragment_register_name" />
-
+        tools:layout="@layout/fragment_register_name">
+        <argument
+            android:name="selected_device"
+            app:argType="com.penguino.bluetooth.models.DeviceInfo" />
+        <action
+            android:id="@+id/registerNameFragment_to_penguinoRcFragment"
+            app:destination="@id/penguinoRcFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/penguinoRcFragment"
+        android:name="com.penguino.bluetooth.fragments.PenguinoRcFragment"
+        android:label="fragment_penguino_rc"
+        tools:layout="@layout/fragment_penguino_rc">
+        <argument
+            android:name="selected_device"
+            app:argType="com.penguino.bluetooth.models.DeviceInfo" />
+        <action
+            android:id="@+id/action_penguinoRcFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
 </navigation>

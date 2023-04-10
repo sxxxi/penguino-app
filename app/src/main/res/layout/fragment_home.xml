@@ -3,15 +3,16 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
+    android:gravity="center"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".HomeFragment">
 
     <Button
-        android:id="@+id/button_scan_devices"
+        android:id="@+id/button_setup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Scan devices" />
+        android:text="Setup Penguino" />
 
 
 

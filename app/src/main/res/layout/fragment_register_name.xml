@@ -5,35 +5,29 @@
     android:id="@+id/textSample"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RegisterName"
+    tools:context=".RegisterNameFragment"
+    android:layout_gravity="center_horizontal"
     android:orientation="vertical">
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:id="@+id/txtSample"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/hello_blank_fragment" />
 
     <EditText
         android:id="@+id/addName"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="text"
-        android:text="add name" />
+        android:hint="Name" />
     <EditText
         android:id="@+id/addPersonality"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="text"
-        android:text="add personality" />
+        android:hint="Personality" />
 
     <EditText
         android:id="@+id/addAge"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="text"
-        android:text="add age" />
+        android:hint="Age" />
 
     <Button
         android:id="@+id/registerBtn"

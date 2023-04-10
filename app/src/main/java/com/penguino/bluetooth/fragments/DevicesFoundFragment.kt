@@ -1,17 +1,11 @@
 package com.penguino.bluetooth.fragments
 
-import android.Manifest
-import android.bluetooth.BluetoothClass.Device
-import android.bluetooth.BluetoothDevice
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
-import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,7 +13,6 @@ import com.penguino.R
 import com.penguino.bluetooth.DeviceListAdapter
 import com.penguino.bluetooth.models.DeviceInfo
 import com.penguino.databinding.FragmentDevicesFoundBinding
-import com.penguino.databinding.FragmentPenguinoScanBinding
 
 
 /*
@@ -49,7 +42,7 @@ class DevicesFoundFragment : Fragment() {
         scannedDevices?.let { devices ->
             binding.deviceList.adapter = DeviceListAdapter(requireContext(), devices) { _, deviceInfo ->
                 val bundle = bundleOf("SELECTED_DEVICE" to deviceInfo)
-                findNavController().navigate(R.id.action_devicesFoundFragment_to_finalCheckFragment, bundle)
+                findNavController().navigate(R.id.action_devicesFoundFragment_to_registerNameFragment, bundle)
             }
             binding.deviceList.layoutManager = LinearLayoutManager(requireContext())
             devices.all { dev ->

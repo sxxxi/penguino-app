@@ -31,6 +31,18 @@
         android:id="@+id/devicesFoundFragment"
         android:name="com.penguino.bluetooth.fragments.DevicesFoundFragment"
         android:label="fragment_devices_found"
-        tools:layout="@layout/fragment_devices_found" />
+        tools:layout="@layout/fragment_devices_found" >
+        <action
+            android:id="@+id/action_devicesFoundFragment_to_finalCheckFragment"
+            app:destination="@id/finalCheckFragment">
+            <argument
+                app:argType="android"
+        </action>
+    </fragment>
+    <fragment
+        android:id="@+id/finalCheckFragment"
+        android:name="com.penguino.bluetooth.fragments.FinalCheckFragment"
+        android:label="fragment_final_check"
+        tools:layout="@layout/fragment_final_check" />
 
 </navigation>

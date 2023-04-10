@@ -37,7 +37,7 @@ class PenguinoScanFragment : Fragment() {
     private lateinit var binding: FragmentPenguinoScanBinding
     private lateinit var bluetoothAdapter: BluetoothAdapter
     private var bleScanner: BluetoothLeScanner? = null
-    private val devices = HashSet<BluetoothDevice>()
+    private val devices = ArrayList<BluetoothDevice>()
     private var scanning: Boolean = false
 
 
@@ -109,7 +109,7 @@ class PenguinoScanFragment : Fragment() {
                 if (devices.size > 0) {
                     val bndl = bundleOf("SCANNED_DEVICES" to devices)
 //                    findNavController().navigate(R.id.action_penguinoScanFragment_to_penguinoScanResultFragment, bndl)
-                    findNavController().navigate(R.id.action_penguinoScanFragment_to_devicesFoundFragment)
+                    findNavController().navigate(R.id.action_penguinoScanFragment_to_devicesFoundFragment, bndl)
                 } else {
                     findNavController().navigate(R.id.action_penguinoScanFragment_to_bluetoothDevicesScan)
                 }

@@ -17,6 +17,11 @@
         android:hint="@string/edit_name"
         android:autofillHints="" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycle_name_suggestions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <EditText
         android:id="@+id/addPersonality"
         android:layout_width="400dp"

@@ -107,7 +107,7 @@ class PenguinoScanFragment : Fragment() {
                 } else {
                     findNavController().navigate(R.id.action_penguinoScanFragment_to_homeFragment)
                 }
-            }, 3000)
+            }, 5000)
         }
 
     }

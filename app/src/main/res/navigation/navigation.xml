@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bluetooth_navigation"
+    app:startDestination="@id/bluetoothDevicesScan">
+
+    <fragment
+        android:id="@+id/bluetoothDevicesScan"
+        android:name="com.penguino.bluetooth.fragments.BluetoothDevicesScan"
+        android:label="fragment_bluetooth_devices_scan"
+        tools:layout="@layout/fragment_bluetooth_devices_scan" >
+        <action
+            android:id="@+id/action_bluetoothDevicesScan_to_penguinoScanFragment"
+            app:destination="@id/penguinoScanFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/penguinoScanFragment"
+        android:name="com.penguino.bluetooth.fragments.PenguinoScanFragment"
+        android:label="fragment_penguino_scan"
+        tools:layout="@layout/fragment_penguino_scan" >
+
+        <action
+            android:id="@+id/action_penguinoScanFragment_to_bluetoothDevicesScan"
+            app:destination="@id/bluetoothDevicesScan" />
+        <action
+            android:id="@+id/action_penguinoScanFragment_to_devicesFoundFragment"
+            app:destination="@id/devicesFoundFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/devicesFoundFragment"
+        android:name="com.penguino.bluetooth.fragments.DevicesFoundFragment"
+        android:label="fragment_devices_found"
+        tools:layout="@layout/fragment_devices_found" />
+
+</navigation>

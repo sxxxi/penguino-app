@@ -12,7 +12,7 @@
         android:layout_height="match_parent"
         android:name="androidx.navigation.fragment.NavHostFragment"
         app:defaultNavHost="true"
-        app:navGraph="@navigation/bluetooth_navigation"
+        app:navGraph="@navigation/navigation"
         />
 
 

@@ -20,6 +20,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.penguino.R
 import com.penguino.bluetooth.services.BluetoothLeService
 import com.penguino.databinding.FragmentBluetoothDevicesScanBinding
@@ -47,6 +49,7 @@ class BluetoothDevicesScan : Fragment() {
     private var device: BluetoothDevice? = null
     private var bluetoothLeService: BluetoothLeService? = null
     private var scanning: Boolean = false
+    private var productFound: Boolean = false
 
     private val requestPermissionLauncher =
         registerForActivityResult(
@@ -106,7 +109,8 @@ class BluetoothDevicesScan : Fragment() {
         binding.connect.isEnabled = false;
 
         binding.buttonScan.setOnClickListener {
-            scanBle()
+            findNavController().navigate(R.id.action_bluetoothDevicesScan_to_penguinoScanFragment)
+//            scanBle()
         }
 
         binding.connect.setOnClickListener {
@@ -119,7 +123,7 @@ class BluetoothDevicesScan : Fragment() {
 
         binding.buttonServices.setOnClickListener {
             Log.d(DTAG, "BLE service null: ${bluetoothLeService == null}")
-            return@setOnClickListener
+//            return@setOnClickListener
             bluetoothLeService?.getGattServices()?.forEach {
                 Log.d("SERVICES", "${it?.uuid.toString()}: ${it?.uuid == UUID.fromString("00001800-0000-1000-8000-00805f9b34fb")}")
             }
@@ -186,6 +190,9 @@ class BluetoothDevicesScan : Fragment() {
             if (d != null) {
                 val name = result.scanRecord?.deviceName
 //                Log.d(DTAG, "$name: ${d.address}")
+
+
+                // Do things in this block when device's name is Penguino
                 if (name == "Penguino") {
                     val btMgr = requireActivity().getSystemService(BluetoothManager::class.java)
                     val scanner = btMgr?.adapter?.bluetoothLeScanner
@@ -193,25 +200,8 @@ class BluetoothDevicesScan : Fragment() {
                     device = result.device
                     binding.connect.isEnabled = true
 
-                    if (activity?.let {
-                            ActivityCompat.checkSelfPermission(
-                                it,
-                                Manifest.permission.BLUETOOTH_SCAN
-                            )
-                        } != PackageManager.PERMISSION_GRANTED
-                    ) {
-                        // TODO: Consider calling
-                        //    ActivityCompat#requestPermissions
-                        // here to request the missing permissions, and then overriding
-                        //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                        //                                          int[] grantResults)
-                        // to handle the case where the user grants the permission. See the documentation
-                        // for ActivityCompat#requestPermissions for more details.
-
-                        scanner?.stopScan(this)
-                        return
-                    }
-
+                    productFound = true
+                    // Originally, I stop scan here but lets cap it to 3s for now.
                 }
             }
         }
@@ -262,6 +252,8 @@ class BluetoothDevicesScan : Fragment() {
     private fun scanBle() {
         if (scanning) return
 
+
+
         val btMgr = requireActivity().getSystemService(BluetoothManager::class.java)
         val scanner = btMgr.adapter.bluetoothLeScanner
 
@@ -282,6 +274,11 @@ class BluetoothDevicesScan : Fragment() {
             Log.d(DTAG, "Stopping scan")
             scanner.stopScan(scanCallback)
             scanning = false
+
+            if (productFound) {
+            } else {
+            }
+
 
         }, 3000)
     }

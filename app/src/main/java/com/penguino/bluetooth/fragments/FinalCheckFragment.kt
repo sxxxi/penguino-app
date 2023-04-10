@@ -1,60 +1,86 @@
 package com.penguino.bluetooth.fragments
 
+import android.bluetooth.BluetoothClass.Device
+import android.bluetooth.BluetoothDevice
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.penguino.R
+import com.penguino.bluetooth.models.DeviceInfo
+import com.penguino.bluetooth.services.BluetoothLeService
+import com.penguino.databinding.FragmentFinalCheckBinding
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+private const val ARG_PARAM1 = "SELECTED_DEVICE"
 
 /**
  * A simple [Fragment] subclass.
  * Use the [FinalCheckFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+private const val TAG = "FinalCheckFragment"
 class FinalCheckFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private lateinit var binding: FragmentFinalCheckBinding
+    private var selectedDevice: DeviceInfo? = null
+    private var bluetoothLeService: BluetoothLeService? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+            selectedDevice = it.getSerializable(ARG_PARAM1, DeviceInfo::class.java)
+        }
+
+        // Bind service here
+        Intent(requireActivity(), BluetoothLeService::class.java).also { intent ->
+            val bindSuccess: Boolean = requireActivity().bindService(intent, bluetoothServiceConn, Context.BIND_AUTO_CREATE)
+            Log.d(TAG, bindSuccess.toString())
+            if (!bindSuccess) {
+                requireActivity().unbindService(bluetoothServiceConn)
+            }
         }
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_final_check, container, false)
+    ): View {
+        binding = FragmentFinalCheckBinding.inflate(layoutInflater)
+
+        selectedDevice?.let {
+            Log.d(TAG, it.toString())
+        }
+
+
+        return binding.root
     }
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment FinalCheckFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            FinalCheckFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+    // Callbacks for binding BluetoothLeService
+    private val bluetoothServiceConn = object: ServiceConnection {
+        private val TAG = "BluetoothServiceConnection"
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            Log.d(TAG, "Service Bound")
+            bluetoothLeService = (service as BluetoothLeService.ServiceBinder).getService()
+            Log.d(TAG, "Service null: ${bluetoothLeService == null}")
+            bluetoothLeService?.let { bluetooth ->
+                // Connect here and do stuff here on service created
+                if (!bluetooth.initialize()) {
+                    Log.d(TAG, "Unable to initialize service")
+                    requireActivity().finish()
                 }
             }
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            Log.d(TAG, "Service Unbound")
+        }
     }
 }

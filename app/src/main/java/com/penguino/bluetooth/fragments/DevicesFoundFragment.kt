@@ -1,6 +1,7 @@
 package com.penguino.bluetooth.fragments
 
 import android.Manifest
+import android.bluetooth.BluetoothClass.Device
 import android.bluetooth.BluetoothDevice
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -11,10 +12,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.core.app.ActivityCompat
+import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.penguino.R
 import com.penguino.bluetooth.DeviceListAdapter
+import com.penguino.bluetooth.models.DeviceInfo
 import com.penguino.databinding.FragmentDevicesFoundBinding
 import com.penguino.databinding.FragmentPenguinoScanBinding
 
@@ -27,12 +30,12 @@ private const val ARG_PARAM1 = "SCANNED_DEVICES"
 private const val TAG = "PenguinoScanResultFragment"
 class DevicesFoundFragment : Fragment() {
     private lateinit var binding: FragmentDevicesFoundBinding
-    private var scannedDevices: ArrayList<BluetoothDevice>? = arrayListOf()
+    private var scannedDevices: ArrayList<DeviceInfo>? = arrayListOf()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            scannedDevices = it.getSerializable(ARG_PARAM1, ArrayList::class.java) as ArrayList<BluetoothDevice>
+            scannedDevices = it.getSerializable(ARG_PARAM1, ArrayList::class.java) as ArrayList<DeviceInfo>
         }
     }
 
@@ -43,26 +46,13 @@ class DevicesFoundFragment : Fragment() {
         binding = FragmentDevicesFoundBinding.inflate(inflater)
 
         // Check if fragment is receiving the list of devices.
-        scannedDevices?.let {
-            binding.deviceList.adapter = DeviceListAdapter(requireContext(), it) {
-                findNavController().navigate()
+        scannedDevices?.let { devices ->
+            binding.deviceList.adapter = DeviceListAdapter(requireContext(), devices) { _, deviceInfo ->
+                val bundle = bundleOf("SELECTED_DEVICE" to deviceInfo)
+                findNavController().navigate(R.id.action_devicesFoundFragment_to_finalCheckFragment, bundle)
             }
             binding.deviceList.layoutManager = LinearLayoutManager(requireContext())
-            it.all { dev ->
-                if (ActivityCompat.checkSelfPermission(
-                        requireContext(),
-                        Manifest.permission.BLUETOOTH_CONNECT
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    // TODO: Consider calling
-                    //    ActivityCompat#requestPermissions
-                    // here to request the missing permissions, and then overriding
-                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                    //                                          int[] grantResults)
-                    // to handle the case where the user grants the permission. See the documentation
-                    // for ActivityCompat#requestPermissions for more details.
-                    return@let
-                }
+            devices.all { dev ->
                 Log.d(TAG, dev.name)
                 return@all true
             }

@@ -11,28 +11,29 @@ import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.penguino.R
+import com.penguino.bluetooth.models.DeviceInfo
 
 class DeviceListAdapter(
     private val ctx: Context,
-    private val devices: ArrayList<BluetoothDevice>,
-    private val deviceSelectHandler: () -> Unit
+    private val devices: ArrayList<DeviceInfo>,
+    private val deviceSelectHandler: (View, DeviceInfo) -> Unit
     ): RecyclerView.Adapter<DeviceListAdapter.ViewHolder>() {
 
     class ViewHolder(
         view: View,
-        private val deviceSelectHandler: () -> Unit
+        private val deviceSelectHandler: (View, DeviceInfo) -> Unit
     ): RecyclerView.ViewHolder(view) {
+        lateinit var deviceInfo: DeviceInfo
         val deviceName: TextView
         val deviceAddress: TextView
 
         init {
             deviceName = view.findViewById(R.id.text_device_name)
             deviceAddress = view.findViewById(R.id.text_device_address)
-            view.setOnClickListener {
-                deviceSelectHandler()
+            view.setOnClickListener { v ->
+                deviceSelectHandler(v, deviceInfo)
             }
         }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -46,21 +47,12 @@ class DeviceListAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        if (ActivityCompat.checkSelfPermission(
-                this.ctx,
-                Manifest.permission.BLUETOOTH_CONNECT
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return
+        holder.deviceInfo = devices[position]
+        holder.deviceInfo.let {
+            holder.deviceName.text = it.name
+            holder.deviceAddress.text = it.address
         }
-        holder.deviceName.text = devices[position].name
-        holder.deviceAddress.text = devices[position].address
+
+
     }
 }

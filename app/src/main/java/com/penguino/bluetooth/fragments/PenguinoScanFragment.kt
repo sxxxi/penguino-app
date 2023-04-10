@@ -2,6 +2,7 @@ package com.penguino.bluetooth.fragments
 
 import android.Manifest
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothClass.Device
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGattService
 import android.bluetooth.BluetoothManager
@@ -24,6 +25,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import com.penguino.R
+import com.penguino.bluetooth.models.DeviceInfo
 import com.penguino.bluetooth.services.BluetoothLeService
 import com.penguino.databinding.FragmentPenguinoScanBinding
 
@@ -37,7 +39,7 @@ class PenguinoScanFragment : Fragment() {
     private lateinit var binding: FragmentPenguinoScanBinding
     private lateinit var bluetoothAdapter: BluetoothAdapter
     private var bleScanner: BluetoothLeScanner? = null
-    private val devices = ArrayList<BluetoothDevice>()
+    private val devices = ArrayList<DeviceInfo>()
     private var scanning: Boolean = false
 
 
@@ -81,7 +83,7 @@ class PenguinoScanFragment : Fragment() {
 
                 }
                 if (dev.name == "Penguino") {
-                    devices.add(dev)
+                    devices.add(DeviceInfo(dev.name, dev.address))
                 }
 
             }

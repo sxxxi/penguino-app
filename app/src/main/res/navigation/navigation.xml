@@ -36,7 +36,8 @@
             android:id="@+id/action_devicesFoundFragment_to_finalCheckFragment"
             app:destination="@id/finalCheckFragment">
             <argument
-                app:argType="android"
+                android:name="device"
+                app:argType="android.bluetooth.BluetoothDevice" />
         </action>
     </fragment>
     <fragment

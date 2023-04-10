@@ -1,16 +1,15 @@
-package com.penguino
+package com.penguino.web.fragments
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.os.bundleOf
-//import androidx.appcompat.app.AppCompatActivity
-//import androidx.databinding.DataBindingUtil
-//import android.widget.TextView
+import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.penguino.R
 import com.penguino.bluetooth.models.DeviceInfo
 import com.penguino.databinding.FragmentRegisterNameBinding
 import okhttp3.*
@@ -19,15 +18,8 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 import java.io.IOException
 
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "SELECTED_DEVICE"
 private const val HOST = "http://10.16.48.153:8080"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [RegisterNameFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class RegisterNameFragment : Fragment() {
     private var selectedDevice: DeviceInfo? = null
     private lateinit var binding: FragmentRegisterNameBinding
@@ -35,7 +27,7 @@ class RegisterNameFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let { args ->
-            selectedDevice = args.getSerializable(ARG_PARAM1 , DeviceInfo::class.java)
+            selectedDevice = args.getSerializable(ARG_PARAM1, DeviceInfo::class.java)
         }
     }
 
@@ -46,13 +38,22 @@ class RegisterNameFragment : Fragment() {
         binding = FragmentRegisterNameBinding.inflate(inflater, container, false)
 
         binding.registerBtn.setOnClickListener {
-            registerAndConnectClickHandler(it)
+            registerAndConnectClickHandler()
         }
 
         return binding.root
     }
 
-    private fun registerAndConnectClickHandler(view: View) {
+    private fun registerAndConnectClickHandler() {
+        // Fill up all fields >:(
+        val nameField = binding.addName.text
+        val personalityField = binding.addPersonality.text
+        val ageField = binding.addAge.text
+        if (nameField.isBlank() || personalityField.isBlank() || ageField.isBlank()) {
+            displayToast("Please fill up all fields.")
+            return
+        }
+
         doHttpStuff()
 
         // pass the device to the remote controller
@@ -66,9 +67,9 @@ class RegisterNameFragment : Fragment() {
         val client: OkHttpClient = OkHttpClient()
 
         //Get user inputs
-        val name = binding.addName.text.toString()
-        val personality = binding.addPersonality.text.toString()
-        val age = binding.addAge.text.toString()
+        val name = binding.addName.text.toString().trim()
+        val personality = binding.addPersonality.text.toString().trim()
+        val age = binding.addAge.text.toString().trim()
 
         //make json object
         val jsonObject = JSONObject()
@@ -122,6 +123,10 @@ class RegisterNameFragment : Fragment() {
 //                    }
 //                })
         }).start()
+    }
+
+    private fun displayToast(msg: String) {
+        Toast.makeText(requireContext(), msg, Toast.LENGTH_SHORT).show()
     }
 
 }

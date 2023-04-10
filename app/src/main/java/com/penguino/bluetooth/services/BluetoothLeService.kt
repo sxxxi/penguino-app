@@ -14,7 +14,7 @@ import androidx.core.app.ActivityCompat
 import java.util.*
 
 private const val TAG = "BluetoothLeService"
-class BluetoothLeService(): Service() {
+class BluetoothLeService : Service() {
     private var btAdapter: BluetoothAdapter? = null
     private var connectionState: Int = STATE_DISCONNECTED
     private var bluetoothGatt: BluetoothGatt? = null
@@ -94,11 +94,6 @@ class BluetoothLeService(): Service() {
 
     override fun onBind(intent: Intent?): IBinder {
         return ServiceBinder()
-    }
-
-    override fun onCreate() {
-        super.onCreate()
-        // Check permissions
     }
 
     fun initialize(): Boolean {

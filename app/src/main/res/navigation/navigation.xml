@@ -37,7 +37,7 @@
     </fragment>
     <fragment
         android:id="@+id/registerNameFragment"
-        android:name="com.penguino.RegisterNameFragment"
+        android:name="com.penguino.web.fragments.RegisterNameFragment"
         android:label="fragment_register_name"
         tools:layout="@layout/fragment_register_name">
         <argument

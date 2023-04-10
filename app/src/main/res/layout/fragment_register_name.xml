@@ -1,16 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/textSample"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".RegisterName">
+    tools:context=".RegisterName"
+    android:orientation="vertical">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
         android:id="@+id/txtSample"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="@string/hello_blank_fragment" />
 
-</FrameLayout>
+    <EditText
+        android:id="@+id/addName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:text="add name" />
+    <EditText
+        android:id="@+id/addPersonality"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:text="add personality" />
+
+    <EditText
+        android:id="@+id/addAge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="text"
+        android:text="add age" />
+
+    <Button
+        android:id="@+id/registerBtn"
+        android:layout_width="108dp"
+        android:layout_height="wrap_content"
+        android:text="Register" />
+
+</LinearLayout>

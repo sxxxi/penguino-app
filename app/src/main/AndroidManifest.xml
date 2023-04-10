@@ -20,6 +20,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.Penguino"
+        android:usesCleartextTraffic="true"
         tools:targetApi="33">
         <service
             android:name=".bluetooth.services.BluetoothLeService"

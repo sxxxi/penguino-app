@@ -62,5 +62,8 @@ dependencies {
     //OKHttp
     implementation 'com.squareup.okhttp3:okhttp:4.10.0'
 
+    //jackson
+    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin:2.12.1'
+
 
 }

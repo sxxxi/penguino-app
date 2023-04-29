@@ -15,10 +15,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.penguino.R
 import com.penguino.bluetooth.models.DeviceInfo
@@ -37,6 +35,7 @@ class PenguinoScanFragment : Fragment() {
     private val devices = ArrayList<DeviceInfo>()
     private var scanning: Boolean = false
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -46,9 +45,7 @@ class PenguinoScanFragment : Fragment() {
         // Check if bluetooth is enabled
         if (!bluetoothAdapter.isEnabled) {
             // popup to inform app needs bt
-            Toast.makeText(requireContext(), "Please enable bluetooth before scanning for devices.", Toast.LENGTH_SHORT)
-                .show()
-            findNavController().navigate(R.id.action_penguinoScanFragment_to_homeFragment)
+            requireActivity().finish()
         }
 
         bleScanner = bluetoothAdapter.bluetoothLeScanner
@@ -106,9 +103,9 @@ class PenguinoScanFragment : Fragment() {
 
                 if (devices.size > 0) {
                     val bundle = bundleOf("SCANNED_DEVICES" to devices)
-                    view?.findNavController()?.navigate(R.id.action_penguinoScanFragment_to_devicesFoundFragment, bundle)
+                    findNavController().navigate(R.id.action_penguinoScanFragment_to_devicesFoundFragment, bundle)
                 } else {
-                    view?.findNavController()?.navigate(R.id.action_penguinoScanFragment_to_homeFragment)
+                    findNavController().navigate(R.id.action_penguinoScanFragment_to_homeFragment)
                 }
             }, 5000)
         }

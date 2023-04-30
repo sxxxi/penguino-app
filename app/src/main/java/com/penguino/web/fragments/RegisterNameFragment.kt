@@ -103,7 +103,7 @@ class RegisterNameFragment : Fragment() {
                     }
                     Log.d("Fooo", "trying to update list")
                     binding.recycleNameSuggestions.adapter = adapter
-                    adapter?.notifyDataSetChanged()
+                    adapter.notifyDataSetChanged()
                 })
             }
         }

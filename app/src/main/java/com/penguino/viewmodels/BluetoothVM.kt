@@ -37,13 +37,16 @@ class BluetoothVM @Inject constructor(
 
     val scannedDevices = mutableStateListOf<DeviceInfo>()
 
+    var selectedDevice = mutableStateOf<DeviceInfo?>(null)
+        private set
+
     private val scanCallback: ScanCallback = object: ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult?) {
             super.onScanResult(callbackType, result)
             result?.let { res ->
                 val device = res.device
                 val deviceInfo = DeviceInfo(device.name ?: "NO_NAME", device.address)
-                scannedDevices.add(deviceInfo)
+                if (!scannedDevices.contains(deviceInfo)) scannedDevices.add(deviceInfo)
             }
         }
     }
@@ -51,22 +54,27 @@ class BluetoothVM @Inject constructor(
     fun scanDevices() {
         if (scanning.value == ScanStatus.Scanning) return
         val scanner: BluetoothLeScanner = btAdapter.bluetoothLeScanner
+        scannedDevices.clear()
         Log.d("FOO", "Starting scan")
-
         _scanning.value = ScanStatus.Scanning
-
-        Log.d("BAZ", "${scanning.value}")
-
         scanner.startScan(scanCallback)
         Handler(Looper.getMainLooper()).postDelayed({ ->
-            scanner.stopScan(scanCallback)
             Log.d("FOO", "Stopping scan")
-
-            _scanning.value = ScanStatus.Idle
-
-
-            Log.d("BAZ", "${scanning.value}")
-
+            stopScan()
         }, 5000)
+    }
+
+    fun stopScan() {
+        when (scanning.value) {
+            ScanStatus.Scanning -> {
+                btAdapter.bluetoothLeScanner.stopScan(scanCallback)
+                _scanning.value = ScanStatus.Idle
+            }
+            else -> {}
+        }
+    }
+
+    fun selectDevice(device: DeviceInfo) {
+        this.selectedDevice.value = device
     }
 }

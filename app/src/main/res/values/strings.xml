@@ -6,4 +6,5 @@
     <string name="edit_name">Name</string>
     <string name="edit_age">Age</string>
     <string name="button_register">Register</string>
+    <string name="title_activity_compose">ComposeActivity</string>
 </resources>

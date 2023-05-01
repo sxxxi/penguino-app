@@ -7,5 +7,5 @@ data class RegistrationInfo (
     var name: String = "",
     var personality: String = "",
     var age: Int = 0,
-    val device: DeviceInfo = DeviceInfo()
-)
+    var device: DeviceInfo = DeviceInfo()
+): java.io.Serializable

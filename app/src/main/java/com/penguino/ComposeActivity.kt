@@ -31,6 +31,7 @@ import androidx.navigation.compose.rememberNavController
 import com.penguino.ui.theme.PenguinoTheme
 import com.penguino.viewmodels.BluetoothVM
 import com.penguino.views.DeviceList
+import com.penguino.views.RegistrationPage
 import com.penguino.views.ScanPage
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -90,7 +91,7 @@ fun MainScreen(
     Scaffold {
         NavHost(
             navController = navController,
-            startDestination = "home",
+            startDestination = "registration",
             modifier = modifier.padding(it)
         ) {
             composable("home") {
@@ -104,7 +105,7 @@ fun MainScreen(
                 )
             }
             composable("registration") {
-
+                RegistrationPage()
             }
         }
 

@@ -34,9 +34,13 @@ class BluetoothVM @Inject constructor(
 ): ViewModel() {
     private var _scanning = MutableStateFlow(ScanStatus.Idle)
     var scanning = _scanning.asStateFlow()
-
     val scannedDevices = mutableStateListOf<DeviceInfo>()
 
+    /**
+     * SelectedDevice is initially null, therefore, classes depending on
+     * its value should pass through the device scanning procedure to
+     * update this property.
+     */
     var selectedDevice = mutableStateOf<DeviceInfo?>(null)
         private set
 

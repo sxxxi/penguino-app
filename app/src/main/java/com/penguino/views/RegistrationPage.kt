@@ -1,7 +1,5 @@
 package com.penguino.views
 
-import android.inputmethodservice.Keyboard
-import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -19,7 +17,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -33,26 +30,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.fasterxml.jackson.core.JsonEncoding
-import com.fasterxml.jackson.core.io.JsonStringEncoder
 import com.penguino.bluetooth.models.RegistrationInfo
 import com.penguino.ui.theme.PenguinoTheme
 import com.penguino.viewmodels.RegistrationVM
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonEncoder
 
-private const val DTAG = "RegistrationPage"
+private const val TAG = "RegistrationPage"
 @Composable
 fun RegistrationPage(
     modifier: Modifier = Modifier,
-    regVM: RegistrationVM = viewModel()
+    regVM: RegistrationVM = viewModel(factory = RegistrationVM.Factory)
 ) {
     Column(
         modifier = modifier
             .fillMaxSize()
             .padding(vertical = 16.dp),
-//        verticalArrangement = Arrangement.SpaceEvenly
     ) {
         Text(
             modifier = modifier.padding(horizontal = 12.dp, vertical = 32.dp),
@@ -71,7 +62,7 @@ fun RegistrationPage(
             modifier = modifier
                 .fillMaxWidth()
                 .padding(vertical = 12.dp),
-            onClick = { Log.d(DTAG, Json.encodeToString(regVM.regInfo.value)) }) {
+            onClick = { /* TODO */ }) {
             Text(text = "Let's go!")
         }
     }
@@ -99,7 +90,6 @@ fun TextFields(
         ) { newValue, updatable ->
             updatable.name = newValue
             suggestions.add("Hi :)")
-            Log.d(DTAG, "NewVal: $newValue, Reg: ${updatable.name}")
         }
 
 
@@ -150,38 +140,6 @@ fun TextInput(
         }
     )
 }
-
-//@OptIn(ExperimentalMaterial3Api::class)
-//@Composable
-//fun TextInputWithSuggestion(
-//    modifier: Modifier = Modifier,
-//    suggestions: List<String>,
-//    value: String,
-//    label: (@Composable () -> Unit),
-//    keyboardType: KeyboardType = KeyboardType.Text,
-//    updater: ((RegistrationInfo) -> Unit) -> Unit,
-//    combined: (newVal: String, updatable: RegistrationInfo) -> Unit
-//) {
-//    val tem = remember { mutableStateOf(value) }
-//
-//    TextField(
-//        modifier = modifier
-//            .fillMaxWidth()
-//            .padding(all = 4.dp),
-//        label = label,
-//        value = tem.value,
-//        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = keyboardType),
-//        onValueChange = { newVal ->
-//            tem.value = newVal
-//            updater {
-//                combined(tem.value, it)
-//            }
-//        }
-//    )
-//
-//    SuggestionList(mutState = tem, suggestions = suggestions)
-//}
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -240,7 +198,9 @@ fun SuggestionList(
 ) {
     val scrollState = rememberScrollState()
     Row(
-        modifier = modifier.horizontalScroll(scrollState).fillMaxWidth(),
+        modifier = modifier
+            .horizontalScroll(scrollState)
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.End
     ) {
         suggestions.forEach { s ->

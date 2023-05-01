@@ -15,18 +15,23 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.penguino.bluetooth.models.DeviceInfo
+import dagger.hilt.InstallIn
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
+import javax.inject.Singleton
 
 enum class ScanStatus {
     Scanning,
     Idle
 }
 
+private const val TAG = "BluetoothVM"
 @SuppressLint("MissingPermission")
 @HiltViewModel
 class BluetoothVM @Inject constructor(
@@ -80,5 +85,6 @@ class BluetoothVM @Inject constructor(
 
     fun selectDevice(device: DeviceInfo) {
         this.selectedDevice.value = device
+        Log.d(TAG, "NewDevice: ${Json.encodeToString(device)}, Selected: ${Json.encodeToString(selectedDevice.value)}")
     }
 }

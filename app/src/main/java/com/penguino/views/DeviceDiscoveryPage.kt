@@ -1,6 +1,5 @@
 package com.penguino.views
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -14,7 +13,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -29,31 +27,36 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.penguino.bluetooth.models.DeviceInfo
 import com.penguino.ui.theme.PenguinoTheme
 import com.penguino.viewmodels.BluetoothVM
+import com.penguino.viewmodels.RegistrationVM
 import com.penguino.viewmodels.ScanStatus
+
+private const val TAG = "ScanPage"
 
 @Composable
 fun ScanPage (
     modifier: Modifier = Modifier,
-    testVM: BluetoothVM = hiltViewModel(),
+    btVM: BluetoothVM = hiltViewModel(),
+    regVM: RegistrationVM = viewModel(factory = RegistrationVM.Factory),
+//    regVM: RegistrationVM = viewModel(),
     onNavigateToHome: () -> Unit,
     onNavigateToRegistration: () -> Unit
 ) {
-    val scanState by testVM.scanning.collectAsState()
-    val scannedDevices = remember { testVM.scannedDevices }
+    val scanState by btVM.scanning.collectAsState()
+    val scannedDevices = remember { btVM.scannedDevices }
 
     Column(modifier = modifier
         .fillMaxSize()
     ) {
-
         DeviceList(
             modifier = modifier
                 .weight(1F),
             devices = scannedDevices,
-            onItemClick = {
-                testVM.selectDevice(it)
+            onItemClick = { di ->
+                regVM.updateRegInfo { it.device = di }
                 onNavigateToRegistration()
             }
         )
@@ -66,7 +69,7 @@ fun ScanPage (
                 modifier = modifier
                     .weight(1f)
             ) {
-                testVM.stopScan()
+                btVM.stopScan()
                 onNavigateToHome()
             }
 
@@ -74,7 +77,7 @@ fun ScanPage (
                 modifier = modifier
                     .weight(1f),
                 scanStatus = scanState
-            ) { testVM.scanDevices() }
+            ) { btVM.scanDevices() }
 
         }
 

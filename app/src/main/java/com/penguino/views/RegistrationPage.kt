@@ -84,15 +84,18 @@ fun TextFields(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        // Get suggested names and store in a mutable state here :)
+        val suggestions = remember { mutableStateListOf<String>() }
 
         TextInputWithSuggestion(
             value = regInfo.name,
-            updater = updater,
-            label = { Text("Name") },
-            suggestions = listOf("Foo", "Bar", "Baz")
-        ) { newVal, reg ->
-            Log.d(DTAG, newVal)
-            reg.name = newVal
+            stateUpdater = updater,
+            label = "Name",
+            suggestions = suggestions
+        ) { newValue, updatable ->
+            updatable.name = newValue
+            suggestions.add("Hi :)")
+            Log.d(DTAG, "NewVal: $newValue, Reg: ${updatable.name}")
         }
 
 
@@ -144,46 +147,103 @@ fun TextInput(
     )
 }
 
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Composable
+//fun TextInputWithSuggestion(
+//    modifier: Modifier = Modifier,
+//    suggestions: List<String>,
+//    value: String,
+//    label: (@Composable () -> Unit),
+//    keyboardType: KeyboardType = KeyboardType.Text,
+//    updater: ((RegistrationInfo) -> Unit) -> Unit,
+//    combined: (newVal: String, updatable: RegistrationInfo) -> Unit
+//) {
+//    val tem = remember { mutableStateOf(value) }
+//
+//    TextField(
+//        modifier = modifier
+//            .fillMaxWidth()
+//            .padding(all = 4.dp),
+//        label = label,
+//        value = tem.value,
+//        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = keyboardType),
+//        onValueChange = { newVal ->
+//            tem.value = newVal
+//            updater {
+//                combined(tem.value, it)
+//            }
+//        }
+//    )
+//
+//    SuggestionList(mutState = tem, suggestions = suggestions)
+//}
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TextInputWithSuggestion(
     modifier: Modifier = Modifier,
+    label: String,
+    labelComposable: (@Composable () -> Unit) = { Text(text = label) },
     suggestions: List<String>,
     value: String,
-    label: (@Composable () -> Unit),
-    keyboardType: KeyboardType = KeyboardType.Text,
-    updater: ((RegistrationInfo) -> Unit) -> Unit,
-    combined: (newVal: String, updatable: RegistrationInfo) -> Unit
+    stateUpdater: ((updatable: RegistrationInfo) -> Unit) -> Unit,
+    sideEffect: (newValue: String, updatable: RegistrationInfo) -> Unit
 ) {
-    val tem = remember { mutableStateOf(value) }
+    // Store a local state for the UI.
+    var stateVal by remember { mutableStateOf(value) }
+
+    /**
+     * I couldn't update the shared mutable state from within
+     * the suggestionList component therefore I decided to
+     * create a value change handler shared by both components
+     */
+    fun onValueChange(newValue: String) {
+        // Update local state (UI update)
+        stateVal = newValue
+
+        // Update ViewModel state
+        stateUpdater { updatable ->
+            /**
+             * Inject/Expose the updatable to the sideEffect function.
+             * Theoretically, we should be able to update the ViewModel state
+             * by exposing a reference to it to lambda functions.
+             *
+             * Hope it works
+             */
+            sideEffect(newValue, updatable)
+
+        }
+    }
 
     TextField(
         modifier = modifier
             .fillMaxWidth()
             .padding(all = 4.dp),
-        label = label,
-        value = tem.value,
-        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = keyboardType),
-        onValueChange = { newVal ->
-            tem.value = newVal
-            updater {
-                combined(tem.value, it)
-            }
-        }
+        label = labelComposable,
+        value = stateVal,
+        onValueChange = ::onValueChange
     )
 
-    SuggestionList(mutState = tem, suggestions = listOf("Foo", "Bar", "Baz"))
+    SuggestionList(suggestions = suggestions, onClickHandler = ::onValueChange)
 }
 
 @Composable
 fun SuggestionList(
     modifier: Modifier = Modifier,
-    mutState: MutableState<String>,
     suggestions: List<String>,
+    onClickHandler: (String) -> Unit
 ) {
-    Row() {
+    val scrollState = rememberScrollState()
+    Row(
+        modifier = modifier.horizontalScroll(scrollState).fillMaxWidth(),
+        horizontalArrangement = Arrangement.End
+    ) {
         suggestions.forEach { s ->
-            SuggestionItem(mutState = mutState, value = s)
+            SuggestionItem(
+                value = s,
+                onClickHandler = onClickHandler
+            )
         }
     }
 }
@@ -191,16 +251,21 @@ fun SuggestionList(
 @Composable
 fun SuggestionItem(
     modifier: Modifier = Modifier,
-    mutState: MutableState<String>,
     value: String,
+    onClickHandler: (String) -> Unit
 ) {
     Surface(
-        modifier = modifier.clickable {
-            Log.d(DTAG, mutState.value)
-            mutState.value = value
-        }
+        modifier = modifier
+            .shadow(2.dp)
+            .padding(4.dp)
+            .clickable {
+                onClickHandler(value)
+            }
     ) {
-        Text(text = value)
+        Text(
+            modifier = modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+            text = value
+        )
     }
 }
 

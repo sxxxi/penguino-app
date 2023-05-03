@@ -26,18 +26,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.penguino.bluetooth.models.DeviceInfo
+import com.penguino.models.DeviceInfo
 import com.penguino.ui.theme.PenguinoTheme
-import com.penguino.viewmodels.BluetoothVM
-import com.penguino.viewmodels.RegistrationVM
+import com.penguino.viewmodels.BluetoothViewModel
+import com.penguino.viewmodels.RegistrationViewModel
 
 private const val TAG = "ScanPage"
 
 @Composable
 fun ScanPage (
     modifier: Modifier = Modifier,
-    btVM: BluetoothVM = hiltViewModel(),
-    regVM: RegistrationVM,
+    btVM: BluetoothViewModel = hiltViewModel(),
+    regVM: RegistrationViewModel,
 //    regVM: RegistrationVM = viewModel(),
     onNavigateToHome: () -> Unit,
     onNavigateToRegistration: () -> Unit

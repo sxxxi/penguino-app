@@ -1,10 +1,10 @@
-package com.penguino.hilt
+package com.penguino.di
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
-import com.penguino.bluetooth.services.BluetoothManagement
-import com.penguino.bluetooth.services.BluetoothManagementImpl
+import com.penguino.repositories.BleRepository
+import com.penguino.repositories.BleRepositoryImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,7 +27,7 @@ object HiltModule {
     @Singleton
     fun provideBluetoothManagement(
         @ApplicationContext context: Context,
-        bluetoothAdapter: BluetoothAdapter): BluetoothManagement {
-        return BluetoothManagementImpl(context, bluetoothAdapter)
+        bluetoothAdapter: BluetoothAdapter): BleRepository {
+        return BleRepositoryImpl(context, bluetoothAdapter)
     }
 }

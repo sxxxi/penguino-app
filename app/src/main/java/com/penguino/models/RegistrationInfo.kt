@@ -1,4 +1,4 @@
-package com.penguino.bluetooth.models
+package com.penguino.models
 
 import kotlinx.serialization.Serializable
 

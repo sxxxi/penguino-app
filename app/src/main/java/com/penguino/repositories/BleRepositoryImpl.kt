@@ -1,7 +1,6 @@
-package com.penguino.bluetooth.services
+package com.penguino.repositories
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
@@ -17,19 +16,17 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.penguino.bluetooth.models.DeviceInfo
-import com.penguino.viewmodels.ScanStatus
+import com.penguino.models.DeviceInfo
+import com.penguino.services.BluetoothLeService
 import javax.inject.Inject
 
 private const val DTAG = "BluetoothManagementImpl"
 
 @SuppressLint("MissingPermission")
-class BluetoothManagementImpl @Inject constructor(
+class BleRepositoryImpl @Inject constructor(
     private val context: Context,
     private val blAdapter: BluetoothAdapter,
-//    override val scannedDevices: SnapshotStateList<DeviceInfo> = mutableStateListOf<DeviceInfo>()
-): BluetoothManagement {
+): BleRepository {
     private var bluetoothLeService: BluetoothLeService? = null
     override val scanning: MutableState<Boolean> = mutableStateOf(false)
     override val devicesFound = mutableStateListOf<DeviceInfo>()

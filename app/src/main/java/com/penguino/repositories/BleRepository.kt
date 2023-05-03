@@ -1,11 +1,10 @@
-package com.penguino.bluetooth.services
+package com.penguino.repositories
 
-import android.bluetooth.BluetoothAdapter
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import com.penguino.bluetooth.models.DeviceInfo
+import com.penguino.models.DeviceInfo
 
-interface BluetoothManagement {
+interface BleRepository {
     val devicesFound: SnapshotStateList<DeviceInfo>
     val scanning: MutableState<Boolean>
     fun scanDevices()

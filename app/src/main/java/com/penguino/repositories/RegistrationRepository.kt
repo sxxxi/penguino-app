@@ -1,6 +1,6 @@
-package com.penguino.utils.http
+package com.penguino.repositories
 
-import com.penguino.bluetooth.models.RegistrationInfo
+import com.penguino.models.RegistrationInfo
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject

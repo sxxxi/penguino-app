@@ -8,8 +8,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.penguino.bluetooth.models.RegistrationInfo
-import com.penguino.utils.http.RegistrationRepository
+import com.penguino.models.RegistrationInfo
+import com.penguino.repositories.RegistrationRepository
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Response
@@ -18,7 +18,7 @@ import java.io.IOException
 
 private const val TAG = "RegistrationVM"
 
-class RegistrationVM(
+class RegistrationViewModel(
     private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 

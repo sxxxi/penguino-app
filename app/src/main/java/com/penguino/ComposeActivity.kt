@@ -1,7 +1,6 @@
 package com.penguino
 
 import android.Manifest
-import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
@@ -22,11 +21,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
@@ -36,9 +32,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.penguino.ui.theme.PenguinoTheme
-import com.penguino.viewmodels.BluetoothVM
-import com.penguino.viewmodels.RegistrationVM
-import com.penguino.views.DeviceList
 import com.penguino.views.RegistrationPage
 import com.penguino.views.RemoteControl
 import com.penguino.views.ScanPage

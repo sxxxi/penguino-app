@@ -4,17 +4,17 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.penguino.bluetooth.models.DeviceInfo
-import com.penguino.bluetooth.models.RegistrationInfo
-import com.penguino.bluetooth.services.BluetoothManagement
+import com.penguino.models.DeviceInfo
+import com.penguino.models.RegistrationInfo
+import com.penguino.repositories.BleRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 private const val TAG = "BluetoothVM"
 @SuppressLint("MissingPermission")
 @HiltViewModel
-class BluetoothVM @Inject constructor(
-    private val bluetoothManager: BluetoothManagement,
+class BluetoothViewModel @Inject constructor(
+    private val bluetoothManager: BleRepository,
 ): ViewModel() {
     var scanning = bluetoothManager.scanning
     val scannedDevices = bluetoothManager.devicesFound

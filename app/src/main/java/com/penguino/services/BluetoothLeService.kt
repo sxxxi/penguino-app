@@ -1,4 +1,4 @@
-package com.penguino.bluetooth.services
+package com.penguino.services
 
 import android.Manifest
 import android.app.Service

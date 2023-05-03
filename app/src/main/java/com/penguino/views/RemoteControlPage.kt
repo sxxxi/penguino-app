@@ -18,12 +18,12 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import com.penguino.viewmodels.BluetoothVM
+import com.penguino.viewmodels.BluetoothViewModel
 
 @Composable
 fun RemoteControl(
     modifier: Modifier = Modifier,
-    btVM: BluetoothVM,
+    btVM: BluetoothViewModel,
     onNavigateToHome: () -> Unit
 ) {
     val lifecycleOwner = LocalLifecycleOwner.current

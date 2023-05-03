@@ -18,7 +18,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
@@ -27,12 +26,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.penguino.bluetooth.models.DeviceInfo
 import com.penguino.ui.theme.PenguinoTheme
 import com.penguino.viewmodels.BluetoothVM
 import com.penguino.viewmodels.RegistrationVM
-import com.penguino.viewmodels.ScanStatus
 
 private const val TAG = "ScanPage"
 
@@ -40,12 +37,12 @@ private const val TAG = "ScanPage"
 fun ScanPage (
     modifier: Modifier = Modifier,
     btVM: BluetoothVM = hiltViewModel(),
-    regVM: RegistrationVM = viewModel(factory = RegistrationVM.Factory),
+    regVM: RegistrationVM,
 //    regVM: RegistrationVM = viewModel(),
     onNavigateToHome: () -> Unit,
     onNavigateToRegistration: () -> Unit
 ) {
-    val scanState by btVM.scanning.collectAsState()
+    val scanState by btVM.scanning
     val scannedDevices = remember { btVM.scannedDevices }
 
     Column(modifier = modifier
@@ -57,6 +54,7 @@ fun ScanPage (
             devices = scannedDevices,
             onItemClick = { di ->
                 regVM.updateRegInfo { it.device = di }
+                btVM.selectDevice(di)
                 onNavigateToRegistration()
             }
         )
@@ -88,14 +86,14 @@ fun ScanPage (
 @Composable
 fun ScanButton(
     modifier: Modifier = Modifier,
-    scanStatus: ScanStatus,
+    scanStatus: Boolean,
     onClick: () -> Unit,
 ) {
     Button(
         modifier = modifier
             .padding(8.dp),
         onClick = { onClick() },
-        enabled = scanStatus == ScanStatus.Idle
+        enabled = !scanStatus
     ) {
         Text(text = "Scan")
     }

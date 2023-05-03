@@ -1,24 +1,20 @@
 package com.penguino.viewmodels
 
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.createSavedStateHandle
-import androidx.lifecycle.viewmodel.CreationExtras
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.penguino.bluetooth.models.RegistrationInfo
-import dagger.hilt.InstallIn
-import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import javax.inject.Inject
-import javax.inject.Singleton
+import com.penguino.utils.http.RegistrationRepository
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.Response
+import org.json.JSONArray
+import java.io.IOException
 
 private const val TAG = "RegistrationVM"
 
@@ -29,18 +25,17 @@ class RegistrationVM(
 
     var regInfo = mutableStateOf( RegistrationInfo() )
 
-    companion object {
-        private const val SAVED_REG_INFO = "RegistrationInfo"
-        private var instance: RegistrationVM? = null
-        val Factory = object: ViewModelProvider.Factory {
-            override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
-                if (instance == null) {
-                    instance = RegistrationVM(extras.createSavedStateHandle())
-                }
-                return instance as T
-            }
-        }
-    }
+//    companion object {
+//        private var instance: RegistrationVM? = null
+//        val Factory = object: ViewModelProvider.Factory {
+//            override fun <T : ViewModel> create(modelClass: Class<T>, extras: CreationExtras): T {
+//                if (instance == null) {
+//                    instance = RegistrationVM(extras.createSavedStateHandle())
+//                }
+//                return instance as T
+//            }
+//        }
+//    }
 
     /**
      * Please don't use: _mutTest, test, and testUpdate.
@@ -60,12 +55,50 @@ class RegistrationVM(
     fun updateRegInfo(updateLambda: (RegistrationInfo) -> Unit) {
         val copy = regInfo.value.copy()
         updateLambda(copy)
-        Log.d("booba" , "Old: ${regInfo.value.name}, New: ${copy.name}")
         regInfo.value = copy
     }
 
-    fun getSuggestedNames() {
 
+    val names = mutableStateListOf<String>()
+    private val nameSuggestionCallback = object: Callback {
+        override fun onFailure(call: Call, e: IOException) {
+            Log.d("FOO", "Something went wrong")
+            return
+        }
+
+        override fun onResponse(call: Call, response: Response) {
+            response.body?.let { body ->
+                val x = JSONArray(body.string())
+                for (i in 0 until x.length()) {
+                    names.add(x[i] as String)
+                }
+            }
+        }
+    }
+    fun getSuggestedNames(): SnapshotStateList<String> {
+        RegistrationRepository.getSuggestedNames(nameSuggestionCallback)
+        return names
+    }
+
+    fun postRegInfo(onSuccess: () -> Unit, onFail: () -> Unit) {
+        val postCallback = object: Callback {
+            override fun onFailure(call: Call, e: IOException) {
+                onFail()
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                Handler(Looper.getMainLooper())
+                    .post(Runnable {
+                        when(response.code) {
+                            200 -> onSuccess()
+                            else -> onFail()
+                        }
+                    })
+            }
+        }
+
+
+        RegistrationRepository.postRegistrationInfo(regInfo.value, postCallback)
     }
 
 

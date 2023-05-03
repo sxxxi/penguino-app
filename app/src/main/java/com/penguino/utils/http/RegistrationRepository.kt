@@ -1,8 +1,6 @@
 package com.penguino.utils.http
 
 import com.penguino.bluetooth.models.RegistrationInfo
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
@@ -10,7 +8,6 @@ import okhttp3.Callback
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 
 class RegistrationRepository {

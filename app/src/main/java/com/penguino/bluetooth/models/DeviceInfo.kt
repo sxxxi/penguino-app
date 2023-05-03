@@ -2,7 +2,6 @@ package com.penguino.bluetooth.models
 
 import kotlinx.serialization.Serializable
 
-
 @Serializable
 data class DeviceInfo (
     val name: String = "",

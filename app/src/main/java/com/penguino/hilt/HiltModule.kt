@@ -3,7 +3,6 @@ package com.penguino.hilt
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
-import android.util.Log
 import com.penguino.bluetooth.services.BluetoothManagement
 import com.penguino.bluetooth.services.BluetoothManagementImpl
 import dagger.Module
@@ -16,7 +15,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object HiltModule {
-
     @Provides
     @Singleton
     fun provideBluetoothAdapter(
@@ -27,7 +25,9 @@ object HiltModule {
 
     @Provides
     @Singleton
-    fun provideBluetoothManagement(bluetoothAdapter: BluetoothAdapter): BluetoothManagement {
-        return BluetoothManagementImpl(bluetoothAdapter)
+    fun provideBluetoothManagement(
+        @ApplicationContext context: Context,
+        bluetoothAdapter: BluetoothAdapter): BluetoothManagement {
+        return BluetoothManagementImpl(context, bluetoothAdapter)
     }
 }

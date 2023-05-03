@@ -1,5 +1,6 @@
 package com.penguino.views
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +14,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -238,16 +240,5 @@ fun SuggestionItem(
             modifier = modifier.padding(horizontal = 12.dp, vertical = 8.dp),
             text = value
         )
-    }
-}
-
-@Preview
-@Composable
-fun RegistrationPagePreview() {
-    PenguinoTheme {
-        Surface {
-            TextFields(regInfo = RegistrationInfo(), updater = {})
-        }
-
     }
 }

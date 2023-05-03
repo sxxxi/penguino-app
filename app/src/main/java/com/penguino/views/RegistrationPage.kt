@@ -29,21 +29,24 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.penguino.bluetooth.models.RegistrationInfo
 import com.penguino.ui.theme.PenguinoTheme
+import com.penguino.utils.http.RegistrationRepository
 import com.penguino.viewmodels.RegistrationVM
 
 private const val TAG = "RegistrationPage"
 @Composable
 fun RegistrationPage(
     modifier: Modifier = Modifier,
-    regVM: RegistrationVM = viewModel(factory = RegistrationVM.Factory)
+    regVM: RegistrationVM,
+    onNavigateToRemoteControl: () -> Unit
 ) {
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(vertical = 16.dp),
+            .padding(8.dp),
     ) {
         Text(
             modifier = modifier.padding(horizontal = 12.dp, vertical = 32.dp),
@@ -54,7 +57,7 @@ fun RegistrationPage(
         TextFields(
             modifier = modifier
                 .align(Alignment.CenterHorizontally),
-            regInfo = regVM.regInfo.value,
+            regVM = regVM,
             updater = regVM::updateRegInfo
         )
 
@@ -62,7 +65,13 @@ fun RegistrationPage(
             modifier = modifier
                 .fillMaxWidth()
                 .padding(vertical = 12.dp),
-            onClick = { /* TODO */ }) {
+            onClick = {
+                Log.d(TAG, regVM.regInfo.value.device.toString())
+                regVM.postRegInfo(
+                    onSuccess = onNavigateToRemoteControl,
+                    onFail = { /* TODO */ }
+                )
+            }) {
             Text(text = "Let's go!")
         }
     }
@@ -71,7 +80,7 @@ fun RegistrationPage(
 @Composable
 fun TextFields(
     modifier: Modifier = Modifier,
-    regInfo: RegistrationInfo,
+    regVM: RegistrationVM,
     updater: ((RegistrationInfo) -> Unit) -> Unit
 ) {
     Column (
@@ -80,7 +89,8 @@ fun TextFields(
         verticalArrangement = Arrangement.Center
     ) {
         // Get suggested names and store in a mutable state here :)
-        val suggestions = remember { mutableStateListOf<String>() }
+        val suggestions = remember { regVM.getSuggestedNames() }
+        val regInfo by remember { regVM.regInfo }
 
         TextInputWithSuggestion(
             value = regInfo.name,
@@ -89,9 +99,7 @@ fun TextFields(
             suggestions = suggestions
         ) { newValue, updatable ->
             updatable.name = newValue
-            suggestions.add("Hi :)")
         }
-
 
         TextInput(
             value = regInfo.personality,

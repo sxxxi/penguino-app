@@ -50,13 +50,20 @@ class ComposeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
+            val viewModelStoreOwner = LocalViewModelStoreOwner.current ?: remember {
+                val viewModelStore = ViewModelStore()
+                object : ViewModelStoreOwner {
+                    override val viewModelStore: ViewModelStore
+                        get() = viewModelStore
+                }
+            }
             PenguinoTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen()
+                    MainScreen(storeOwner = viewModelStoreOwner)
                 }
             }
         }
@@ -85,27 +92,37 @@ fun BottomBar() {
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
-    btVM: BluetoothVM = hiltViewModel(),
+    storeOwner: ViewModelStoreOwner,
     navController: NavHostController = rememberNavController()
 ) {
     Scaffold {
         NavHost(
             navController = navController,
-            startDestination = "registration",
+            startDestination = "home",
             modifier = modifier.padding(it)
         ) {
             composable("home") {
                 HomePage(onNavigateToScan = { navController.navigate("scan") })
             }
             composable("scan") {
-                btVM.scanDevices()
                 ScanPage(
+                    regVM = viewModel(viewModelStoreOwner = storeOwner),
+                    btVM = hiltViewModel(viewModelStoreOwner = storeOwner),
                     onNavigateToRegistration = { navController.navigate("registration") },
                     onNavigateToHome = { navController.navigate("home") },
                 )
             }
             composable("registration") {
-                RegistrationPage()
+                RegistrationPage(
+                    regVM = viewModel(viewModelStoreOwner = storeOwner),
+                    onNavigateToRemoteControl = { navController.navigate("rc") })
+            }
+
+            composable("rc") {
+                RemoteControl(
+                    btVM = hiltViewModel(viewModelStoreOwner = storeOwner),
+                    onNavigateToHome = { navController.navigate("home")}
+                )
             }
         }
 

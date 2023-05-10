@@ -20,6 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Penguino"
         android:usesCleartextTraffic="true">
+
         <activity
             android:name=".ComposeActivity"
             android:exported="true"

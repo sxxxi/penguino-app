@@ -1,9 +1,11 @@
 package com.penguino
 
 import android.Manifest
+import android.app.Activity
 import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -22,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
@@ -60,6 +64,7 @@ class ComposeActivity : ComponentActivity() {
                 }
             }
             PenguinoTheme {
+
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -88,6 +93,17 @@ fun BottomBar() {
     }
 }
 
+@Composable
+fun requestPermissions(permissions: Array<String>, callback: (granted: List<String>) -> Unit) {
+    rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
+        // Return list of allowed permissions
+        val granted = mutableListOf<String>()
+        permissions.forEach { p ->
+            if (result.getValue(p)) granted.add(p)
+        }
+        callback(granted)
+    }.launch(permissions)
+}
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -151,3 +167,5 @@ fun HomePage(
     }
 
 }
+
+

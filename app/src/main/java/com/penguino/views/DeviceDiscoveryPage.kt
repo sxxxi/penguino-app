@@ -1,5 +1,6 @@
 package com.penguino.views
 
+import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -15,14 +16,18 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -71,11 +76,20 @@ fun ScanPage (
                 onNavigateToHome()
             }
 
+
+            val ctx = LocalContext.current
+
             ScanButton(
                 modifier = modifier
                     .weight(1f),
                 scanStatus = scanState
-            ) { btVM.scanDevices() }
+            ) {
+                if (!btVM.btEnabled()) {
+                    Toast.makeText(ctx, "Please enable Bluetooth", Toast.LENGTH_SHORT).show()
+                } else {
+                    btVM.scanDevices()
+                }
+            }
 
         }
 
@@ -148,9 +162,14 @@ fun DeviceListItem(
     device: DeviceInfo,
     onClick: (DeviceInfo) -> Unit = {}
 ) {
+    val deviceSupported by remember { mutableStateOf(device.name.equals("PENGUINO", true)) }
+
     Surface(
         modifier = modifier
-            .clickable { onClick(device) },
+            .clickable(
+                enabled = deviceSupported,
+                onClick = { onClick(device) }
+            ),
         shape = MaterialTheme.shapes.small,
         shadowElevation = 4.dp
     ) {

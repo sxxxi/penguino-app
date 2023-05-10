@@ -113,4 +113,8 @@ class BleRepositoryImpl @Inject constructor(
         bluetoothLeService?.disconnect()
     }
 
+    override fun btEnabled(): Boolean {
+        return blAdapter.isEnabled
+    }
+
 }

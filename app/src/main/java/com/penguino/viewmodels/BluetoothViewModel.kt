@@ -27,16 +27,9 @@ class BluetoothViewModel @Inject constructor(
     var selectedDevice = mutableStateOf<DeviceInfo?>(null)
         private set
 
-//    private val scanCallback: ScanCallback = object: ScanCallback() {
-//        override fun onScanResult(callbackType: Int, result: ScanResult?) {
-//            super.onScanResult(callbackType, result)
-//            result?.let { res ->
-//                val device = res.device
-//                val deviceInfo = DeviceInfo(device.name ?: "NO_NAME", device.address)
-//                if (!scannedDevices.contains(deviceInfo)) scannedDevices.add(deviceInfo)
-//            }
-//        }
-//    }
+    fun btEnabled(): Boolean {
+        return bluetoothManager.btEnabled()
+    }
 
     fun scanDevices() {
         bluetoothManager.scanDevices()

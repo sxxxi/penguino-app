@@ -15,4 +15,6 @@ interface BleRepository {
     fun sendMessage(message: String)
     fun connect(device: DeviceInfo): Boolean
     fun disconnect()
+
+    fun btEnabled(): Boolean
 }

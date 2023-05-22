@@ -1,9 +1,7 @@
 package com.penguino
 
 import android.Manifest
-import android.app.Activity
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -15,7 +13,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -25,7 +22,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.ViewModelStoreOwner
@@ -35,10 +31,20 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.penguino.constants.Screen
+import com.penguino.navigation.homeScreen
+import com.penguino.navigation.navigateToHome
+import com.penguino.navigation.navigateToRegistration
+import com.penguino.navigation.navigateToRemoteControl
+import com.penguino.navigation.navigateToScan
+import com.penguino.navigation.registrationScreen
+import com.penguino.navigation.remoteControlScreen
+import com.penguino.navigation.scanScreen
 import com.penguino.ui.theme.PenguinoTheme
-import com.penguino.views.RegistrationPage
-import com.penguino.views.RemoteControl
-import com.penguino.views.ScanPage
+import com.penguino.viewmodels.BluetoothViewModel
+import com.penguino.views.RegistrationScreen
+import com.penguino.views.RemoteControlScreen
+import com.penguino.views.ScanScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -49,20 +55,12 @@ class ComposeActivity : ComponentActivity() {
             ActivityResultContracts.RequestMultiplePermissions()
         ) { results ->
             results.forEach {
-                Log.d("BOOBA", "${it.key}: ${it.value}")
             }
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val viewModelStoreOwner = LocalViewModelStoreOwner.current ?: remember {
-                val viewModelStore = ViewModelStore()
-                object : ViewModelStoreOwner {
-                    override val viewModelStore: ViewModelStore
-                        get() = viewModelStore
-                }
-            }
             PenguinoTheme {
 
                 // A surface container using the 'background' color from the theme
@@ -70,7 +68,7 @@ class ComposeActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    MainScreen(storeOwner = viewModelStoreOwner)
+                    MainScreen()
                 }
             }
         }
@@ -110,40 +108,22 @@ fun requestPermissions(permissions: Array<String>, callback: (granted: List<Stri
 @Composable
 fun MainScreen(
     modifier: Modifier = Modifier,
-    storeOwner: ViewModelStoreOwner,
     navController: NavHostController = rememberNavController()
 ) {
     Scaffold {
         NavHost(
             navController = navController,
-            startDestination = "home",
+            startDestination = Screen.HomeScreen.route,
             modifier = modifier.padding(it)
         ) {
-            composable("home") {
-                HomePage(onNavigateToScan = { navController.navigate("scan") })
-            }
-            composable("scan") {
-                ScanPage(
-                    regVM = viewModel(viewModelStoreOwner = storeOwner),
-                    btVM = hiltViewModel(viewModelStoreOwner = storeOwner),
-                    onNavigateToRegistration = { navController.navigate("registration") },
-                    onNavigateToHome = { navController.navigate("home") },
-                )
-            }
-            composable("registration") {
-                RegistrationPage(
-                    regVM = viewModel(viewModelStoreOwner = storeOwner),
-                    onNavigateToRemoteControl = { navController.navigate("rc") })
-            }
-
-            composable("rc") {
-                RemoteControl(
-                    btVM = hiltViewModel(viewModelStoreOwner = storeOwner),
-                    onNavigateToHome = { navController.navigate("home")}
-                )
-            }
+            homeScreen(onNavigateToScan = navController::navigateToScan)
+            scanScreen(
+                onNavigateToRegistration = navController::navigateToRegistration,
+                onNavigateToHome = navController::navigateToHome
+            )
+            registrationScreen(onNavigateToRemoteControl = navController::navigateToRemoteControl)
+            remoteControlScreen(onNavigateToHome = navController::navigateToHome)
         }
-
     }
 }
 
@@ -158,8 +138,7 @@ fun HomePage(
             verticalArrangement = Arrangement.Bottom
     ) {
         Button(
-            modifier = modifier
-                .fillMaxWidth(),
+            modifier = modifier.fillMaxWidth(),
             onClick = { onNavigateToScan() }
         ) {
             Text(text = "Setup Product")

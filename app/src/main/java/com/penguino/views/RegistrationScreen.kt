@@ -28,15 +28,20 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
+import com.penguino.cache.RegInfoCache
+import com.penguino.models.DeviceInfo
 import com.penguino.models.RegistrationInfo
 import com.penguino.viewmodels.RegistrationViewModel
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 
 private const val TAG = "RegistrationPage"
 @Composable
-fun RegistrationPage(
+fun RegistrationScreen(
     modifier: Modifier = Modifier,
     regVM: RegistrationViewModel,
-    onNavigateToRemoteControl: () -> Unit
+    regInfo: RegistrationInfo,
+    onNavigateToRemoteControl: (DeviceInfo) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -52,8 +57,9 @@ fun RegistrationPage(
         TextFields(
             modifier = modifier
                 .align(Alignment.CenterHorizontally),
-            regVM = regVM,
-            updater = regVM::updateRegInfo
+            updater = regVM::updateRegInfo,
+            suggestions = regVM.getSuggestedNames(),
+            regInfo = regVM.regInfo
         )
 
         Button(
@@ -61,11 +67,17 @@ fun RegistrationPage(
                 .fillMaxWidth()
                 .padding(vertical = 12.dp),
             onClick = {
-                Log.d(TAG, regVM.regInfo.value.device.toString())
-                regVM.postRegInfo(
-                    onSuccess = onNavigateToRemoteControl,
-                    onFail = { /* TODO */ }
-                )
+                Log.d(TAG, regVM.regInfo.device.toString())
+//                regVM.postRegInfo(
+//                    onSuccess = onNavigateToRemoteControl,
+//                    onFail = { /* TODO */ }
+//                )
+
+//                val adapter = Moshi.Builder().add(KotlinJsonAdapterFactory()).build().adapter(DeviceInfo::class.java)
+//                val x = adapter.toJson(regInfo.device)
+//                Log.d("TEST", adapter.fromJson(x).toString())
+
+                onNavigateToRemoteControl(regInfo.device)
             }) {
             Text(text = "Let's go!")
         }
@@ -75,7 +87,8 @@ fun RegistrationPage(
 @Composable
 fun TextFields(
     modifier: Modifier = Modifier,
-    regVM: RegistrationViewModel,
+    suggestions: List<String>,
+    regInfo: RegistrationInfo,
     updater: ((RegistrationInfo) -> Unit) -> Unit
 ) {
     Column (
@@ -84,9 +97,6 @@ fun TextFields(
         verticalArrangement = Arrangement.Center
     ) {
         // Get suggested names and store in a mutable state here :)
-        val suggestions = remember { regVM.getSuggestedNames() }
-        val regInfo by remember { regVM.regInfo }
-
         TextInputWithSuggestion(
             value = regInfo.name,
             stateUpdater = updater,

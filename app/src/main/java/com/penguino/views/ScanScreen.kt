@@ -16,8 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,113 +23,61 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.penguino.models.DeviceInfo
 import com.penguino.ui.theme.PenguinoTheme
-import com.penguino.viewmodels.BluetoothViewModel
-import com.penguino.viewmodels.RegistrationViewModel
+import com.penguino.viewmodels.uistates.ScanUiState
 
 private const val TAG = "ScanPage"
 
+// TODO: Make btEnabled reactive. Change value when bluetooth status is changed.
+// TODO: Research best practices for styling and where to store style property values.
+
 @Composable
-fun ScanPage (
+fun ScanScreen (
     modifier: Modifier = Modifier,
-    btVM: BluetoothViewModel = hiltViewModel(),
-    regVM: RegistrationViewModel,
-//    regVM: RegistrationVM = viewModel(),
+    uiState: ScanUiState,
+    onDeviceSelected: (DeviceInfo) -> Unit,
+    onScanButtonClicked: () -> Unit,
+    onBackButtonClicked: () -> Unit,
     onNavigateToHome: () -> Unit,
     onNavigateToRegistration: () -> Unit
 ) {
-    val scanState by btVM.scanning
-    val scannedDevices = remember { btVM.scannedDevices }
+    val btEnabled = uiState.bluetoothEnabled
 
     Column(modifier = modifier
         .fillMaxSize()
     ) {
         DeviceList(
-            modifier = modifier
-                .weight(1F),
-            devices = scannedDevices,
-            onItemClick = { di ->
-                regVM.updateRegInfo { it.device = di }
-                btVM.selectDevice(di)
+            modifier = modifier.weight(1F),
+            devices = uiState.devicesFound,
+            onItemClick = {
+                onDeviceSelected(it)
                 onNavigateToRegistration()
             }
         )
 
-        Row (
-            modifier = modifier
-                .fillMaxWidth()
-        ) {
-            BackButton(
-                modifier = modifier
-                    .weight(1f)
-            ) {
-                btVM.stopScan()
+        ButtonRow(
+            btEnabled = btEnabled,
+            scanning = uiState.scanning,
+            onScanButtonClicked = {
+                onScanButtonClicked()
+            },
+            onBackButtonClicked = {
+                onBackButtonClicked()
                 onNavigateToHome()
             }
-
-
-            val ctx = LocalContext.current
-
-            ScanButton(
-                modifier = modifier
-                    .weight(1f),
-                scanStatus = scanState
-            ) {
-                if (!btVM.btEnabled()) {
-                    Toast.makeText(ctx, "Please enable Bluetooth", Toast.LENGTH_SHORT).show()
-                } else {
-                    btVM.scanDevices()
-                }
-            }
-
-        }
-
-
+        )
     }
 }
 
 @Composable
-fun ScanButton(
+private fun DeviceList(
     modifier: Modifier = Modifier,
-    scanStatus: Boolean,
-    onClick: () -> Unit,
-) {
-    Button(
-        modifier = modifier
-            .padding(8.dp),
-        onClick = { onClick() },
-        enabled = !scanStatus
-    ) {
-        Text(text = "Scan")
-    }
-}
-
-@Composable
-fun BackButton(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
-    FilledTonalButton (
-        modifier = modifier
-            .padding(8.dp),
-        onClick = { onClick() },
-    ) {
-        Text(text = "Back")
-    }
-}
-
-@JvmOverloads
-@Composable
-fun DeviceList(
-    modifier: Modifier = Modifier,
-    devices: SnapshotStateList<DeviceInfo>,
+    devices: List<DeviceInfo>,
     onItemClick: (DeviceInfo) -> Unit = {}
 ) {
     LazyColumn(
@@ -157,12 +103,13 @@ fun DeviceList(
 }
 
 @Composable
-fun DeviceListItem(
+private fun DeviceListItem(
     modifier: Modifier = Modifier,
     device: DeviceInfo,
     onClick: (DeviceInfo) -> Unit = {}
 ) {
-    val deviceSupported by remember { mutableStateOf(device.name.equals("PENGUINO", true)) }
+//    val deviceSupported by remember { mutableStateOf(device.name.equals("PENGUINO", true)) }
+    val deviceSupported = true
 
     Surface(
         modifier = modifier
@@ -193,8 +140,67 @@ fun DeviceListItem(
     }
 }
 
+@Composable
+private fun ButtonRow(
+    modifier: Modifier = Modifier,
+    btEnabled: Boolean,
+    scanning: Boolean,
+    onScanButtonClicked: () -> Unit,
+    onBackButtonClicked: () -> Unit
+) {
+    Row (modifier = modifier.fillMaxWidth()) {
+        BackButton(
+            modifier = modifier.weight(1f),
+            onClick = onBackButtonClicked
+        )
 
+        // TODO: Change to Snack bar
+        val ctx = LocalContext.current
 
+        ScanButton(
+            modifier = modifier.weight(1f),
+            scanning = scanning
+        ) {
+//            if (!btEnabled) {
+//                Toast.makeText(ctx, "Please enable Bluetooth", Toast.LENGTH_SHORT).show()
+//            } else {
+//                onScanButtonClicked()
+//            }
+            onScanButtonClicked()
+        }
+
+    }
+}
+
+@Composable
+private fun ScanButton(
+    modifier: Modifier = Modifier,
+    scanning: Boolean,
+    onClick: () -> Unit,
+) {
+    Button(
+        modifier = modifier
+            .padding(8.dp),
+        onClick = { onClick() },
+        enabled = !scanning
+    ) {
+        Text(text = "Scan")
+    }
+}
+
+@Composable
+private fun BackButton(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    FilledTonalButton (
+        modifier = modifier
+            .padding(8.dp),
+        onClick = { onClick() },
+    ) {
+        Text(text = "Back")
+    }
+}
 
 @Preview
 @Composable

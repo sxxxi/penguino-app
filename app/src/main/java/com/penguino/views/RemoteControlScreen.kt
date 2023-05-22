@@ -1,6 +1,5 @@
 package com.penguino.views
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,61 +9,55 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
+import com.penguino.models.DeviceInfo
 import com.penguino.viewmodels.BluetoothViewModel
 
 @Composable
-fun RemoteControl(
+fun RemoteControlScreen(
     modifier: Modifier = Modifier,
-    btVM: BluetoothViewModel,
+    deviceInfo: DeviceInfo,
     onNavigateToHome: () -> Unit
 ) {
-    val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(key1 = lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            when(event) {
-                Lifecycle.Event.ON_CREATE -> {
-                    Log.d("HELLO", btVM.selectedDevice.value.toString())
-                    btVM.bindService()
-                }
-
-                Lifecycle.Event.ON_RESUME -> {
-                    btVM.connect()
-                }
-
-                Lifecycle.Event.ON_DESTROY -> {
-                    btVM.disconnect()
-                    btVM.unbindService()
-                }
-
-                else -> {}
-            }
-        }
-
-        lifecycleOwner.lifecycle.addObserver(observer)
-
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
+//    val lifecycleOwner = LocalLifecycleOwner.current
+//    DisposableEffect(key1 = lifecycleOwner) {
+//        val observer = LifecycleEventObserver { _, event ->
+//            when(event) {
+//                Lifecycle.Event.ON_CREATE -> {
+//                    btVM.bindService()
+//                }
+//
+//                Lifecycle.Event.ON_RESUME -> {
+//                    btVM.connect()
+//                }
+//
+//                Lifecycle.Event.ON_DESTROY -> {
+//                    btVM.disconnect()
+//                    btVM.unbindService()
+//                }
+//
+//                else -> {}
+//            }
+//        }
+//
+//        lifecycleOwner.lifecycle.addObserver(observer)
+//
+//        onDispose {
+//            lifecycleOwner.lifecycle.removeObserver(observer)
+//        }
+//    }
 
     Column(modifier = modifier.fillMaxSize().padding(8.dp)) {
         Column {
-            val device by btVM.selectedDevice
             Text(
-                text = device?.name ?: "",
+                text = deviceInfo.name,
                 style = MaterialTheme.typography.headlineLarge,
             )
 
             Text(
-                text = device?.address ?: "",
+                text = deviceInfo.address,
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.secondary
             )
@@ -75,11 +68,11 @@ fun RemoteControl(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Button(onClick = { btVM.sendMessage("ON") }) {
+            Button(onClick = { }) {
                 Text(text = "LED ON")
             }
 
-            Button(onClick = { btVM.sendMessage("OFF") }) {
+            Button(onClick = {  }) {
                 Text(text = "LED OFF")
             }
         }
@@ -87,7 +80,7 @@ fun RemoteControl(
         Button(
             modifier = modifier.fillMaxWidth(),
             onClick = {
-            btVM.disconnect()
+//            btVM.disconnect()
             onNavigateToHome()
             }
         ) {

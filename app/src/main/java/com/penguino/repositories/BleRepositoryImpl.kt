@@ -13,11 +13,13 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.penguino.models.DeviceInfo
 import com.penguino.services.BluetoothLeService
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 private const val DTAG = "BluetoothManagementImpl"
@@ -28,16 +30,29 @@ class BleRepositoryImpl @Inject constructor(
     private val blAdapter: BluetoothAdapter,
 ): BleRepository {
     private var bluetoothLeService: BluetoothLeService? = null
-    override val scanning: MutableState<Boolean> = mutableStateOf(false)
-    override val devicesFound = mutableStateListOf<DeviceInfo>()
+
+    private var _scanning = MutableStateFlow(false)
+    override var scanning: StateFlow<Boolean> = _scanning
+
+    private var _btEnabled = MutableStateFlow(true)
+    override var btEnabled: StateFlow<Boolean> = _btEnabled
+
+    // Devices found during the scanning process. (Needs a little more tweak)
+    private val mutDeviceSet: MutableSet<DeviceInfo> = mutableSetOf()
+    private val _deviceList = MutableStateFlow<List<DeviceInfo>>(listOf())
+    override val deviceList: StateFlow<List<DeviceInfo>> = _deviceList
 
     private val scanCallback: ScanCallback = object: ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult?) {
             super.onScanResult(callbackType, result)
             result?.let { res ->
                 val device = res.device
-                val deviceInfo = DeviceInfo(device.name ?: "???", device.address)
-                if (!devicesFound.contains(deviceInfo)) devicesFound.add(deviceInfo)
+                val deviceInfo = DeviceInfo(device.name ?: "Foo", device.address)
+
+                mutDeviceSet.add(deviceInfo)
+                _deviceList.value = mutDeviceSet.toList()
+
+                Log.d(DTAG, deviceList.value.toString())
             }
         }
     }
@@ -52,7 +67,6 @@ class BleRepositoryImpl @Inject constructor(
                 // Connect here and do stuff here on service created
                 if (!bluetooth.initialize()) {
                     Log.e(TAG, "Unable to initialize service")
-//                    context.finish()
                 }
             }
         }
@@ -65,8 +79,11 @@ class BleRepositoryImpl @Inject constructor(
     override fun scanDevices() {
         if (scanning.value) return
         val scanner: BluetoothLeScanner = blAdapter.bluetoothLeScanner
-        devicesFound.clear()
-        scanning.value = true
+
+        mutDeviceSet.clear()
+        _deviceList.value = mutDeviceSet.toList()
+
+        _scanning.value = true
         scanner.startScan(scanCallback)
 
         Handler(Looper.getMainLooper()).postDelayed({ ->
@@ -78,7 +95,7 @@ class BleRepositoryImpl @Inject constructor(
     override fun stopScan() {
         if (scanning.value) {
             blAdapter.bluetoothLeScanner.stopScan(scanCallback)
-            scanning.value = false
+            _scanning.value = false
         }
     }
 

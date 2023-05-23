@@ -1,30 +1,95 @@
 package com.penguino.viewmodels
 
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.penguino.cache.RegInfoCache
 import com.penguino.models.RegistrationInfo
-import com.penguino.repositories.RegistrationRepository
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.Response
-import org.json.JSONArray
-import java.io.IOException
+import com.penguino.retrofit.RegistrationService
+import com.penguino.viewmodels.uistates.RegistrationUiState
+import com.squareup.moshi.Moshi
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Retrofit
+import javax.inject.Inject
+import retrofit2.Callback
+import retrofit2.Response
 
 private const val TAG = "RegistrationVM"
 
-class RegistrationViewModel(
-    private val savedStateHandle: SavedStateHandle
+// TODO: Add registered device to roomDB and add a section in home screen to connect to that device in one tap.
+
+@HiltViewModel
+class RegistrationViewModel @Inject constructor(
+    retrofit: Retrofit,
+    private val moshi: Moshi,
+    private val regInfoCache: RegInfoCache
 ) : ViewModel() {
+    private val petsApi = retrofit.create(RegistrationService::class.java)
+    var uiState by mutableStateOf(RegistrationUiState(
+        regInfo = regInfoCache.getRegInfo() ?: RegistrationInfo()
+    ))
+
+    init {
+        getSuggestedNames()
+    }
+
+    fun updateRegInfo(updateLambda: (RegistrationInfo) -> Unit) {
+        val copy = uiState.regInfo.copy()
+        updateLambda(copy)
+        uiState = uiState.copy(regInfo = copy)
+        regInfoCache.saveRegInfo(copy)
+    }
+
+    private fun getSuggestedNames() = viewModelScope.launch {
+        petsApi.suggestNames(8).enqueue(object: Callback<List<String>> {
+            override fun onResponse(
+                call: Call<List<String>>,
+                response: Response<List<String>>
+            ) {
+                if (response.isSuccessful) {
+                    uiState = uiState.copy(
+                        suggestions = response.body()?.toList() ?: listOf()
+                    )
+
+                }
+            }
+
+            override fun onFailure(call: Call<List<String>>, t: Throwable) {
+                TODO("Not yet implemented")
+            }
+        })
+    }
+
+    fun postRegInfo() {
+        Log.d("FOO", moshi.adapter(RegistrationInfo::class.java).toJson(uiState.regInfo))
+        petsApi.addPetInfo(uiState.regInfo).enqueue(object: Callback<String> {
+            override fun onResponse(
+                call: Call<String>,
+                response: Response<String>
+            ) {
+                if (response.isSuccessful) {
+                    Log.d("FOO", response.body() ?: "Ok")
+                    regInfoCache.clearRegInfo()
+                }
+            }
+
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Log.d("FOO", t.message.toString())
+            }
+        })
+    }
+}
 
 
-    var regInfo = mutableStateOf( RegistrationInfo() )
-
+// REFERENCE
 //    companion object {
 //        private var instance: RegistrationVM? = null
 //        val Factory = object: ViewModelProvider.Factory {
@@ -37,11 +102,11 @@ class RegistrationViewModel(
 //        }
 //    }
 
-    /**
-     * Please don't use: _mutTest, test, and testUpdate.
-     * This is only for experimenting with SavedStateHandle and
-     * will be removed in the future.
-     */
+/**
+ * Please don't use: _mutTest, test, and testUpdate.
+ * This is only for experimenting with SavedStateHandle and
+ * will be removed in the future.
+ */
 //    private var _mutTest = MutableStateFlow<RegistrationInfo>(
 //        savedStateHandle.getStateFlow(
 //            SAVED_REG_INFO, RegistrationInfo()).value)
@@ -51,55 +116,3 @@ class RegistrationViewModel(
 //        updateLambda(_mutTest.value)
 //        Log.d(TAG, "Check: ${Json.encodeToString(test.value)}")
 //    }
-
-    fun updateRegInfo(updateLambda: (RegistrationInfo) -> Unit) {
-        val copy = regInfo.value.copy()
-        updateLambda(copy)
-        regInfo.value = copy
-    }
-
-
-    val names = mutableStateListOf<String>()
-    private val nameSuggestionCallback = object: Callback {
-        override fun onFailure(call: Call, e: IOException) {
-            Log.d("FOO", "Something went wrong")
-            return
-        }
-
-        override fun onResponse(call: Call, response: Response) {
-            response.body?.let { body ->
-                val x = JSONArray(body.string())
-                for (i in 0 until x.length()) {
-                    names.add(x[i] as String)
-                }
-            }
-        }
-    }
-    fun getSuggestedNames(): SnapshotStateList<String> {
-        RegistrationRepository.getSuggestedNames(nameSuggestionCallback)
-        return names
-    }
-
-    fun postRegInfo(onSuccess: () -> Unit, onFail: () -> Unit) {
-        val postCallback = object: Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                onFail()
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                Handler(Looper.getMainLooper())
-                    .post(Runnable {
-                        when(response.code) {
-                            200 -> onSuccess()
-                            else -> onFail()
-                        }
-                    })
-            }
-        }
-
-
-        RegistrationRepository.postRegistrationInfo(regInfo.value, postCallback)
-    }
-
-
-}

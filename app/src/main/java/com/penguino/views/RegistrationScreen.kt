@@ -28,15 +28,21 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
+import com.penguino.cache.RegInfoCache
+import com.penguino.models.DeviceInfo
 import com.penguino.models.RegistrationInfo
 import com.penguino.viewmodels.RegistrationViewModel
+import com.penguino.viewmodels.uistates.RegistrationUiState
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 
 private const val TAG = "RegistrationPage"
 @Composable
-fun RegistrationPage(
+fun RegistrationScreen(
     modifier: Modifier = Modifier,
     regVM: RegistrationViewModel,
-    onNavigateToRemoteControl: () -> Unit
+    uiState: RegistrationUiState,
+    onNavigateToRemoteControl: (DeviceInfo) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -52,8 +58,9 @@ fun RegistrationPage(
         TextFields(
             modifier = modifier
                 .align(Alignment.CenterHorizontally),
-            regVM = regVM,
-            updater = regVM::updateRegInfo
+            updater = regVM::updateRegInfo,
+            suggestions = uiState.suggestions,
+            regInfo = uiState.regInfo
         )
 
         Button(
@@ -61,11 +68,9 @@ fun RegistrationPage(
                 .fillMaxWidth()
                 .padding(vertical = 12.dp),
             onClick = {
-                Log.d(TAG, regVM.regInfo.value.device.toString())
-                regVM.postRegInfo(
-                    onSuccess = onNavigateToRemoteControl,
-                    onFail = { /* TODO */ }
-                )
+                Log.d(TAG, uiState.regInfo.toString())
+                regVM.postRegInfo()
+                onNavigateToRemoteControl(uiState.regInfo.device)
             }) {
             Text(text = "Let's go!")
         }
@@ -75,7 +80,8 @@ fun RegistrationPage(
 @Composable
 fun TextFields(
     modifier: Modifier = Modifier,
-    regVM: RegistrationViewModel,
+    suggestions: List<String>,
+    regInfo: RegistrationInfo,
     updater: ((RegistrationInfo) -> Unit) -> Unit
 ) {
     Column (
@@ -84,9 +90,6 @@ fun TextFields(
         verticalArrangement = Arrangement.Center
     ) {
         // Get suggested names and store in a mutable state here :)
-        val suggestions = remember { regVM.getSuggestedNames() }
-        val regInfo by remember { regVM.regInfo }
-
         TextInputWithSuggestion(
             value = regInfo.name,
             stateUpdater = updater,

@@ -1,7 +1,5 @@
 package com.penguino.viewmodels
 
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -10,74 +8,83 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.penguino.cache.RegInfoCache
 import com.penguino.models.RegistrationInfo
-import com.penguino.repositories.RegistrationRepository
+import com.penguino.retrofit.RegistrationService
+import com.penguino.viewmodels.uistates.RegistrationUiState
+import com.squareup.moshi.Moshi
 import dagger.hilt.android.lifecycle.HiltViewModel
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.Response
-import org.json.JSONArray
-import java.io.IOException
+import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Retrofit
 import javax.inject.Inject
+import retrofit2.Callback
+import retrofit2.Response
 
 private const val TAG = "RegistrationVM"
 
+// TODO: Add registered device to roomDB and add a section in home screen to connect to that device in one tap.
+
 @HiltViewModel
 class RegistrationViewModel @Inject constructor(
-    private val savedStateHandle: SavedStateHandle,
+    retrofit: Retrofit,
+    private val moshi: Moshi,
     private val regInfoCache: RegInfoCache
 ) : ViewModel() {
-    var regInfo by mutableStateOf( regInfoCache.getRegInfo() ?: RegistrationInfo() )
+    private val petsApi = retrofit.create(RegistrationService::class.java)
+    var uiState by mutableStateOf(RegistrationUiState(
+        regInfo = regInfoCache.getRegInfo() ?: RegistrationInfo()
+    ))
+
+    init {
+        getSuggestedNames()
+    }
 
     fun updateRegInfo(updateLambda: (RegistrationInfo) -> Unit) {
-        val copy = regInfo.copy()
+        val copy = uiState.regInfo.copy()
         updateLambda(copy)
-        regInfo = copy
+        uiState = uiState.copy(regInfo = copy)
         regInfoCache.saveRegInfo(copy)
     }
 
-    val names = mutableStateListOf<String>()
-    private val nameSuggestionCallback = object: Callback {
-        override fun onFailure(call: Call, e: IOException) {
-            Log.d("FOO", "Something went wrong")
-            return
-        }
+    private fun getSuggestedNames() = viewModelScope.launch {
+        petsApi.suggestNames(8).enqueue(object: Callback<List<String>> {
+            override fun onResponse(
+                call: Call<List<String>>,
+                response: Response<List<String>>
+            ) {
+                if (response.isSuccessful) {
+                    uiState = uiState.copy(
+                        suggestions = response.body()?.toList() ?: listOf()
+                    )
 
-        override fun onResponse(call: Call, response: Response) {
-            response.body?.let { body ->
-                val x = JSONArray(body.string())
-                for (i in 0 until x.length()) {
-                    names.add(x[i] as String)
                 }
             }
-        }
-    }
-    fun getSuggestedNames(): SnapshotStateList<String> {
-        RegistrationRepository.getSuggestedNames(nameSuggestionCallback)
-        return names
+
+            override fun onFailure(call: Call<List<String>>, t: Throwable) {
+                TODO("Not yet implemented")
+            }
+        })
     }
 
-    fun postRegInfo(onSuccess: () -> Unit, onFail: () -> Unit) {
-        val postCallback = object: Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                onFail()
+    fun postRegInfo() {
+        Log.d("FOO", moshi.adapter(RegistrationInfo::class.java).toJson(uiState.regInfo))
+        petsApi.addPetInfo(uiState.regInfo).enqueue(object: Callback<String> {
+            override fun onResponse(
+                call: Call<String>,
+                response: Response<String>
+            ) {
+                if (response.isSuccessful) {
+                    Log.d("FOO", response.body() ?: "Ok")
+                    regInfoCache.clearRegInfo()
+                }
             }
 
-            override fun onResponse(call: Call, response: Response) {
-                Handler(Looper.getMainLooper())
-                    .post(Runnable {
-                        when(response.code) {
-                            200 -> {
-                                onSuccess()
-                                regInfoCache.clearRegInfo()
-                            }
-                            else -> onFail()
-                        }
-                    })
+            override fun onFailure(call: Call<String>, t: Throwable) {
+                Log.d("FOO", t.message.toString())
             }
-        }
-        RegistrationRepository.postRegistrationInfo(regInfo, postCallback)
+        })
     }
 }
 

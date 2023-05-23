@@ -9,45 +9,51 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
-import com.penguino.models.DeviceInfo
-import com.penguino.viewmodels.BluetoothViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import com.penguino.viewmodels.RemoteControlViewModel
+import com.penguino.viewmodels.uistates.RemoteControlUiState
 
 @Composable
 fun RemoteControlScreen(
     modifier: Modifier = Modifier,
-    deviceInfo: DeviceInfo,
+    rcVm: RemoteControlViewModel,
+    uiState: RemoteControlUiState,
     onNavigateToHome: () -> Unit
 ) {
-//    val lifecycleOwner = LocalLifecycleOwner.current
-//    DisposableEffect(key1 = lifecycleOwner) {
-//        val observer = LifecycleEventObserver { _, event ->
-//            when(event) {
-//                Lifecycle.Event.ON_CREATE -> {
-//                    btVM.bindService()
-//                }
-//
-//                Lifecycle.Event.ON_RESUME -> {
-//                    btVM.connect()
-//                }
-//
-//                Lifecycle.Event.ON_DESTROY -> {
-//                    btVM.disconnect()
-//                    btVM.unbindService()
-//                }
-//
-//                else -> {}
-//            }
-//        }
-//
-//        lifecycleOwner.lifecycle.addObserver(observer)
-//
-//        onDispose {
-//            lifecycleOwner.lifecycle.removeObserver(observer)
-//        }
-//    }
+    val deviceInfo = uiState.deviceInfo
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(key1 = lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when(event) {
+                Lifecycle.Event.ON_CREATE -> {
+                    rcVm.bindService()
+                }
+
+                Lifecycle.Event.ON_RESUME -> {
+                    rcVm.connect()
+                }
+
+                Lifecycle.Event.ON_DESTROY -> {
+                    rcVm.disconnect()
+                    rcVm.unbindService()
+                }
+
+                else -> {}
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 
     Column(modifier = modifier.fillMaxSize().padding(8.dp)) {
         Column {
@@ -68,11 +74,11 @@ fun RemoteControlScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Button(onClick = { }) {
+            Button(onClick = { rcVm.sendMessage("ON") }) {
                 Text(text = "LED ON")
             }
 
-            Button(onClick = {  }) {
+            Button(onClick = { rcVm.sendMessage("OFF") }) {
                 Text(text = "LED OFF")
             }
         }
@@ -80,8 +86,8 @@ fun RemoteControlScreen(
         Button(
             modifier = modifier.fillMaxWidth(),
             onClick = {
-//            btVM.disconnect()
-            onNavigateToHome()
+                rcVm.disconnect()
+                onNavigateToHome()
             }
         ) {
             Text(text = "Disconnect")

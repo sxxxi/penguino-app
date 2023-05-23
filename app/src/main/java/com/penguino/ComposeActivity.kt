@@ -41,10 +41,6 @@ import com.penguino.navigation.registrationScreen
 import com.penguino.navigation.remoteControlScreen
 import com.penguino.navigation.scanScreen
 import com.penguino.ui.theme.PenguinoTheme
-import com.penguino.viewmodels.BluetoothViewModel
-import com.penguino.views.RegistrationScreen
-import com.penguino.views.RemoteControlScreen
-import com.penguino.views.ScanScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

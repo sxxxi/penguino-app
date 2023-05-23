@@ -32,6 +32,7 @@ import com.penguino.cache.RegInfoCache
 import com.penguino.models.DeviceInfo
 import com.penguino.models.RegistrationInfo
 import com.penguino.viewmodels.RegistrationViewModel
+import com.penguino.viewmodels.uistates.RegistrationUiState
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 
@@ -40,7 +41,7 @@ private const val TAG = "RegistrationPage"
 fun RegistrationScreen(
     modifier: Modifier = Modifier,
     regVM: RegistrationViewModel,
-    regInfo: RegistrationInfo,
+    uiState: RegistrationUiState,
     onNavigateToRemoteControl: (DeviceInfo) -> Unit
 ) {
     Column(
@@ -58,8 +59,8 @@ fun RegistrationScreen(
             modifier = modifier
                 .align(Alignment.CenterHorizontally),
             updater = regVM::updateRegInfo,
-            suggestions = regVM.getSuggestedNames(),
-            regInfo = regVM.regInfo
+            suggestions = uiState.suggestions,
+            regInfo = uiState.regInfo
         )
 
         Button(
@@ -67,17 +68,9 @@ fun RegistrationScreen(
                 .fillMaxWidth()
                 .padding(vertical = 12.dp),
             onClick = {
-                Log.d(TAG, regVM.regInfo.device.toString())
-//                regVM.postRegInfo(
-//                    onSuccess = onNavigateToRemoteControl,
-//                    onFail = { /* TODO */ }
-//                )
-
-//                val adapter = Moshi.Builder().add(KotlinJsonAdapterFactory()).build().adapter(DeviceInfo::class.java)
-//                val x = adapter.toJson(regInfo.device)
-//                Log.d("TEST", adapter.fromJson(x).toString())
-
-                onNavigateToRemoteControl(regInfo.device)
+                Log.d(TAG, uiState.regInfo.toString())
+                regVM.postRegInfo()
+                onNavigateToRemoteControl(uiState.regInfo.device)
             }) {
             Text(text = "Let's go!")
         }

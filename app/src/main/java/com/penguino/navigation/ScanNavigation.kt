@@ -16,6 +16,7 @@ fun NavGraphBuilder.scanScreen(
 		val scanVm: ScanViewModel = hiltViewModel()
 		ScanScreen(
 			uiState = scanVm.uiState,
+			viewmodel = scanVm,
 			onDeviceSelected = scanVm::saveSelectedDevice,
 			onScanButtonClicked = scanVm::scanDevices,
 			onBackButtonClicked = scanVm::stopScan,

@@ -29,6 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.penguino.models.DeviceInfo
 import com.penguino.ui.theme.PenguinoTheme
+import com.penguino.viewmodels.ScanViewModel
 import com.penguino.viewmodels.uistates.ScanUiState
 
 private const val TAG = "ScanPage"
@@ -39,6 +40,7 @@ private const val TAG = "ScanPage"
 @Composable
 fun ScanScreen (
     modifier: Modifier = Modifier,
+    viewmodel: ScanViewModel,
     uiState: ScanUiState,
     onDeviceSelected: (DeviceInfo) -> Unit,
     onScanButtonClicked: () -> Unit,
@@ -46,6 +48,8 @@ fun ScanScreen (
     onNavigateToHome: () -> Unit,
     onNavigateToRegistration: () -> Unit
 ) {
+    val devicesFound = uiState.devicesFound
+    val scanning = uiState.scanning
     val btEnabled = uiState.bluetoothEnabled
 
     Column(modifier = modifier
@@ -53,21 +57,21 @@ fun ScanScreen (
     ) {
         DeviceList(
             modifier = modifier.weight(1F),
-            devices = uiState.devicesFound,
+            devices = devicesFound,
             onItemClick = {
-                onDeviceSelected(it)
+                viewmodel.saveSelectedDevice(it)
                 onNavigateToRegistration()
             }
         )
 
         ButtonRow(
             btEnabled = btEnabled,
-            scanning = uiState.scanning,
+            scanning = scanning,
             onScanButtonClicked = {
-                onScanButtonClicked()
+                viewmodel.scanDevices()
             },
             onBackButtonClicked = {
-                onBackButtonClicked()
+                viewmodel.stopScan()
                 onNavigateToHome()
             }
         )

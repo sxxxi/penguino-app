@@ -30,7 +30,6 @@ class ScanViewModel @Inject constructor(
 			// I have to review this. <Structured concurrency>
 			btRepo.deviceList
 				.combine(btRepo.scanning) { devices, scanning ->
-					Log.d("TEST", devices.toString())
 					uiState.copy(devicesFound = devices, scanning = scanning)
 				}
 				.combine(btRepo.btEnabled) { state, btEnabled ->
@@ -42,11 +41,11 @@ class ScanViewModel @Inject constructor(
 		}
 	}
 
-	fun scanDevices() {
+	fun scanDevices() = viewModelScope.launch {
 		btRepo.scanDevices()
 	}
 
-	fun stopScan() {
+	fun stopScan() = viewModelScope.launch {
 		btRepo.stopScan()
 	}
 

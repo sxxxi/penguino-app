@@ -67,7 +67,6 @@ class BleRepositoryImpl @Inject constructor(
                 // Connect here and do stuff here on service created
                 if (!bluetooth.initialize()) {
                     Log.e(TAG, "Unable to initialize service")
-//                    context.finish()
                 }
             }
         }

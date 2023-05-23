@@ -16,7 +16,7 @@ fun NavGraphBuilder.registrationScreen(
 		val regVm = hiltViewModel<RegistrationViewModel>()
 		RegistrationScreen(
 			regVM = regVm,
-			regInfo = regVm.regInfo,
+			uiState = regVm.uiState,
 			onNavigateToRemoteControl = onNavigateToRemoteControl
 		)
 	}

@@ -40,7 +40,8 @@ fun NavGraphBuilder.remoteControlScreen(
 	) {
 		val rcVm = hiltViewModel<RemoteControlViewModel>()
 		RemoteControlScreen(
-			deviceInfo = rcVm.deviceInfo,
+			rcVm = rcVm,
+			uiState = rcVm.uiState,
 			onNavigateToHome = onNavigateToHome
 		)
 	}

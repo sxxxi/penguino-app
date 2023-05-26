@@ -9,9 +9,8 @@ import androidx.navigation.compose.composable
 import com.penguino.constants.Screen
 import com.penguino.models.DeviceInfo
 import com.penguino.viewmodels.RemoteControlViewModel
-import com.penguino.views.RemoteControlScreen
+import com.penguino.ui.screens.RemoteControlScreen
 import com.squareup.moshi.Moshi
-import com.squareup.moshi.adapter
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 
 const val rcDeviceArg = "rcDevice"

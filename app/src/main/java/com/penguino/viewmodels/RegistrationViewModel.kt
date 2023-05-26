@@ -2,17 +2,13 @@ package com.penguino.viewmodels
 
 import android.util.Log
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.penguino.cache.RegInfoCache
 import com.penguino.models.RegistrationInfo
 import com.penguino.retrofit.RegistrationService
-import com.penguino.viewmodels.uistates.RegistrationUiState
 import com.squareup.moshi.Moshi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -41,6 +37,11 @@ class RegistrationViewModel @Inject constructor(
         getSuggestedNames()
     }
 
+    data class RegistrationUiState(
+        val suggestions: List<String> = listOf(),
+        val regInfo: RegistrationInfo
+    )
+
     fun updateRegInfo(updateLambda: (RegistrationInfo) -> Unit) {
         val copy = uiState.regInfo.copy()
         updateLambda(copy)
@@ -63,7 +64,7 @@ class RegistrationViewModel @Inject constructor(
             }
 
             override fun onFailure(call: Call<List<String>>, t: Throwable) {
-                TODO("Not yet implemented")
+//                TODO("Not yet implemented")
             }
         })
     }

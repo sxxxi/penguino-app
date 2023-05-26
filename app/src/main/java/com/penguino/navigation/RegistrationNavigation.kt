@@ -7,7 +7,7 @@ import androidx.navigation.compose.composable
 import com.penguino.constants.Screen
 import com.penguino.models.DeviceInfo
 import com.penguino.viewmodels.RegistrationViewModel
-import com.penguino.views.RegistrationScreen
+import com.penguino.ui.screens.RegistrationScreen
 
 fun NavGraphBuilder.registrationScreen(
 	onNavigateToRemoteControl: (DeviceInfo) -> Unit

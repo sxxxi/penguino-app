@@ -1,4 +1,4 @@
-package com.penguino.views
+package com.penguino.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.penguino.viewmodels.RemoteControlViewModel
-import com.penguino.viewmodels.uistates.RemoteControlUiState
+import com.penguino.viewmodels.RemoteControlViewModel.RemoteControlUiState
 
 @Composable
 fun RemoteControlScreen(

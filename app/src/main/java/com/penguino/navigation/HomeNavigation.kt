@@ -3,7 +3,7 @@ package com.penguino.navigation
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.penguino.HomePage
+import com.penguino.ui.screens.HomePage
 import com.penguino.constants.Screen
 
 fun NavGraphBuilder.homeScreen(

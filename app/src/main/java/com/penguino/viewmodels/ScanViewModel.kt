@@ -10,7 +10,6 @@ import com.penguino.cache.RegInfoCache
 import com.penguino.models.DeviceInfo
 import com.penguino.models.RegistrationInfo
 import com.penguino.repositories.BleRepository
-import com.penguino.viewmodels.uistates.ScanUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
@@ -24,6 +23,12 @@ class ScanViewModel @Inject constructor(
 ) : ViewModel() {
 	var uiState by mutableStateOf(ScanUiState())
 		private set
+
+	data class ScanUiState (
+		val bluetoothEnabled: Boolean = false,
+		val scanning: Boolean = false,
+		val devicesFound: List<DeviceInfo> = listOf()
+	)
 
 	init {
 		viewModelScope.launch {

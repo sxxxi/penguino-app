@@ -6,7 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.penguino.constants.Screen
 import com.penguino.viewmodels.ScanViewModel
-import com.penguino.views.ScanScreen
+import com.penguino.ui.screens.ScanScreen
 
 fun NavGraphBuilder.scanScreen(
 	onNavigateToHome: () -> Unit,

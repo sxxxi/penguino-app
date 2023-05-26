@@ -4,9 +4,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import com.penguino.models.DeviceInfo
 import com.penguino.navigation.RemoteControlArgs
 import com.penguino.repositories.BleRepository
-import com.penguino.viewmodels.uistates.RemoteControlUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -19,6 +19,10 @@ class RemoteControlViewModel @Inject constructor(
 	val uiState by mutableStateOf(RemoteControlUiState(
 		deviceInfo = args.rcDevice
 	))
+
+	data class RemoteControlUiState(
+		val deviceInfo: DeviceInfo
+	)
 
 	/**
 	 * I'm just doing one liners for now to make it readable

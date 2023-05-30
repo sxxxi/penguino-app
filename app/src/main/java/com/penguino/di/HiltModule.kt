@@ -4,12 +4,17 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.SharedPreferences
-import com.google.gson.Gson
+import androidx.room.Room
 import com.google.gson.GsonBuilder
-import com.penguino.cache.RegInfoCache
-import com.penguino.cache.RegInfoCacheImpl
+import com.penguino.repositories.RegInfoCache
+import com.penguino.repositories.RegInfoCacheImpl
 import com.penguino.repositories.BleRepository
 import com.penguino.repositories.BleRepositoryImpl
+import com.penguino.repositories.RegistrationRepository
+import com.penguino.repositories.RegistrationRepositoryImpl
+import com.penguino.repositories.RegistrationService
+import com.penguino.room.DeviceDatabase
+import com.penguino.room.dao.DeviceDao
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -19,7 +24,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
 @Module
@@ -64,13 +68,75 @@ object HiltModule {
 
     @Provides
     @Singleton
-    fun petsApi(
-        moshi: Moshi
-    ): Retrofit  {
+    fun retrofit(): Retrofit  {
         val gson = GsonBuilder().setLenient().create()
         return Retrofit.Builder()
             .baseUrl("http://192.168.50.153:8080/")
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
     }
+
+
+    @Provides
+    @Singleton
+    fun deviceDao(@ApplicationContext ctx: Context): DeviceDao {
+        return Room
+            .databaseBuilder(
+                context = ctx,
+                klass = DeviceDatabase::class.java,
+                name = "SavedDevicesDatabase")
+            .build()
+            .dao()
+    }
+
+    @Provides
+    @Singleton
+    fun deviceApi(retrofit: Retrofit): RegistrationService {
+        return retrofit.create(RegistrationService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun deviceRepository(
+        deviceApi: RegistrationService,
+        deviceDao: DeviceDao
+    ): RegistrationRepository {
+        return RegistrationRepositoryImpl(
+            registrationApi = deviceApi,
+            registrationDao = deviceDao
+        )
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

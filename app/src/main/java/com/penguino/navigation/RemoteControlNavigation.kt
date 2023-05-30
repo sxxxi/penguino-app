@@ -6,28 +6,20 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.penguino.constants.Screen
 import com.penguino.models.DeviceInfo
+import com.penguino.models.RegistrationInfo
 import com.penguino.viewmodels.RemoteControlViewModel
 import com.penguino.ui.screens.RemoteControlScreen
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 
 const val rcDeviceArg = "rcDevice"
-
-internal class RemoteControlArgs(
-	rcDeviceJson: String
+internal data class RemoteControlArgs(
+	private val moshi: Moshi,
+	private val savedStateHandle: SavedStateHandle,
 ) {
-	private val adapter = Moshi.Builder()
-		.add(KotlinJsonAdapterFactory())
-		.build().adapter(DeviceInfo::class.java)
-	val rcDevice: DeviceInfo = adapter.fromJson(rcDeviceJson)!!		// I promise you, this is not null.
-
-	constructor(savedStateHandle: SavedStateHandle): this(
-		rcDeviceJson = checkNotNull(savedStateHandle[rcDeviceArg]) as String
-	) {
-		Log.d("TESTING", checkNotNull(savedStateHandle[rcDeviceArg]))
-	}
+	private val adapter by lazy { moshi.adapter(RegistrationInfo::class.java) }
+	val regInfo: RegistrationInfo? = adapter.fromJson(checkNotNull(savedStateHandle[rcDeviceArg]) as String)
 }
 
 fun NavGraphBuilder.remoteControlScreen(
@@ -46,11 +38,11 @@ fun NavGraphBuilder.remoteControlScreen(
 	}
 }
 
-fun NavController.navigateToRemoteControl(rcDevice: DeviceInfo) {
+fun NavController.navigateToRemoteControl(rcDevice: RegistrationInfo) {
 	val adapter = Moshi.Builder()
 		.add(KotlinJsonAdapterFactory())
 		.build()
-		.adapter(DeviceInfo::class.java)
+		.adapter(RegistrationInfo::class.java)
 	Log.d("TEST", adapter.toJson(rcDevice).toString())
 	navigate("${Screen.RemoteControlScreen.route}/${adapter.toJson(rcDevice)}")
 }

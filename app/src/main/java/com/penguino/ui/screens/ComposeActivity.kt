@@ -3,29 +3,28 @@ package com.penguino.ui.screens
 import android.Manifest
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.penguino.constants.Screen
+import com.penguino.navigation.Screen
 import com.penguino.navigation.homeScreen
 import com.penguino.navigation.navigateToHome
+import com.penguino.navigation.navigateToPetInfo
 import com.penguino.navigation.navigateToRegistration
 import com.penguino.navigation.navigateToRemoteControl
 import com.penguino.navigation.navigateToScan
+import com.penguino.navigation.petInfo
 import com.penguino.navigation.registrationScreen
 import com.penguino.navigation.remoteControlScreen
 import com.penguino.navigation.scanScreen
@@ -76,7 +75,14 @@ private fun MainScreen(
             startDestination = Screen.HomeScreen.route,
             modifier = modifier.padding(it)
         ) {
-            homeScreen(onNavigateToScan = navController::navigateToScan)
+            homeScreen(
+                onSavedPetClicked = navController::navigateToPetInfo,
+                onNavigateToScan = navController::navigateToScan
+            )
+            petInfo(
+                onNavigateToHome = navController::navigateToHome,
+                onNavigateToRc = navController::navigateToRemoteControl
+            )
             scanScreen(
                 onNavigateToRegistration = navController::navigateToRegistration,
                 onNavigateToHome = navController::navigateToHome

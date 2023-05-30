@@ -1,12 +1,15 @@
 package com.penguino.models
 
-import com.squareup.moshi.Json
+import androidx.room.ColumnInfo
+import androidx.room.Embedded
+import androidx.room.Entity
 import kotlinx.serialization.Serializable
 
 @Serializable
+@Entity(primaryKeys = ["address"])
 data class RegistrationInfo (
-    @field:Json(name = "name") var name: String = "",
-    @field:Json(name = "personality") var personality: String = "",
-    @field:Json(name = "age") var age: Int = 0,
-    @field:Json(name = "deviceInfo") var device: DeviceInfo = DeviceInfo()
-): java.io.Serializable
+    @Embedded var device: DeviceInfo = DeviceInfo(),
+    @ColumnInfo var petName: String = "",
+    @ColumnInfo var personality: String = "",
+    @ColumnInfo var age: Int = 0,
+)

@@ -6,9 +6,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.penguino.cache.RegInfoCache
+import com.penguino.repositories.RegInfoCache
 import com.penguino.models.RegistrationInfo
-import com.penguino.retrofit.RegistrationService
+import com.penguino.repositories.RegistrationRepositoryImpl
+import com.penguino.repositories.RegistrationService
 import com.squareup.moshi.Moshi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -26,7 +27,8 @@ private const val TAG = "RegistrationVM"
 class RegistrationViewModel @Inject constructor(
     retrofit: Retrofit,
     private val moshi: Moshi,
-    private val regInfoCache: RegInfoCache
+    private val regInfoCache: RegInfoCache,
+    private val regRepo: RegistrationRepositoryImpl
 ) : ViewModel() {
     private val petsApi = retrofit.create(RegistrationService::class.java)
     var uiState by mutableStateOf(RegistrationUiState(
@@ -34,7 +36,7 @@ class RegistrationViewModel @Inject constructor(
     ))
 
     init {
-        getSuggestedNames()
+//        getSuggestedNames()
     }
 
     data class RegistrationUiState(
@@ -63,30 +65,24 @@ class RegistrationViewModel @Inject constructor(
                 }
             }
 
-            override fun onFailure(call: Call<List<String>>, t: Throwable) {
-//                TODO("Not yet implemented")
-            }
+            override fun onFailure(call: Call<List<String>>, t: Throwable) {/*TODO*/}
         })
     }
 
-    fun postRegInfo() {
-        Log.d("FOO", moshi.adapter(RegistrationInfo::class.java).toJson(uiState.regInfo))
-        petsApi.addPetInfo(uiState.regInfo).enqueue(object: Callback<String> {
-            override fun onResponse(
-                call: Call<String>,
-                response: Response<String>
-            ) {
+    fun postRegInfo() = viewModelScope.launch {
+        regRepo.saveDevice(device = uiState.regInfo, callback = object: Callback<String> {
+            override fun onResponse(call: Call<String>, response: Response<String>) {
                 if (response.isSuccessful) {
                     Log.d("FOO", response.body() ?: "Ok")
                     regInfoCache.clearRegInfo()
                 }
             }
 
-            override fun onFailure(call: Call<String>, t: Throwable) {
-                Log.d("FOO", t.message.toString())
-            }
+            override fun onFailure(call: Call<String>, t: Throwable) {/*TODO*/}
         })
+        regInfoCache.clearRegInfo()
     }
+
 }
 
 

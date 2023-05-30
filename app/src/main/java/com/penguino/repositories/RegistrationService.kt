@@ -1,4 +1,4 @@
-package com.penguino.retrofit
+package com.penguino.repositories
 
 import com.penguino.models.RegistrationInfo
 import retrofit2.Call
@@ -14,5 +14,5 @@ interface RegistrationService {
 	fun suggestNames(@Path("size") suggestionSize: Int): Call<List<String>>
 
 	@POST(API)
-	fun addPetInfo(@Body regInfo: RegistrationInfo): Call<String>
+	fun addDeviceInfo(@Body regInfo: RegistrationInfo): Call<String>
 }

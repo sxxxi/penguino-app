@@ -5,23 +5,26 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.penguino.models.DeviceInfo
+import com.penguino.models.RegistrationInfo
 import com.penguino.navigation.RemoteControlArgs
 import com.penguino.repositories.BleRepository
+import com.squareup.moshi.Moshi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class RemoteControlViewModel @Inject constructor(
 	savedStateHandle: SavedStateHandle,
+	moshi: Moshi,
 	private val btRepository: BleRepository
 ): ViewModel() {
-	private val args = RemoteControlArgs(savedStateHandle = savedStateHandle)
+	private val args = RemoteControlArgs(savedStateHandle = savedStateHandle, moshi = moshi)
 	val uiState by mutableStateOf(RemoteControlUiState(
-		deviceInfo = args.rcDevice
+		deviceInfo = args.regInfo ?: RegistrationInfo()
 	))
 
 	data class RemoteControlUiState(
-		val deviceInfo: DeviceInfo
+		val deviceInfo: RegistrationInfo
 	)
 
 	/**
@@ -31,7 +34,7 @@ class RemoteControlViewModel @Inject constructor(
 	 */
 	fun bindService() = btRepository.bindService()
 	fun unbindService() = btRepository.unbindService()
-	fun connect() = btRepository.connect(uiState.deviceInfo)
+	fun connect() = btRepository.connect(uiState.deviceInfo.device)
 	fun disconnect() = btRepository.disconnect()
 	fun sendMessage(msg: String) = btRepository.sendMessage(msg)
 

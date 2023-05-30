@@ -36,7 +36,7 @@ fun RemoteControlScreen(
                 }
 
                 Lifecycle.Event.ON_RESUME -> {
-                    rcVm.connect()
+//                    rcVm.connect()
                 }
 
                 Lifecycle.Event.ON_DESTROY -> {
@@ -58,12 +58,12 @@ fun RemoteControlScreen(
     Column(modifier = modifier.fillMaxSize().padding(8.dp)) {
         Column {
             Text(
-                text = deviceInfo.name,
+                text = deviceInfo.petName,
                 style = MaterialTheme.typography.headlineLarge,
             )
 
             Text(
-                text = deviceInfo.address,
+                text = deviceInfo.device.address,
                 style = MaterialTheme.typography.headlineSmall,
                 color = MaterialTheme.colorScheme.secondary
             )

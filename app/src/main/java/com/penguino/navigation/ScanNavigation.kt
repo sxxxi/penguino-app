@@ -4,7 +4,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.penguino.constants.Screen
 import com.penguino.viewmodels.ScanViewModel
 import com.penguino.ui.screens.ScanScreen
 

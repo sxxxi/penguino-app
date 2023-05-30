@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.penguino.cache.RegInfoCache
+import com.penguino.repositories.RegInfoCache
 import com.penguino.models.DeviceInfo
 import com.penguino.models.RegistrationInfo
 import com.penguino.repositories.BleRepository

@@ -130,7 +130,7 @@ private fun DeviceListItem(
         ) {
             Text(
                 style = MaterialTheme.typography.titleMedium,
-                text = device.name
+                text = device.deviceName
             )
             Text(
                 text = device.address,

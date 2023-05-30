@@ -1,9 +1,9 @@
-package com.penguino.constants
+package com.penguino.navigation
 
 import androidx.navigation.NamedNavArgument
+import androidx.navigation.NavArgument
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.penguino.navigation.rcDeviceArg
 
 sealed class Screen(
 	val route: String,
@@ -18,6 +18,13 @@ sealed class Screen(
 		routeWithArgs = "rc/{$rcDeviceArg}",
 		arguments = listOf(
 			navArgument(rcDeviceArg) {type = NavType.StringType}
+		)
+	)
+	object PetInfoScreen: Screen(
+		route = "petInfo",
+		routeWithArgs = "petInfo/{$petInfoSelectedDeviceArg}",
+		arguments = listOf(
+			navArgument(petInfoSelectedDeviceArg) {type = NavType.StringType}
 		)
 	)
 }

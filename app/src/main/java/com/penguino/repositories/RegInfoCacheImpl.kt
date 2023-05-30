@@ -1,4 +1,4 @@
-package com.penguino.cache
+package com.penguino.repositories
 
 import android.content.SharedPreferences
 import com.penguino.models.RegistrationInfo

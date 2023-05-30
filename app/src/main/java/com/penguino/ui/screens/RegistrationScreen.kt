@@ -23,13 +23,17 @@ import com.penguino.viewmodels.RegistrationViewModel.RegistrationUiState
 
 private const val TAG = "RegistrationPage"
 
+/*
+TODO: dont register device if device is already saved
+ */
+
 // Inject event callbacks instead of the view-model.
 @Composable
 fun RegistrationScreen(
     modifier: Modifier = Modifier,
     regVM: RegistrationViewModel,
     uiState: RegistrationUiState,
-    onNavigateToRemoteControl: (DeviceInfo) -> Unit = {}
+    onNavigateToRemoteControl: (RegistrationInfo) -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -56,7 +60,7 @@ fun RegistrationScreen(
                 .padding(vertical = 12.dp),
             onClick = {
                 regVM.postRegInfo()
-                onNavigateToRemoteControl(uiState.regInfo.device)
+                onNavigateToRemoteControl(uiState.regInfo)
             }) {
             Text(text = "Let's go!")
         }
@@ -77,12 +81,12 @@ private fun TextFields(
     ) {
         // Get suggested names and store in a mutable state here :)
         TextInputWithSuggestion(
-            value = regInfo.name,
+            value = regInfo.petName,
             stateUpdater = updater,
             label = "Name",
             suggestions = suggestions
         ) { newValue, updatable ->
-            updatable.name = newValue
+            updatable.petName = newValue
         }
 
         TextInput(

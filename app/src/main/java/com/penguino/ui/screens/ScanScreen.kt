@@ -32,7 +32,6 @@ import com.penguino.viewmodels.ScanViewModel.ScanUiState
 private const val TAG = "ScanPage"
 
 // TODO: Make btEnabled reactive. Change value when bluetooth status is changed.
-// TODO: Research best practices for styling and where to store style property values.
 
 @Composable
 fun ScanScreen (

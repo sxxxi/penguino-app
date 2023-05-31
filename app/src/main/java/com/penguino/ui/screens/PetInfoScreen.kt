@@ -3,59 +3,40 @@ package com.penguino.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.rounded.Delete
-import androidx.compose.material.icons.rounded.Warning
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.penguino.models.DeviceInfo
 import com.penguino.models.RegistrationInfo
+import com.penguino.ui.components.ConfirmationAlert
+import com.penguino.ui.components.CustomTopBar
+import com.penguino.ui.components.MenuButton
+import com.penguino.ui.components.TitledText
 import com.penguino.ui.theme.PenguinoTheme
 import com.penguino.viewmodels.PetInfoViewModel
 
-private fun Modifier.popUpABit() = layout { measurable, constraints ->
-	val children = measurable.measure(constraints = constraints)
-	val topPad = children.height/2
-
-	layout(children.width, children.height - topPad) {
-		children.place(0, -topPad)
-	}
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PetInfoScreen(
 	modifier: Modifier = Modifier,
@@ -64,9 +45,8 @@ fun PetInfoScreen(
 	onNavigateToHome: () -> Unit = {},
 	onNavigateToRc: (RegistrationInfo) -> Unit = {}
 ) {
-	val petInfo by remember {
-		mutableStateOf(uiState.selectedDevice)
-	}
+	val petInfo by remember { mutableStateOf(uiState.selectedDevice) }
+	var deleteRequest by remember { mutableStateOf(false) }
 
 	Column(
 		modifier = modifier
@@ -74,60 +54,81 @@ fun PetInfoScreen(
 			.background(MaterialTheme.colorScheme.background)
 	) {
 		PetInfoHeader(
-			image = null,
+//			image = null,
 			petName = petInfo.petName,
-			address = petInfo.device.address
-		)
-		Column(
-			modifier = Modifier
-				.weight(1f)
-				.padding(8.dp)
-		) {
-			Text(text = "Personality: ${petInfo.personality}")
-			Text(text = "Age: ${petInfo.age}")
-		}
-		Row(
-			modifier = Modifier
-				.fillMaxWidth()
-				.padding(4.dp)
-		) {
-			// TODO: Ask if user really wants to delete item
-			IconButton(onClick = {
-				onDeleteClicked()
-				onNavigateToHome()
-			}) {
-				Icon(
-					imageVector = Icons.Rounded.Delete,
-					contentDescription = "",
-					tint = MaterialTheme.colorScheme.primary
+			headerButtons = {
+				var expanded by remember {
+					mutableStateOf(false)
+				}
+				MenuButton(
+					expanded = expanded,
+					onClick = { expanded = !expanded },
+					onDismiss = { expanded = false },
+					menuButtons = {
+						DropdownMenuItem(
+							text = { Text(text = "Edit") },
+							onClick = {
+								deleteRequest = true
+								expanded = false
+							}
+						)
+						DropdownMenuItem(
+							text = { Text(text = "Delete") },
+							onClick = {
+								deleteRequest = true
+								expanded = false
+							}
+						)
+					}
 				)
 			}
-			Button(
-				modifier = Modifier.weight(1f),
-				shape = RoundedCornerShape(10),
-				onClick = { onNavigateToRc(petInfo) }
-			) {
-				Text("Let's play!")
+		)
+
+		PetInfoSection(
+			modifier = Modifier
+				.weight(1f)
+				.fillMaxWidth(),
+			petInfo = petInfo,
+			onNavigateToRc = onNavigateToRc
+		)
+
+	}
+
+	if (deleteRequest) {
+		ConfirmationAlert(
+			modifier = modifier.clip(RoundedCornerShape(5)),
+			title = "Delete",
+			text = "Are you sure you want to delete this profile?",
+			onConfirm = {
+				onDeleteClicked()
+				onNavigateToHome()
+				deleteRequest = !deleteRequest
+			},
+			onDismiss = {
+				deleteRequest = !deleteRequest
 			}
-		}
+		)
 	}
 }
 
 @Composable
-fun PetInfoHeader(
+private fun PetInfoHeader(
 	image: ImageBitmap? = null,
 	petName: String = "",
-	address: String = ""
+	headerButtons: @Composable RowScope.() -> Unit,
 ) {
 	Column(
 		modifier = Modifier
 			.background(MaterialTheme.colorScheme.primary)
 	) {
-		Spacer(modifier = Modifier.padding(10.dp))
-		Row(
+		CustomTopBar(
+			headerButtons = headerButtons
+		)
+		Column(
 			modifier = Modifier
+				.padding(20.dp)
 				.fillMaxWidth(),
-			horizontalArrangement = Arrangement.Center
+			horizontalAlignment = Alignment.CenterHorizontally
 		) {
 			PetPfp(
 				modifier = Modifier
@@ -136,24 +137,61 @@ fun PetInfoHeader(
 					.border(2.dp, MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(100)),
 				imageBitmap = image
 			)
-		}
-		Column(
-			modifier = Modifier
-				.fillMaxWidth()
-				.padding(20.dp),
-			horizontalAlignment = Alignment.CenterHorizontally
-		) {
+			Spacer(modifier = Modifier.padding(10.dp))
 			Text(
 				text = petName,
-				fontSize = MaterialTheme.typography.displayMedium.fontSize,
 				fontWeight = FontWeight.Bold,
-				color = MaterialTheme.colorScheme.onPrimary
-			)
-			Text(
-				text = address,
+				style = MaterialTheme.typography.displayLarge,
 				color = MaterialTheme.colorScheme.onPrimary
 			)
 		}
+	}
+
+}
+
+
+//private val InfoTextModifier = Modifier.fi
+private val petInfoSectionTextModifier = Modifier.padding(vertical = 8.dp)
+
+@Composable
+private fun PetInfoSection(
+	modifier: Modifier = Modifier,
+	petInfo: RegistrationInfo,
+	onNavigateToRc: (RegistrationInfo) -> Unit
+) {
+	Column(
+		modifier = modifier,
+		verticalArrangement = Arrangement.Center,
+		horizontalAlignment = Alignment.CenterHorizontally
+	) {
+		TitledText(
+			modifier = petInfoSectionTextModifier,
+			title = "Address",
+			text = petInfo.device.address
+		)
+		Row {
+			TitledText(
+				modifier = petInfoSectionTextModifier,
+				title = "Personality",
+				text = petInfo.personality
+			)
+			Spacer(modifier = Modifier.padding(4.dp))
+			TitledText(
+				modifier = petInfoSectionTextModifier,
+				title = "Age",
+				text = petInfo.age.toString()
+			)
+
+		}
+	}
+	Button(
+		modifier = Modifier
+			.fillMaxWidth()
+			.padding(4.dp),
+		shape = RoundedCornerShape(10),
+		onClick = { onNavigateToRc(petInfo) }
+	) {
+		Text("Let's play!")
 	}
 }
 
@@ -175,3 +213,4 @@ fun PreviewPetInfoScreen() {
 		PetInfoScreen(uiState = uiState)
 	}
 }
+

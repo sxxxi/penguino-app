@@ -87,7 +87,9 @@ private fun MainScreen(
                 onNavigateToRegistration = navController::navigateToRegistration,
                 onNavigateToHome = navController::navigateToHome
             )
-            registrationScreen(onNavigateToRemoteControl = navController::navigateToRemoteControl)
+            registrationScreen(onNavigateToRemoteControl = { regInfo ->
+                navController.navigateToRemoteControl(rcDevice = regInfo, popToHome = true)
+            })
             remoteControlScreen(onNavigateToHome = navController::navigateToHome)
         }
     }

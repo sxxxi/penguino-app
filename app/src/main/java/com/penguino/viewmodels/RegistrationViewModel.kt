@@ -21,8 +21,6 @@ import retrofit2.Response
 
 private const val TAG = "RegistrationVM"
 
-// TODO: Add registered device to roomDB and add a section in home screen to connect to that device in one tap.
-
 @HiltViewModel
 class RegistrationViewModel @Inject constructor(
     retrofit: Retrofit,
@@ -65,7 +63,7 @@ class RegistrationViewModel @Inject constructor(
                 }
             }
 
-            override fun onFailure(call: Call<List<String>>, t: Throwable) {/*TODO*/}
+            override fun onFailure(call: Call<List<String>>, t: Throwable) {}
         })
     }
 
@@ -78,7 +76,7 @@ class RegistrationViewModel @Inject constructor(
                 }
             }
 
-            override fun onFailure(call: Call<String>, t: Throwable) {/*TODO*/}
+            override fun onFailure(call: Call<String>, t: Throwable) {}
         })
         regInfoCache.clearRegInfo()
     }

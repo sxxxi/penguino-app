@@ -38,11 +38,16 @@ fun NavGraphBuilder.remoteControlScreen(
 	}
 }
 
-fun NavController.navigateToRemoteControl(rcDevice: RegistrationInfo) {
+fun NavController.navigateToRemoteControl(rcDevice: RegistrationInfo, popToHome: Boolean = false) {
 	val adapter = Moshi.Builder()
 		.add(KotlinJsonAdapterFactory())
 		.build()
 		.adapter(RegistrationInfo::class.java)
 	Log.d("TEST", adapter.toJson(rcDevice).toString())
-	navigate("${Screen.RemoteControlScreen.route}/${adapter.toJson(rcDevice)}")
+	val routeWithArgs = "${Screen.RemoteControlScreen.route}/${adapter.toJson(rcDevice)}"
+	navigate(routeWithArgs) {
+		if (popToHome) {
+			popUpTo(Screen.HomeScreen.route)
+		}
+	}
 }

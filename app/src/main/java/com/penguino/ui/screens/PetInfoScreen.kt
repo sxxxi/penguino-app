@@ -12,8 +12,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,7 +47,8 @@ fun PetInfoScreen(
 	uiState: PetInfoViewModel.PetInfoUiState,
 	onDeleteClicked: () -> Unit = {},
 	onNavigateToHome: () -> Unit = {},
-	onNavigateToRc: (RegistrationInfo) -> Unit = {}
+	onNavigateToRc: (RegistrationInfo) -> Unit = {},
+	onBackPressed: (() -> Unit)? = {}
 ) {
 	val petInfo by remember { mutableStateOf(uiState.selectedDevice) }
 	var deleteRequest by remember { mutableStateOf(false) }
@@ -56,6 +61,7 @@ fun PetInfoScreen(
 		PetInfoHeader(
 //			image = null,
 			petName = petInfo.petName,
+			onBackPressed = onBackPressed,
 			headerButtons = {
 				var expanded by remember {
 					mutableStateOf(false)
@@ -116,12 +122,24 @@ private fun PetInfoHeader(
 	image: ImageBitmap? = null,
 	petName: String = "",
 	headerButtons: @Composable RowScope.() -> Unit,
+	onBackPressed: (() -> Unit)? = null
 ) {
 	Column(
 		modifier = Modifier
 			.background(MaterialTheme.colorScheme.primary)
 	) {
 		CustomTopBar(
+			navButton = {
+				onBackPressed?.let {
+					IconButton(onClick = it) {
+						Icon(
+							imageVector = Icons.Default.ArrowBack,
+							contentDescription = "Back",
+							tint = MaterialTheme.colorScheme.onPrimary
+						)
+					}
+				}
+			},
 			headerButtons = headerButtons
 		)
 		Column(

@@ -28,7 +28,8 @@ internal data class PetInfoArgs(
 
 fun NavGraphBuilder.petInfo(
 	onNavigateToHome: () -> Unit,
-	onNavigateToRc: (RegistrationInfo) -> Unit
+	onNavigateToRc: (RegistrationInfo) -> Unit,
+	onBackPressed: () -> Unit
 ) {
 	composable(route = Screen.PetInfoScreen.routeWithArgs, arguments = Screen.PetInfoScreen.arguments) {
 		val viewModel: PetInfoViewModel = hiltViewModel()
@@ -36,7 +37,8 @@ fun NavGraphBuilder.petInfo(
 			uiState = viewModel.uiState,
 			onDeleteClicked = viewModel::deleteRegInfo,
 			onNavigateToHome = onNavigateToHome,
-			onNavigateToRc = onNavigateToRc
+			onNavigateToRc = onNavigateToRc,
+			onBackPressed = onBackPressed
 		)
 	}
 }

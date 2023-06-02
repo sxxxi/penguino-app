@@ -18,4 +18,7 @@ abstract class DeviceDao {
 	@Delete
 	abstract fun removeDevice(regInfo: RegistrationInfo)
 
+	@Query("SELECT COUNT(*) FROM (SELECT * FROM RegistrationInfo WHERE address = :address)")
+	abstract fun deviceExists(address: String): Boolean
+
 }

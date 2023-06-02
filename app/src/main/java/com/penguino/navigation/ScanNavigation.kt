@@ -1,5 +1,6 @@
 package com.penguino.navigation
 
+import androidx.compose.runtime.collectAsState
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -8,19 +9,19 @@ import com.penguino.viewmodels.ScanViewModel
 import com.penguino.ui.screens.ScanScreen
 
 fun NavGraphBuilder.scanScreen(
-	onNavigateToHome: () -> Unit,
-	onNavigateToRegistration: () -> Unit
+	onNavigateToHome: () -> Unit = {},
+	onNavigateToRegistration: () -> Unit = {},
+	onBackPressed: () -> Unit = {}
 ) {
 	composable(Screen.ScanScreen.route) {
 		val scanVm: ScanViewModel = hiltViewModel()
+		val uiState = scanVm.uiState.collectAsState()
 		ScanScreen(
-			uiState = scanVm.uiState,
-			viewmodel = scanVm,
+			uiState = uiState.value,
 			onDeviceSelected = scanVm::saveSelectedDevice,
 			onScanButtonClicked = scanVm::scanDevices,
-			onBackButtonClicked = scanVm::stopScan,
-			onNavigateToHome = onNavigateToHome,
-			onNavigateToRegistration = onNavigateToRegistration
+			onNavigateToRegistration = onNavigateToRegistration,
+			onBackPressed = onBackPressed
 		)
 	}
 }

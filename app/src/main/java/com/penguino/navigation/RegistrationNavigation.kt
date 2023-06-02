@@ -10,7 +10,8 @@ import com.penguino.viewmodels.RegistrationViewModel
 import com.penguino.ui.screens.RegistrationScreen
 
 fun NavGraphBuilder.registrationScreen(
-	onNavigateToRemoteControl: (RegistrationInfo) -> Unit
+	onNavigateToRemoteControl: (RegistrationInfo) -> Unit,
+	onBackPressed: () -> Unit = {}
 ) {
 	composable(Screen.RegistrationScreen.route) {
 		val regVm = hiltViewModel<RegistrationViewModel>()

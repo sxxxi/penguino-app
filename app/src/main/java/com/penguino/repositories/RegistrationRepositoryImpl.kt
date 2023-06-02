@@ -32,6 +32,10 @@ class RegistrationRepositoryImpl @Inject constructor(
 		registrationDao.removeDevice(device)
 	}
 
+	override fun deviceExists(address: String): Boolean {
+		return registrationDao.deviceExists(address)
+	}
+
 //	private fun postDevice(
 //		device: RegistrationInfo,
 //		callback: Callback<String>

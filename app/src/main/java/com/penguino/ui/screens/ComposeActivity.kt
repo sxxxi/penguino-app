@@ -81,11 +81,13 @@ private fun MainScreen(
             )
             petInfo(
                 onNavigateToHome = navController::navigateToHome,
-                onNavigateToRc = navController::navigateToRemoteControl
+                onNavigateToRc = navController::navigateToRemoteControl,
+                onBackPressed = navController::popBackStack
             )
             scanScreen(
                 onNavigateToRegistration = navController::navigateToRegistration,
-                onNavigateToHome = navController::navigateToHome
+                onNavigateToHome = navController::navigateToHome,
+                onBackPressed = navController::popBackStack
             )
             registrationScreen(onNavigateToRemoteControl = { regInfo ->
                 navController.navigateToRemoteControl(rcDevice = regInfo, popToHome = true)

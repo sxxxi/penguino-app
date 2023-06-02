@@ -46,21 +46,20 @@ class BleRepositoryImpl @Inject constructor(
         override fun onScanResult(callbackType: Int, result: ScanResult?) {
             super.onScanResult(callbackType, result)
             result?.device?.let { device ->
-//                device.name?.let { name ->
-//                    val deviceInfo = DeviceInfo(deviceName = name, address = device.address)
+                device.name?.let { name ->
+//                    if (name != "Penguino") return
+
+                    val deviceInfo = DeviceInfo(deviceName = name, address = device.address)
+
+                    mutDeviceSet.add(deviceInfo)
+                    _deviceList.value = mutDeviceSet.toList()
+
+                    Log.d(DTAG, deviceList.value.toString())
+                }
+//                val deviceInfo = DeviceInfo(deviceName = device.name ?: "", address = device.address)
 //
-//                    mutDeviceSet.add(deviceInfo)
-//                    _deviceList.value = mutDeviceSet.toList()
-//
-//                    Log.d(DTAG, deviceList.value.toString())
-//                }
-
-                val deviceInfo = DeviceInfo(deviceName = device.name ?: "", address = device.address)
-
-                mutDeviceSet.add(deviceInfo)
-                _deviceList.value = mutDeviceSet.toList()
-
-
+//                mutDeviceSet.add(deviceInfo)
+//                _deviceList.value = mutDeviceSet.toList()
             }
         }
     }

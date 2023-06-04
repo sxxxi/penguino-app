@@ -67,7 +67,7 @@ private const val TAG = "ScanPage"
 @Composable
 fun ScanScreen (
     modifier: Modifier = Modifier,
-    uiState: ScanUiState,
+    uiState: ScanUiState = ScanUiState(),
     onDeviceSelected: (device: DeviceInfo) -> Boolean = { false },
     onScanButtonClicked: () -> Unit = {},
     onNavigateToRegistration: () -> Unit = {},
@@ -87,6 +87,11 @@ fun ScanScreen (
             }
         }
     }
+
+    // Only run once
+    LaunchedEffect(key1 = Unit, block = {
+        onScanButtonClicked()
+    })
 
     Scaffold(
         topBar = {
@@ -163,30 +168,6 @@ fun ScanScreen (
             }
         }
     }
-
-
-//    Column(modifier = modifier
-//        .fillMaxSize()
-//    ) {
-//        DeviceList(
-//            modifier = modifier.weight(1F),
-//            devices = devicesFound,
-//            onItemClick = {
-//                onDeviceSelected(it)
-//                onNavigateToRegistration()
-//            }
-//        )
-//
-//        ButtonRow(
-//            btEnabled = btEnabled,
-//            scanning = scanning,
-//            onScanButtonClicked = onScanButtonClicked,
-//            onBackButtonClicked = {
-//                onBackButtonClicked()
-//                onNavigateToHome()
-//            }
-//        )
-//    }
 }
 
 @Composable
@@ -252,68 +233,6 @@ private fun DeviceListItem(
                 color = MaterialTheme.colorScheme.secondary
             )
         }
-    }
-}
-
-@Composable
-private fun ButtonRow(
-    modifier: Modifier = Modifier,
-    btEnabled: Boolean,
-    scanning: Boolean,
-    onScanButtonClicked: () -> Unit,
-    onBackButtonClicked: () -> Unit
-) {
-    Row (modifier = modifier.fillMaxWidth()) {
-        BackButton(
-            modifier = modifier.weight(1f),
-            onClick = onBackButtonClicked
-        )
-
-        // TODO: Change to Snack bar
-        val ctx = LocalContext.current
-
-        ScanButton(
-            modifier = modifier.weight(1f),
-            scanning = scanning
-        ) {
-//            if (!btEnabled) {
-//                Toast.makeText(ctx, "Please enable Bluetooth", Toast.LENGTH_SHORT).show()
-//            } else {
-//                onScanButtonClicked()
-//            }
-            onScanButtonClicked()
-        }
-
-    }
-}
-
-@Composable
-private fun ScanButton(
-    modifier: Modifier = Modifier,
-    scanning: Boolean,
-    onClick: () -> Unit,
-) {
-    Button(
-        modifier = modifier
-            .padding(8.dp),
-        onClick = { onClick() },
-        enabled = !scanning
-    ) {
-        Text(text = "Scan")
-    }
-}
-
-@Composable
-private fun BackButton(
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
-) {
-    FilledTonalButton (
-        modifier = modifier
-            .padding(8.dp),
-        onClick = { onClick() },
-    ) {
-        Text(text = "Back")
     }
 }
 

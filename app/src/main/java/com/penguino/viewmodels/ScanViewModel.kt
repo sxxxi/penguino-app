@@ -59,20 +59,17 @@ class ScanViewModel @Inject constructor(
 					_uiState.update { us }
 				}
 		}
-		scanDevices()
 	}
 
-	fun scanDevices() = viewModelScope.launch {
-		_uiState.update { state ->
-			state.copy(scanning = true)
+	fun scanDevices() {
+		viewModelScope.launch(Dispatchers.IO) {
+			btRepo.scanDevices()
 		}
-		btRepo.scanDevices()
 	}
 
-	fun stopScan() = viewModelScope.launch {
-		btRepo.stopScan()
-		_uiState.update { state ->
-			state.copy(scanning = false)
+	fun stopScan() {
+		viewModelScope.launch(Dispatchers.IO) {
+			btRepo.stopScan()
 		}
 	}
 

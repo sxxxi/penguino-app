@@ -86,6 +86,15 @@ class BluetoothLeService : Service() {
         sendBroadcast(intent)
     }
 
+    override fun onCreate() {
+        super.onCreate()
+        Log.d("FOO", "CREATING SERVICE")
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.d("FOO", "DESTROYING SERVICE")
+    }
+
     inner class ServiceBinder: Binder() {
         fun getService(): BluetoothLeService {
             return this@BluetoothLeService
@@ -130,7 +139,6 @@ class BluetoothLeService : Service() {
         return bluetoothGatt?.services
     }
 
-    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     fun writeToPengu(control: String) {
         val UUID_CONST = "-0000-1000-8000-00805f9b34fb"
         val chars = bluetoothGatt?.getService(UUID.fromString("0000aaa0$UUID_CONST"))

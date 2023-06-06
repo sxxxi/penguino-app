@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.room.Room
 import com.google.gson.GsonBuilder
+import com.penguino.chat.ChatApi
 import com.penguino.repositories.RegInfoCache
 import com.penguino.repositories.RegInfoCacheImpl
 import com.penguino.repositories.BleRepository
@@ -24,6 +25,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.create
 import javax.inject.Singleton
 
 @Module
@@ -105,6 +107,17 @@ object HiltModule {
             registrationApi = deviceApi,
             registrationDao = deviceDao
         )
+    }
+
+    @Provides
+    @Singleton
+    fun openAiApi(): ChatApi {
+        val gson = GsonBuilder().setLenient().create()
+        return Retrofit.Builder()
+            .baseUrl("https://api.openai.com/v1/")
+            .addConverterFactory(GsonConverterFactory.create(gson))
+            .build()
+            .create(ChatApi::class.java)
     }
 }
 

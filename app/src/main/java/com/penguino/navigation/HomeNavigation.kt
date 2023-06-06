@@ -14,10 +14,11 @@ fun NavGraphBuilder.homeScreen(
 ) {
 	composable(Screen.HomeScreen.route) {
 		val homeViewModel: HomeViewModel = hiltViewModel()
+//		homeViewModel.test() // TODO: REMOVE
 		HomePage(
 			uiState = homeViewModel.uiState,
 			onNavigateToScan = onNavigateToScan,
-			onSavedPetClicked = onSavedPetClicked
+			onSavedPetClicked = onSavedPetClicked,
 		)
 	}
 }

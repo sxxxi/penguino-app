@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
 import retrofit2.Callback
+import retrofit2.Retrofit
 import javax.inject.Inject
 
 /**

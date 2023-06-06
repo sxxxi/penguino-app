@@ -1,5 +1,13 @@
 package com.penguino.ui.screens
 
+import android.content.Intent
+import android.speech.RecognizerIntent
+import android.speech.RecognizerIntent.EXTRA_RESULTS
+import android.speech.RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
+import android.speech.RecognizerResultsIntent.EXTRA_VOICE_SEARCH_RESULT_STRINGS
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +25,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -24,20 +33,25 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
 import com.penguino.R
 import com.penguino.models.DeviceInfo
 import com.penguino.models.RegistrationInfo
 import com.penguino.ui.theme.PenguinoTheme
+import com.penguino.viewmodels.HomeViewModel
 import com.penguino.viewmodels.HomeViewModel.HomeUiState
+import kotlin.reflect.typeOf
 
 val deviceListItemModifier = Modifier
 	.padding(20.dp)
@@ -49,8 +63,10 @@ fun HomePage(
 	modifier: Modifier = Modifier,
 	uiState: HomeUiState = HomeUiState(),
 	onSavedPetClicked: (RegistrationInfo) -> Unit = {},
-	onNavigateToScan: () -> Unit = {}
+	onNavigateToScan: () -> Unit = {},
 ) {
+
+
 //	Scaffold(topBar = {
 //		TopAppBar(title = { Text(text = "Home") })
 //	}) {
@@ -64,7 +80,7 @@ fun HomePage(
 						modifier = deviceListItemModifier,
 						petName = dev.petName,
 						address = dev.device.address,
-						onClick = {onSavedPetClicked(dev)}
+						onClick = { onSavedPetClicked(dev) }
 					)
 				}
 			}
@@ -97,7 +113,8 @@ fun SavedDeviceListItem(
 	onClick: () -> Unit = {}
 ) {
 	Box(modifier = Modifier
-		.clickable(onClick = onClick ).then(modifier)
+		.clickable(onClick = onClick)
+		.then(modifier)
 	) {
 		Row(
 			modifier = modifier,

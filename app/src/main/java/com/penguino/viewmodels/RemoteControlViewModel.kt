@@ -7,12 +7,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.penguino.chat.ChatMessage
-import com.penguino.models.DeviceInfo
+import com.penguino.models.chat.ChatMessage
 import com.penguino.models.RegistrationInfo
 import com.penguino.navigation.RemoteControlArgs
-import com.penguino.repositories.BleRepository
-import com.penguino.repositories.ChatRepository
+import com.penguino.repositories.bluetooth.BleRepository
+import com.penguino.repositories.chat.ChatRepository
 import com.squareup.moshi.Moshi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest

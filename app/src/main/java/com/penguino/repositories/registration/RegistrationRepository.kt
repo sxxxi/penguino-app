@@ -1,9 +1,8 @@
-package com.penguino.repositories
+package com.penguino.repositories.registration
 
-import com.penguino.models.DeviceInfo
-import retrofit2.Callback
 import com.penguino.models.RegistrationInfo
 import kotlinx.coroutines.flow.Flow
+import retrofit2.Callback
 
 interface RegistrationRepository {
 	suspend fun getSavedDevices(): Flow<List<RegistrationInfo>>

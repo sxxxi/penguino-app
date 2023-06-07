@@ -8,8 +8,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.penguino.models.RegistrationInfo
 import com.penguino.navigation.PetInfoArgs
-import com.penguino.repositories.BleRepository
-import com.penguino.repositories.RegistrationRepository
+import com.penguino.repositories.bluetooth.BleRepository
+import com.penguino.repositories.registration.RegistrationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

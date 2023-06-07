@@ -1,8 +1,6 @@
-package com.penguino.chat
+package com.penguino.models.chat
 
 import com.google.gson.annotations.SerializedName
-import java.time.LocalDate
-import java.time.LocalDateTime
 
 /*
 {
@@ -30,16 +28,17 @@ data class ChatResponse(
 	val created: Long,
 	val choices: List<ResponseChoice>,
 	val usage: ResponseUsage
-)
+) {
+	data class ResponseChoice(
+		val index: Int,
+		val message: ChatMessage,
+		@SerializedName("finish_reason") val finishReason: String
+	)
 
-data class ResponseChoice(
-	val index: Int,
-	val message: ChatMessage,
-	@SerializedName("finish_reason") val finishReason: String
-)
+	data class ResponseUsage(
+		@SerializedName("prompt_tokens") val promptTokens: Int,
+		@SerializedName("completion_tokens") val completionTokens: Int,
+		@SerializedName("total_tokens") val totalTokens: Int
+	)
 
-data class ResponseUsage(
-	@SerializedName("prompt_tokens") val promptTokens: Int,
-	@SerializedName("completion_tokens") val completionTokens: Int,
-	@SerializedName("total_tokens") val totalTokens: Int
-)
+}

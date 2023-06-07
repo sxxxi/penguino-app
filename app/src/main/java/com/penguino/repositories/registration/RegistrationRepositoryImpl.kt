@@ -1,14 +1,11 @@
-package com.penguino.repositories
+package com.penguino.repositories.registration
 
 import com.penguino.models.RegistrationInfo
 import com.penguino.room.dao.DeviceDao
-import com.squareup.moshi.Moshi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
 import retrofit2.Callback
-import retrofit2.Retrofit
 import javax.inject.Inject
 
 /**
@@ -18,9 +15,10 @@ class RegistrationRepositoryImpl @Inject constructor(
 	private val registrationDao: DeviceDao,
 	private val registrationApi: RegistrationService,
 ): RegistrationRepository {
-	override suspend fun getSavedDevices(): Flow<List<RegistrationInfo>> = withContext(Dispatchers.IO) {
-		registrationDao.getAll()
-	}
+	override suspend fun getSavedDevices(): Flow<List<RegistrationInfo>> =
+		withContext(Dispatchers.IO) {
+			registrationDao.getAll()
+		}
 
 	override suspend fun saveDevice(
 		device: RegistrationInfo,

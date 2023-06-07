@@ -50,7 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.penguino.models.DeviceInfo
-import com.penguino.repositories.RegistrationRepository
+import com.penguino.repositories.registration.RegistrationRepository
 import com.penguino.ui.theme.PenguinoTheme
 import com.penguino.viewmodels.ScanViewModel
 import com.penguino.viewmodels.ScanViewModel.ScanUiState

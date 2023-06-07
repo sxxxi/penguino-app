@@ -65,37 +65,31 @@ fun HomePage(
 	onSavedPetClicked: (RegistrationInfo) -> Unit = {},
 	onNavigateToScan: () -> Unit = {},
 ) {
-
-
-//	Scaffold(topBar = {
-//		TopAppBar(title = { Text(text = "Home") })
-//	}) {
-		Column(
-			modifier = modifier
-				.fillMaxSize(),
-		) {
-			LazyColumn {
-				items(uiState.savedDevices) { dev ->
-					SavedDeviceListItem(
-						modifier = deviceListItemModifier,
-						petName = dev.petName,
-						address = dev.device.address,
-						onClick = { onSavedPetClicked(dev) }
-					)
-				}
-			}
-
-			Row(
-				modifier = Modifier
-					.clickable(onClick = onNavigateToScan)
-					.then(deviceListItemModifier),
-				horizontalArrangement = Arrangement.Center
-			) {
-				Icon(imageVector = Icons.Filled.Add, contentDescription = "Add pet")
-				Text(text = "Add pet")
+	Column(
+		modifier = modifier
+			.fillMaxSize(),
+	) {
+		LazyColumn {
+			items(uiState.savedDevices) { dev ->
+				SavedDeviceListItem(
+					modifier = deviceListItemModifier,
+					petName = dev.petName,
+					address = dev.device.address,
+					onClick = { onSavedPetClicked(dev) }
+				)
 			}
 		}
-//	}
+
+		Row(
+			modifier = Modifier
+				.clickable(onClick = onNavigateToScan)
+				.then(deviceListItemModifier),
+			horizontalArrangement = Arrangement.Center
+		) {
+			Icon(imageVector = Icons.Filled.Add, contentDescription = "Add pet")
+			Text(text = "Add pet")
+		}
+	}
 
 }
 
@@ -103,7 +97,6 @@ val defaultPfpImageMod = Modifier
 	.width(60.dp)
 	.clip(RoundedCornerShape(15.dp))
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SavedDeviceListItem(
 	modifier: Modifier = Modifier,
@@ -131,7 +124,8 @@ fun SavedDeviceListItem(
 				)
 				Text(
 					text = address,
-					fontSize = MaterialTheme.typography.titleSmall.fontSize)
+					fontSize = MaterialTheme.typography.titleSmall.fontSize
+				)
 			}
 		}
 	}

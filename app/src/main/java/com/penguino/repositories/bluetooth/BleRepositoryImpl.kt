@@ -1,4 +1,4 @@
-package com.penguino.repositories
+package com.penguino.repositories.bluetooth
 
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothAdapter
@@ -13,21 +13,16 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import com.penguino.models.DeviceInfo
 import com.penguino.services.BluetoothLeService
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
-private const val DTAG = "BluetoothManagementImpl"
-
 @SuppressLint("MissingPermission")
 class BleRepositoryImpl @Inject constructor(
-    private val context: Context,
-    private val blAdapter: BluetoothAdapter,
+	private val context: Context,
+	private val blAdapter: BluetoothAdapter,
 ): BleRepository {
     private var bluetoothLeService: BluetoothLeService? = null
 
@@ -54,7 +49,7 @@ class BleRepositoryImpl @Inject constructor(
                     mutDeviceSet.add(deviceInfo)
                     _deviceList.value = mutDeviceSet.toList()
 
-                    Log.d(DTAG, deviceList.value.toString())
+					Log.d(TAG, deviceList.value.toString())
                 }
 //                val deviceInfo = DeviceInfo(deviceName = device.name ?: "", address = device.address)
 //
@@ -68,18 +63,18 @@ class BleRepositoryImpl @Inject constructor(
     private val bluetoothServiceConn = object : ServiceConnection {
         private val TAG = "BluetoothServiceConnection"
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            Log.i(TAG, "BluetoothLeService Bound")
+			Log.i(TAG, "BluetoothLeService Bound")
             bluetoothLeService = (service as BluetoothLeService.ServiceBinder).getService()
             bluetoothLeService?.let { bluetooth ->
                 // Connect here and do stuff here on service created
                 if (!bluetooth.initialize()) {
-                    Log.e(TAG, "Unable to initialize service")
+					Log.e(TAG, "Unable to initialize service")
                 }
             }
         }
 
         override fun onServiceDisconnected(name: ComponentName?) {
-            Log.d(TAG, "Service Unbound")
+			Log.d(TAG, "Service Unbound")
         }
     }
 
@@ -94,7 +89,7 @@ class BleRepositoryImpl @Inject constructor(
         scanner.startScan(scanCallback)
 
         Handler(Looper.getMainLooper()).postDelayed({ ->
-            Log.d(DTAG, "Stopping scan")
+            Log.d(TAG, "Stopping scan")
             stopScan()
         }, 5000)
     }
@@ -111,7 +106,7 @@ class BleRepositoryImpl @Inject constructor(
             val bindSuccess: Boolean = context.bindService(
                 intent,
                 bluetoothServiceConn,
-                Context.BIND_AUTO_CREATE
+				Context.BIND_AUTO_CREATE
             )
 
             if (!bindSuccess) {
@@ -141,4 +136,7 @@ class BleRepositoryImpl @Inject constructor(
         return blAdapter.isEnabled
     }
 
+    companion object {
+        const val TAG = "BleRepository"
+    }
 }

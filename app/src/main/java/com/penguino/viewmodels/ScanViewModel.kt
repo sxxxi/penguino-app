@@ -8,11 +8,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.material.snackbar.Snackbar
-import com.penguino.repositories.RegInfoCache
+import com.penguino.repositories.registration.RegInfoCache
 import com.penguino.models.DeviceInfo
 import com.penguino.models.RegistrationInfo
-import com.penguino.repositories.BleRepository
-import com.penguino.repositories.RegistrationRepository
+import com.penguino.repositories.bluetooth.BleRepository
+import com.penguino.repositories.registration.RegistrationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

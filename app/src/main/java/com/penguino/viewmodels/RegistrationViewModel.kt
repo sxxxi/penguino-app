@@ -6,10 +6,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.penguino.repositories.RegInfoCache
+import com.penguino.repositories.registration.RegInfoCache
 import com.penguino.models.RegistrationInfo
-import com.penguino.repositories.RegistrationRepositoryImpl
-import com.penguino.repositories.RegistrationService
+import com.penguino.repositories.registration.RegistrationRepositoryImpl
+import com.penguino.repositories.registration.RegistrationService
 import com.squareup.moshi.Moshi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -23,10 +23,10 @@ private const val TAG = "RegistrationVM"
 
 @HiltViewModel
 class RegistrationViewModel @Inject constructor(
-    retrofit: Retrofit,
-    private val moshi: Moshi,
-    private val regInfoCache: RegInfoCache,
-    private val regRepo: RegistrationRepositoryImpl
+	retrofit: Retrofit,
+	private val moshi: Moshi,
+	private val regInfoCache: RegInfoCache,
+	private val regRepo: RegistrationRepositoryImpl
 ) : ViewModel() {
     private val petsApi = retrofit.create(RegistrationService::class.java)
     var uiState by mutableStateOf(RegistrationUiState(

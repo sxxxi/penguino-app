@@ -1,4 +1,4 @@
-package com.penguino.repositories
+package com.penguino.repositories.registration
 
 import com.penguino.models.RegistrationInfo
 

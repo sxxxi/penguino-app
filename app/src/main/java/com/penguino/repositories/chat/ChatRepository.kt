@@ -1,11 +1,10 @@
-package com.penguino.repositories
+package com.penguino.repositories.chat
 
 import android.util.Log
-import com.penguino.chat.ChatApi
-import com.penguino.chat.ChatMessage
-import com.penguino.chat.ChatRequest
-import com.penguino.chat.ChatResponse
-import com.penguino.chat.ConversationHistory
+import com.penguino.models.chat.ChatMessage
+import com.penguino.models.chat.ChatRequest
+import com.penguino.models.chat.ChatResponse
+import com.penguino.models.chat.FocusedList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import retrofit2.Call
@@ -16,36 +15,32 @@ import javax.inject.Inject
 class ChatRepository @Inject constructor(
 	private val chatApi: ChatApi,
 ) {
+
 	private var systemMsg: ChatMessage? = null
-	private val _history = ConversationHistory(20)
+	private val _history = FocusedList<ChatMessage>(20)
 	val history = _history.history
 
 	private val _latestResponse = MutableStateFlow<ChatMessage?>(null)
 	val latestResponse: StateFlow<ChatMessage?> = _latestResponse
 
 	private val chatCallback = object: Callback<ChatResponse> {
-		val tag = "OPENAI"
 		override fun onResponse(
 			call: Call<ChatResponse>,
 			response: Response<ChatResponse>
 		) {
 			if (response.isSuccessful) {
-				response.body()?.let {
-					Log.d(tag, response.body()?.choices?.first()?.message?.content ?: "Oopsies")
-					response.body()?.choices?.first()?.message?.let { message ->
-						_history.addEntry(listOf(message))
-						_latestResponse.value = message
-					}
-
+				response.body()?.choices?.first()?.message?.let { message ->
+					Log.i(TAG, message.content)
+					_history.addEntry(listOf(message))
+					_latestResponse.value = message
 				}
 			} else {
-				Log.d(tag, response.message())
-				Log.d(tag, response.code().toString())
+				Log.e(TAG, "Error code: ${response.code()}\nMessage: ${response.errorBody()}")
 			}
 		}
 
 		override fun onFailure(call: Call<ChatResponse>, t: Throwable) {
-			Log.d(tag, t.message.toString())
+			Log.e(TAG, t.message.toString())
 		}
 	}
 
@@ -87,7 +82,9 @@ class ChatRepository @Inject constructor(
 				messages = messages
 			)
 		).enqueue(callback)
+	}
 
-		Log.d("OPENAI", messages.toString())
+	companion object {
+		const val TAG = "OPENAI"
 	}
 }

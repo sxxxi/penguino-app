@@ -1,4 +1,4 @@
-package com.penguino.chat
+package com.penguino.models.chat
 
 import com.google.gson.annotations.SerializedName
 

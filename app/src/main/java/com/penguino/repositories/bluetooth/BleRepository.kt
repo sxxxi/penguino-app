@@ -1,9 +1,6 @@
-package com.penguino.repositories
+package com.penguino.repositories.bluetooth
 
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.penguino.models.DeviceInfo
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 interface BleRepository {

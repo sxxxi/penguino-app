@@ -32,14 +32,14 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.penguino.models.DeviceInfo
-import com.penguino.models.RegistrationInfo
+import com.penguino.data.local.models.DeviceInfo
+import com.penguino.data.local.models.RegistrationInfo
 import com.penguino.ui.components.ConfirmationAlert
 import com.penguino.ui.components.CustomTopBar
 import com.penguino.ui.components.MenuButton
 import com.penguino.ui.components.TitledText
 import com.penguino.ui.theme.PenguinoTheme
-import com.penguino.viewmodels.PetInfoViewModel
+import com.penguino.ui.viewmodels.PetInfoViewModel
 
 @Composable
 fun PetInfoScreen(

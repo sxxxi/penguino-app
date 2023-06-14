@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.penguino.ui.theme.PenguinoTheme
-import com.penguino.viewmodels.RemoteControlViewModel.RemoteControlUiState
+import com.penguino.ui.viewmodels.RemoteControlViewModel.RemoteControlUiState
 
 @Composable
 fun RemoteControlScreen(

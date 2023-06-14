@@ -14,12 +14,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.core.text.isDigitsOnly
-import com.penguino.models.DeviceInfo
-import com.penguino.models.RegistrationInfo
+import com.penguino.data.local.models.RegistrationInfo
 import com.penguino.ui.components.TextInput
 import com.penguino.ui.components.TextInputWithSuggestion
-import com.penguino.viewmodels.RegistrationViewModel
-import com.penguino.viewmodels.RegistrationViewModel.RegistrationUiState
+import com.penguino.ui.viewmodels.RegistrationViewModel
+import com.penguino.ui.viewmodels.RegistrationViewModel.RegistrationUiState
 
 private const val TAG = "RegistrationPage"
 
@@ -30,10 +29,10 @@ TODO: dont register device if device is already saved
 // Inject event callbacks instead of the view-model.
 @Composable
 fun RegistrationScreen(
-    modifier: Modifier = Modifier,
-    regVM: RegistrationViewModel,
-    uiState: RegistrationUiState,
-    onNavigateToRemoteControl: (RegistrationInfo) -> Unit = {}
+	modifier: Modifier = Modifier,
+	regVM: RegistrationViewModel,
+	uiState: RegistrationUiState,
+	onNavigateToRemoteControl: (RegistrationInfo) -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -69,10 +68,10 @@ fun RegistrationScreen(
 
 @Composable
 private fun TextFields(
-    modifier: Modifier = Modifier,
-    suggestions: List<String>,
-    regInfo: RegistrationInfo,
-    updater: ((RegistrationInfo) -> Unit) -> Unit
+	modifier: Modifier = Modifier,
+	suggestions: List<String>,
+	regInfo: RegistrationInfo,
+	updater: ((RegistrationInfo) -> Unit) -> Unit
 ) {
     Column (
         modifier = modifier.fillMaxWidth(),

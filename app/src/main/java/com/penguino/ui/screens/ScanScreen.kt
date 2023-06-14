@@ -1,6 +1,5 @@
 package com.penguino.ui.screens
 
-import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,18 +16,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarData
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
@@ -37,26 +30,18 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import com.penguino.models.DeviceInfo
-import com.penguino.repositories.registration.RegistrationRepository
+import com.penguino.data.local.models.DeviceInfo
 import com.penguino.ui.theme.PenguinoTheme
-import com.penguino.viewmodels.ScanViewModel
-import com.penguino.viewmodels.ScanViewModel.ScanUiState
+import com.penguino.ui.viewmodels.ScanViewModel.ScanUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlin.math.ceil
 
 private const val TAG = "ScanPage"
 
@@ -66,12 +51,12 @@ private const val TAG = "ScanPage"
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScanScreen (
-    modifier: Modifier = Modifier,
-    uiState: ScanUiState = ScanUiState(),
-    onDeviceSelected: (device: DeviceInfo) -> Boolean = { false },
-    onScanButtonClicked: () -> Unit = {},
-    onNavigateToRegistration: () -> Unit = {},
-    onBackPressed: () -> Unit = {}
+	modifier: Modifier = Modifier,
+	uiState: ScanUiState = ScanUiState(),
+	onDeviceSelected: (device: DeviceInfo) -> Boolean = { false },
+	onScanButtonClicked: () -> Unit = {},
+	onNavigateToRegistration: () -> Unit = {},
+	onBackPressed: () -> Unit = {}
 ) {
     val scope = rememberCoroutineScope()
     val devicesFound = uiState.devicesFound
@@ -172,9 +157,9 @@ fun ScanScreen (
 
 @Composable
 private fun DeviceList(
-    modifier: Modifier = Modifier,
-    devices: List<DeviceInfo>,
-    onItemClick: (device: DeviceInfo) -> Unit = { }
+	modifier: Modifier = Modifier,
+	devices: List<DeviceInfo>,
+	onItemClick: (device: DeviceInfo) -> Unit = { }
 ) {
     LazyColumn(
         modifier = modifier
@@ -200,9 +185,9 @@ private fun DeviceList(
 
 @Composable
 private fun DeviceListItem(
-    modifier: Modifier = Modifier,
-    device: DeviceInfo,
-    onClick: (DeviceInfo) -> Unit = {}
+	modifier: Modifier = Modifier,
+	device: DeviceInfo,
+	onClick: (DeviceInfo) -> Unit = {}
 ) {
 //    val deviceSupported by remember { mutableStateOf(device.name.equals("PENGUINO", true)) }
     val deviceSupported = true

@@ -19,7 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
-import com.penguino.models.RegistrationInfo
+import com.penguino.data.local.models.RegistrationInfo
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

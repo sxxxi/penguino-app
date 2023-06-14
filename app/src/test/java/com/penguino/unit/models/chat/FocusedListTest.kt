@@ -1,8 +1,7 @@
 package com.penguino.unit.models.chat
 
-import com.penguino.models.chat.FocusedList
+import com.penguino.data.network.models.FocusedList
 import org.junit.Test
-
 
 class FocusedListTest {
 	@Test

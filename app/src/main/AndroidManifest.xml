@@ -10,8 +10,13 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
+    <uses-feature
+        android:name="android.hardware.bluetooth_le"
+        android:required="true" />
+
     <application
         android:name=".di.BluetoothApp"
+        android:enableOnBackInvokedCallback="true"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -31,7 +36,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".data.repositories.bluetooth.BluetoothLeService"
+            android:name=".data.local.BleServiceDataSource"
             android:exported="false" />
     </application>
 

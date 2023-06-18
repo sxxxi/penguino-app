@@ -1,5 +1,6 @@
 package com.penguino.ui.screens
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,38 +17,65 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleObserver
 import com.penguino.R
 import com.penguino.data.local.models.DeviceInfo
-import com.penguino.data.local.models.RegistrationInfo
+import com.penguino.data.local.models.RegistrationInfoEntity
+import com.penguino.models.PetInfo
 import com.penguino.ui.theme.PenguinoTheme
+import com.penguino.ui.viewmodels.HomeViewModel
 import com.penguino.ui.viewmodels.HomeViewModel.HomeUiState
 
 val deviceListItemModifier = Modifier
 	.padding(20.dp)
 	.fillMaxWidth()
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomePage(
 	modifier: Modifier = Modifier,
-	uiState: HomeUiState = HomeUiState(),
-	onSavedPetClicked: (RegistrationInfo) -> Unit = {},
+	homeViewModel: HomeViewModel = hiltViewModel(),
+	onSavedPetClicked: (PetInfo) -> Unit = {},
 	onNavigateToScan: () -> Unit = {},
 ) {
+	val uiState by homeViewModel.uiState.collectAsState()
+
+	/**
+	 * TODO: Modularize this later
+	 */
+	val lifecycleOwner = LocalLifecycleOwner.current
+	DisposableEffect(key1 = lifecycleOwner) {
+		val observer = LifecycleEventObserver { _, event ->
+			when(event) {
+				Lifecycle.Event.ON_RESUME -> homeViewModel.onScreenLaunch()
+				else -> homeViewModel.onScreenExit()
+			}
+		}
+		lifecycleOwner.lifecycle.addObserver(observer)
+		onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+	}
+
 	Column(
 		modifier = modifier
 			.fillMaxSize(),
@@ -56,9 +84,10 @@ fun HomePage(
 			items(uiState.savedDevices) { dev ->
 				SavedDeviceListItem(
 					modifier = deviceListItemModifier,
-					petName = dev.petName,
-					address = dev.device.address,
-					onClick = { onSavedPetClicked(dev) }
+					petName = dev.name,
+					address = dev.address,
+					onClick = { onSavedPetClicked(dev) },
+					isNearby = dev.isNearby
 				)
 			}
 		}
@@ -86,6 +115,7 @@ fun SavedDeviceListItem(
 	imageBitmap: ImageBitmap? = null,
 	petName: String = "",
 	address: String = "",
+	isNearby: Boolean = false,
 	onClick: () -> Unit = {}
 ) {
 	Box(modifier = Modifier
@@ -108,6 +138,14 @@ fun SavedDeviceListItem(
 				Text(
 					text = address,
 					fontSize = MaterialTheme.typography.titleSmall.fontSize
+				)
+			}
+			Spacer(modifier = Modifier.weight(1f))
+			Canvas(modifier = Modifier.width(8.dp)) {
+				val clr = if (isNearby) Color.Green else Color.Gray
+				drawCircle(
+					color = clr,
+					radius = 4.dp.toPx()
 				)
 			}
 		}
@@ -142,18 +180,6 @@ fun PetPfp(
 @Composable
 fun PreviewHomeScreen() {
 	PenguinoTheme {
-		HomePage(uiState = HomeUiState(
-			savedDevices = listOf(
-				RegistrationInfo(
-					petName = "Gravy",
-					device = DeviceInfo(address = "xx:xx:xx:xx")
-				),
-				RegistrationInfo(
-					petName = "Ketchup",
-					device = DeviceInfo(address = "xx:xx:xx:xx")
-				)
-			)
-		)
-		)
+		HomePage()
 	}
 }

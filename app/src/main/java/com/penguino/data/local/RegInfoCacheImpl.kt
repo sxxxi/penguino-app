@@ -1,7 +1,7 @@
 package com.penguino.data.local
 
 import android.content.SharedPreferences
-import com.penguino.data.local.models.RegistrationInfo
+import com.penguino.data.local.models.RegistrationInfoEntity
 import com.squareup.moshi.Moshi
 import javax.inject.Inject
 
@@ -12,15 +12,15 @@ class RegInfoCacheImpl @Inject constructor(
 	companion object {
 		const val SAVED_REG_INFO_KEY = "REG_INFO"
 	}
-	private val adapter = moshi.adapter(RegistrationInfo::class.java)
+	private val adapter = moshi.adapter(RegistrationInfoEntity::class.java)
 
-	override fun getRegInfo(): RegistrationInfo? {
+	override fun getRegInfo(): RegistrationInfoEntity? {
 		prefs.getString(SAVED_REG_INFO_KEY, null)?.let {
 			return adapter.fromJson(it)
 		} ?: return null
 	}
 
-	override fun saveRegInfo(regInfo: RegistrationInfo) {
+	override fun saveRegInfo(regInfo: RegistrationInfoEntity) {
 		prefs.edit().putString(SAVED_REG_INFO_KEY, adapter.toJson(regInfo)).apply()
 	}
 

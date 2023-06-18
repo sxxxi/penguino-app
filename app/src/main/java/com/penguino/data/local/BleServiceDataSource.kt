@@ -1,6 +1,7 @@
-package com.penguino.data.repositories.bluetooth
+package com.penguino.data.local
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Service
 import android.bluetooth.*
 import android.content.Intent
@@ -9,12 +10,17 @@ import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.ActivityCompat
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.withContext
 import java.util.*
 
 private const val TAG = "BluetoothLeService"
-class BluetoothLeService : Service() {
+@SuppressLint("MissingPermission")
+class BleServiceDataSource : Service() {
     private var btAdapter: BluetoothAdapter? = null
-    private var connectionState: Int = STATE_DISCONNECTED
+    private val _connectionState= MutableStateFlow(STATE_DISCONNECTED)
     private var bluetoothGatt: BluetoothGatt? = null
 
     private val gattCallback: BluetoothGattCallback = object: BluetoothGattCallback() {
@@ -23,20 +29,12 @@ class BluetoothLeService : Service() {
             when (newState) {
                 BluetoothProfile.STATE_CONNECTED -> {
                     broadcastUpdate(ACTION_GATT_CONNECTED)
-                    connectionState = STATE_CONNECTED
-                    if (ActivityCompat.checkSelfPermission(
-                            this@BluetoothLeService,
-                            Manifest.permission.BLUETOOTH_CONNECT
-                        ) != PackageManager.PERMISSION_GRANTED
-                    ) {
-
-                        return
-                    }
+                    _connectionState.value = STATE_CONNECTED
                     bluetoothGatt?.discoverServices()
                 }
                 BluetoothProfile.STATE_DISCONNECTED -> {
                     broadcastUpdate(ACTION_GATT_DISCONNECTED)
-                    connectionState = STATE_CONNECTED
+                    _connectionState.value = STATE_DISCONNECTED
                 }
             }
         }
@@ -53,13 +51,6 @@ class BluetoothLeService : Service() {
             status: Int
         ) {
             super.onCharacteristicWrite(gatt, characteristic, status)
-            if (ActivityCompat.checkSelfPermission(
-                    this@BluetoothLeService,
-                    Manifest.permission.BLUETOOTH_CONNECT
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                return
-            }
             Log.d(
                 TAG,
                 "Characteristic written: trying to read... [${
@@ -94,8 +85,8 @@ class BluetoothLeService : Service() {
     }
 
     inner class ServiceBinder: Binder() {
-        fun getService(): BluetoothLeService {
-            return this@BluetoothLeService
+        fun getService(): BleServiceDataSource {
+            return this@BleServiceDataSource
         }
     }
 
@@ -116,15 +107,7 @@ class BluetoothLeService : Service() {
     fun connect(address: String): Boolean {
         if (btAdapter == null) return false
         try {
-
             val device = btAdapter?.getRemoteDevice(address)
-
-            if (ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.BLUETOOTH_CONNECT
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-            }
             bluetoothGatt = device?.connectGatt(this, false, gattCallback)
         } catch (e: java.lang.IllegalArgumentException) {
             Log.e(TAG, "Device with provided address not found")
@@ -137,7 +120,7 @@ class BluetoothLeService : Service() {
         return bluetoothGatt?.services
     }
 
-    fun writeToPengu(control: String) {
+    suspend fun writeToPengu(control: String): Unit = withContext(Dispatchers.IO) {
         val UUID_CONST = "-0000-1000-8000-00805f9b34fb"
         val chars = bluetoothGatt?.getService(UUID.fromString("0000aaa0$UUID_CONST"))
             ?.getCharacteristic(UUID.fromString("0000aaaa$UUID_CONST"))
@@ -145,38 +128,12 @@ class BluetoothLeService : Service() {
         // Write characteristic here. wish me luck
         chars?.let {
             val packet = control.toByteArray(Charsets.UTF_8)
-            if (ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.BLUETOOTH_CONNECT
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                return
-            }
-            Log.d(
-                TAG, "Trying to write: ${
-                    bluetoothGatt
-                        ?.writeCharacteristic(
-                            it,
-                            packet,
-                            BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT
-                        )
-                }"
-            )
-
-            Log.d(TAG, "Tried to write: ${packet.toString(Charsets.UTF_8)}")
-
+            bluetoothGatt?.writeCharacteristic(it, packet, BluetoothGattCharacteristic.WRITE_TYPE_DEFAULT)
         }
     }
 
     fun disconnect() {
         bluetoothGatt?.let {
-            if (ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.BLUETOOTH_CONNECT
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                return
-            }
             it.close()
             bluetoothGatt = null
             broadcastUpdate(ACTION_GATT_DISCONNECTED)
@@ -191,12 +148,7 @@ class BluetoothLeService : Service() {
         const val ACTION_GATT_SERVICES_DISCOVERED =
             "sheridan.bautisse.ble.BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED"
 
-        private const val STATE_DISCONNECTED = 0
+        const val STATE_DISCONNECTED = 0
         private const val STATE_CONNECTED = 2
     }
-
-
-
-
-
 }

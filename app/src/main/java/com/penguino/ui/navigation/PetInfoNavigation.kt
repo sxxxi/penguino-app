@@ -5,7 +5,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.penguino.data.local.models.RegistrationInfo
+import com.penguino.data.local.models.RegistrationInfoEntity
+import com.penguino.models.PetInfo
 import com.penguino.ui.screens.PetInfoScreen
 import com.penguino.ui.viewmodels.PetInfoViewModel
 import com.squareup.moshi.Moshi
@@ -16,10 +17,10 @@ const val petInfoSelectedDeviceArg = "selectedDevice"
 val adapter = Moshi.Builder()
 	.add(KotlinJsonAdapterFactory())
 	.build()
-	.adapter(RegistrationInfo::class.java)
+	.adapter(PetInfo::class.java)
 
 internal data class PetInfoArgs(
-	val selectedDevice: RegistrationInfo?
+	val selectedDevice: PetInfo?
 ){
 	constructor(stateHandle: SavedStateHandle) : this(
 		selectedDevice = adapter.fromJson(checkNotNull(stateHandle[petInfoSelectedDeviceArg]) as String)
@@ -28,7 +29,7 @@ internal data class PetInfoArgs(
 
 fun NavGraphBuilder.petInfo(
 	onNavigateToHome: () -> Unit,
-	onNavigateToRc: (RegistrationInfo) -> Unit,
+	onNavigateToRc: (PetInfo) -> Unit,
 	onBackPressed: () -> Unit
 ) {
 	composable(route = Screen.PetInfoScreen.routeWithArgs, arguments = Screen.PetInfoScreen.arguments) {
@@ -43,11 +44,11 @@ fun NavGraphBuilder.petInfo(
 	}
 }
 
-fun NavController.navigateToPetInfo(registrationInfo: RegistrationInfo) {
+fun NavController.navigateToPetInfo(registrationInfoEntity: PetInfo) {
 	val adapter = Moshi.Builder()
 		.add(KotlinJsonAdapterFactory())
 		.build()
-		.adapter(RegistrationInfo::class.java)
-	navigate("${Screen.PetInfoScreen.route}/${adapter.toJson(registrationInfo)}")
+		.adapter(PetInfo::class.java)
+	navigate("${Screen.PetInfoScreen.route}/${adapter.toJson(registrationInfoEntity)}")
 
 }

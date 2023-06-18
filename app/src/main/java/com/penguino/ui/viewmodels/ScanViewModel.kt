@@ -6,8 +6,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.penguino.data.local.RegInfoCache
 import com.penguino.data.local.models.DeviceInfo
-import com.penguino.data.local.models.RegistrationInfo
+import com.penguino.data.local.models.RegistrationInfoEntity
 import com.penguino.data.repositories.bluetooth.BleRepository
+import com.penguino.data.repositories.bluetooth.DeviceDiscoveryRepository
 import com.penguino.data.repositories.registration.RegistrationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +23,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ScanViewModel @Inject constructor(
-	private val btRepo: BleRepository,
+	private val btRepo: DeviceDiscoveryRepository,
 	private val regRepo: RegistrationRepository,
 	private val regInfoCache: RegInfoCache
 ) : ViewModel() {
@@ -55,8 +56,8 @@ class ScanViewModel @Inject constructor(
 	}
 
 	fun scanDevices() {
-		viewModelScope.launch(Dispatchers.IO) {
-			btRepo.scanDevices()
+		viewModelScope.launch {
+			btRepo.scanDevices(5000L)
 		}
 	}
 
@@ -87,7 +88,7 @@ class ScanViewModel @Inject constructor(
 		}
 
 		viewModelScope.launch(Dispatchers.Main) {
-			val regInfo = regInfoCache.getRegInfo() ?: RegistrationInfo()
+			val regInfo = regInfoCache.getRegInfo() ?: RegistrationInfoEntity()
 			regInfo.device = deviceInfo
 			regInfoCache.saveRegInfo(regInfo = regInfo)
 			Log.d("FOO", regInfoCache.getRegInfo().toString())

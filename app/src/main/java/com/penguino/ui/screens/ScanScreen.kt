@@ -29,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
@@ -37,8 +38,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.penguino.data.local.models.DeviceInfo
 import com.penguino.ui.theme.PenguinoTheme
+import com.penguino.ui.viewmodels.ScanViewModel
 import com.penguino.ui.viewmodels.ScanViewModel.ScanUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -53,6 +56,7 @@ private const val TAG = "ScanPage"
 fun ScanScreen (
 	modifier: Modifier = Modifier,
 	uiState: ScanUiState = ScanUiState(),
+    scanViewModel: ScanViewModel = hiltViewModel(),
 	onDeviceSelected: (device: DeviceInfo) -> Boolean = { false },
 	onScanButtonClicked: () -> Unit = {},
 	onNavigateToRegistration: () -> Unit = {},
@@ -74,9 +78,9 @@ fun ScanScreen (
     }
 
     // Only run once
-    LaunchedEffect(key1 = Unit, block = {
+    LaunchedEffect(key1 = Unit) {
         onScanButtonClicked()
-    })
+    }
 
     Scaffold(
         topBar = {
@@ -101,7 +105,7 @@ fun ScanScreen (
         }
     ) { pad ->
         Column(modifier.padding(pad)) {
-            if (uiState.scanning) {
+            if (uiState.devicesFound.isEmpty() && uiState.scanning) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center,

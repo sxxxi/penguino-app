@@ -19,7 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.dp
-import com.penguino.data.local.models.RegistrationInfo
+import com.penguino.data.local.models.RegistrationInfoEntity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -29,8 +29,8 @@ fun TextInputWithSuggestion(
 	labelComposable: (@Composable () -> Unit) = { Text(text = label) },
 	suggestions: List<String>,
 	value: String,
-	stateUpdater: ((updatable: RegistrationInfo) -> Unit) -> Unit,
-	sideEffect: (newValue: String, updatable: RegistrationInfo) -> Unit
+	stateUpdater: ((updatable: RegistrationInfoEntity) -> Unit) -> Unit,
+	sideEffect: (newValue: String, updatable: RegistrationInfoEntity) -> Unit
 ) {
     // Store a local state for the UI.
     var stateVal by remember { mutableStateOf(value) }

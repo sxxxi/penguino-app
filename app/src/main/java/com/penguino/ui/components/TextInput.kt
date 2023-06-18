@@ -13,17 +13,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.penguino.data.local.models.RegistrationInfo
+import com.penguino.data.local.models.RegistrationInfoEntity
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TextInput(
 	modifier: Modifier = Modifier,
 	value: String,
-	updater: ((RegistrationInfo) -> Unit) -> Unit,
+	updater: ((RegistrationInfoEntity) -> Unit) -> Unit,
 	label: (@Composable () -> Unit),
 	keyboardType: KeyboardType = KeyboardType.Text,
-	combined: (newVal: String, updatable: RegistrationInfo) -> Unit
+	combined: (newVal: String, updatable: RegistrationInfoEntity) -> Unit
 ) {
     var tem by remember { mutableStateOf(value) }
 	TextField(

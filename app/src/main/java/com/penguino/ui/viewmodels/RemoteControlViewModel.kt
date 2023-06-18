@@ -8,12 +8,14 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.penguino.data.network.models.ChatMessage
-import com.penguino.data.local.models.RegistrationInfo
+import com.penguino.data.local.models.RegistrationInfoEntity
 import com.penguino.ui.navigation.RemoteControlArgs
 import com.penguino.data.repositories.bluetooth.BleRepository
 import com.penguino.data.repositories.chat.ChatRepository
+import com.penguino.models.PetInfo
 import com.squareup.moshi.Moshi
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,11 +28,10 @@ class RemoteControlViewModel @Inject constructor(
 	private val chatRepository: ChatRepository
 ): ViewModel() {
 	private val args = RemoteControlArgs(savedStateHandle = savedStateHandle, moshi = moshi)
-
 	var uiState by mutableStateOf(
 		RemoteControlUiState(
-		deviceInfo = args.regInfo ?: RegistrationInfo()
-	)
+			deviceInfo = args.regInfo ?: PetInfo()
+		)
 	)
 
 	init {
@@ -42,13 +43,12 @@ class RemoteControlViewModel @Inject constructor(
 		}
 
 		viewModelScope.launch {
-			Log.d("BOOBA", "Setting system message")
 			chatRepository.setSystemMessage("You are a super helpful assistant. Your responses must be in the shortest form")
 		}
 	}
 
 	data class RemoteControlUiState(
-		val deviceInfo: RegistrationInfo,
+		val deviceInfo: PetInfo,
 		val latestResponse: ChatMessage? = null
 	)
 
@@ -59,9 +59,17 @@ class RemoteControlViewModel @Inject constructor(
 	 */
 	fun bindService() = btRepository.bindService()
 	fun unbindService() = btRepository.unbindService()
-	fun connect() = btRepository.connect(uiState.deviceInfo.device)
+	fun connect() {
+		viewModelScope.launch(Dispatchers.IO) {
+			btRepository.connect(uiState.deviceInfo.address)
+		}
+	}
 	fun disconnect() = btRepository.disconnect()
-	fun sendMessage(msg: String) = btRepository.sendMessage(msg)
+	fun sendMessage(msg: String) {
+		viewModelScope.launch {
+			btRepository.sendMessage(msg)
+		}
+	}
 
 	fun chat(message: String) {
 		chatRepository.chat(message = message)

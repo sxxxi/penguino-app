@@ -7,7 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.penguino.data.local.RegInfoCache
-import com.penguino.data.local.models.RegistrationInfo
+import com.penguino.data.local.models.RegistrationInfoEntity
 import com.penguino.data.repositories.registration.RegistrationRepositoryImpl
 import com.penguino.data.network.RegistrationNetworkDataSource
 import com.squareup.moshi.Moshi
@@ -31,7 +31,7 @@ class RegistrationViewModel @Inject constructor(
     private val petsApi = retrofit.create(RegistrationNetworkDataSource::class.java)
     var uiState by mutableStateOf(
 		RegistrationUiState(
-        regInfo = regInfoCache.getRegInfo() ?: RegistrationInfo()
+        regInfo = regInfoCache.getRegInfo() ?: RegistrationInfoEntity()
     )
 	)
 
@@ -41,10 +41,10 @@ class RegistrationViewModel @Inject constructor(
 
     data class RegistrationUiState(
         val suggestions: List<String> = listOf(),
-        val regInfo: RegistrationInfo
+        val regInfo: RegistrationInfoEntity
     )
 
-    fun updateRegInfo(updateLambda: (RegistrationInfo) -> Unit) {
+    fun updateRegInfo(updateLambda: (RegistrationInfoEntity) -> Unit) {
         val copy = uiState.regInfo.copy()
         updateLambda(copy)
         uiState = uiState.copy(regInfo = copy)

@@ -13,9 +13,13 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
+import com.penguino.data.local.BleServiceDataSource
 import com.penguino.data.local.models.DeviceInfo
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @SuppressLint("MissingPermission")
@@ -23,48 +27,15 @@ class BleRepositoryImpl @Inject constructor(
 	private val context: Context,
 	private val blAdapter: BluetoothAdapter,
 ): BleRepository {
-    private var bluetoothLeService: BluetoothLeService? = null
-
-    private var _scanning = MutableStateFlow(false)
-    override var scanning: StateFlow<Boolean> = _scanning
-
-    private var _btEnabled = MutableStateFlow(true)
-    override var btEnabled: StateFlow<Boolean> = _btEnabled
-
-    // Devices found during the scanning process. (Needs a little more tweak)
-    private val mutDeviceSet: MutableSet<DeviceInfo> = mutableSetOf()
-    private val _deviceList = MutableStateFlow<List<DeviceInfo>>(listOf())
-    override val deviceList: StateFlow<List<DeviceInfo>> = _deviceList
-
-    private val scanCallback: ScanCallback = object: ScanCallback() {
-        override fun onScanResult(callbackType: Int, result: ScanResult?) {
-            super.onScanResult(callbackType, result)
-            result?.device?.let { device ->
-                device.name?.let { name ->
-//                    if (name != "Penguino") return
-
-                    val deviceInfo = DeviceInfo(deviceName = name, address = device.address)
-
-                    mutDeviceSet.add(deviceInfo)
-                    _deviceList.value = mutDeviceSet.toList()
-
-					Log.d(TAG, deviceList.value.toString())
-                }
-//                val deviceInfo = DeviceInfo(deviceName = device.name ?: "", address = device.address)
-//
-//                mutDeviceSet.add(deviceInfo)
-//                _deviceList.value = mutDeviceSet.toList()
-            }
-        }
-    }
+    private var bleServiceDataSource: BleServiceDataSource? = null
 
     // Callbacks for binding BluetoothLeService
     private val bluetoothServiceConn = object : ServiceConnection {
         private val TAG = "BluetoothServiceConnection"
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
 			Log.i(TAG, "BluetoothLeService Bound")
-            bluetoothLeService = (service as BluetoothLeService.ServiceBinder).getService()
-            bluetoothLeService?.let { bluetooth ->
+            bleServiceDataSource = (service as BleServiceDataSource.ServiceBinder).getService()
+            bleServiceDataSource?.let { bluetooth ->
                 // Connect here and do stuff here on service created
                 if (!bluetooth.initialize()) {
 					Log.e(TAG, "Unable to initialize service")
@@ -77,31 +48,8 @@ class BleRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun scanDevices() {
-        if (scanning.value) return
-        val scanner: BluetoothLeScanner = blAdapter.bluetoothLeScanner
-
-        mutDeviceSet.clear()
-        _deviceList.value = mutDeviceSet.toList()
-
-        _scanning.value = true
-        scanner.startScan(scanCallback)
-
-        Handler(Looper.getMainLooper()).postDelayed({ ->
-            Log.d(TAG, "Stopping scan")
-            stopScan()
-        }, 5000)
-    }
-
-    override fun stopScan() {
-        if (scanning.value) {
-            blAdapter.bluetoothLeScanner.stopScan(scanCallback)
-            _scanning.value = false
-        }
-    }
-
     override fun bindService() {
-        Intent(context, BluetoothLeService::class.java).also { intent ->
+        Intent(context, BleServiceDataSource::class.java).also { intent ->
             val bindSuccess: Boolean = context.bindService(
                 intent,
                 bluetoothServiceConn,
@@ -119,16 +67,16 @@ class BleRepositoryImpl @Inject constructor(
         context.unbindService(bluetoothServiceConn)
     }
 
-    override fun sendMessage(message: String) {
-        bluetoothLeService?.writeToPengu(message)
+    override suspend fun sendMessage(message: String): Unit = withContext(Dispatchers.IO) {
+        bleServiceDataSource?.writeToPengu(message)
     }
 
-    override fun connect(device: DeviceInfo): Boolean {
-        return bluetoothLeService?.connect(device.address) ?: false
+    override fun connect(address: String): Boolean {
+        return bleServiceDataSource?.connect(address) ?: false
     }
 
     override fun disconnect() {
-        bluetoothLeService?.disconnect()
+        bleServiceDataSource?.disconnect()
     }
 
     override fun btEnabled(): Boolean {

@@ -6,9 +6,10 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.penguino.data.local.models.RegistrationInfo
+import com.penguino.data.local.models.RegistrationInfoEntity
 import com.penguino.ui.navigation.PetInfoArgs
 import com.penguino.data.repositories.registration.RegistrationRepository
+import com.penguino.models.PetInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,12 +21,12 @@ class PetInfoViewModel @Inject constructor(
 ): ViewModel() {
 	private val args = PetInfoArgs(savedStateHandle)
 	var uiState by mutableStateOf(
-		PetInfoUiState(selectedDevice = args.selectedDevice ?: RegistrationInfo())
+		PetInfoUiState(selectedDevice = args.selectedDevice ?: PetInfo())
 	)
 		private set
 
 	data class PetInfoUiState(
-		val selectedDevice: RegistrationInfo = RegistrationInfo()
+		val selectedDevice: PetInfo = PetInfo()
 	)
 
 	fun deleteRegInfo() = viewModelScope.launch {

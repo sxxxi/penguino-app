@@ -1,67 +1,107 @@
 package com.penguino.ui.viewmodels
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.penguino.data.network.models.ChatMessage
-import com.penguino.data.local.models.RegistrationInfo
-import com.penguino.data.repositories.chat.ChatRepository
+import com.penguino.data.repositories.bluetooth.DeviceDiscoveryRepository
 import com.penguino.data.repositories.registration.RegistrationRepository
+import com.penguino.models.PetInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-	registrationRepo: RegistrationRepository,
-	private val chatRepository: ChatRepository
+	private val registrationRepo: RegistrationRepository,
+	private val deviceDiscoveryRepo: DeviceDiscoveryRepository,
 ): ViewModel() {
-	/*
-	1. Fetch saved devices
-	2.
-	 */
-	var uiState by mutableStateOf(HomeUiState())
-		private set
-
-	var history by mutableStateOf(listOf<ChatMessage>())
-
+	private var launchedJob: Job? = null
+	private val _uiState = MutableStateFlow(HomeUiState())
+	val uiState: StateFlow<HomeUiState> = _uiState
 
 	init {
 		viewModelScope.launch {
-			registrationRepo.getSavedDevices().collectLatest {
-				uiState = uiState.copy(savedDevices = it)
-			}
-		}
-
-		viewModelScope.launch {
-			chatRepository.history.collectLatest {
-				history = it
+			registrationRepo
+				.getSavedDevices()
+				.collectLatest {
+					_uiState.value = _uiState.value.copy(savedDevices = it)
 			}
 		}
 	}
 
 	data class HomeUiState(
-		val savedDevices: List<RegistrationInfo> = listOf()
+		val savedDevices: List<PetInfo> = listOf()
 	)
 
+	/**
+	 * Set private local job reference holder so that it can be
+	 * cancelled by other functions (onScreenExit)
+	 */
+	fun onScreenLaunch() {
+		Log.i("FOO", "STARTING STARTUP JOB")
+		launchedJob = updateNearbyDevices()
+	}
 
-
-	fun test() {
-		viewModelScope.launch(Dispatchers.IO) {
-			delay(3000L)
-			val systemMessage = "You are a super helpful assistant. Your responses must be in the shortest form"
-
-			chatRepository.chat(system = systemMessage, message = "remember the magic number: 76")
-
-			delay(5000L)
-
-			chatRepository.chat(message = "do you remember the magic number?")
+	/**
+	 * Call to dispose onScreenLaunch
+	 */
+	fun onScreenExit() {
+		viewModelScope.launch(context = Dispatchers.Default) {
+			Log.d("FOO", "STOPPING STARTUP JOB $launchedJob")
+			launchedJob?.cancelAndJoin()
+			launchedJob = null
 		}
 	}
 
+	private fun updateNearbyDevices() = viewModelScope.launch(Dispatchers.Default) {
+		/**
+		 * This coroutine will handle scanning nearby devices
+		 * once every 10 seconds
+		 *
+		 * POSSIBLE OPTIMIZATIONS: Use work manager instead of
+		 * using coroutines? (Still have to learn it)
+		 */
+		launch(Dispatchers.Default) {
+			try {
+				while (isActive) {
+					deviceDiscoveryRepo.scanDevices(5000L)
+					delay(15000L)
+				}
+			} finally {
+				deviceDiscoveryRepo.stopScan()
+			}
+		}
+
+		/**
+		 * Listens to changes in both the list of saved devices in
+		 * the database and the list of discovered devices, and
+		 * changes the status of each of the saved devices accordingly
+		 */
+		_uiState
+			.combine(deviceDiscoveryRepo.deviceList) { savedDevices, nearbyDevices ->
+				savedDevices.savedDevices.map { saved ->
+					val isNearby = nearbyDevices
+						.find { nearby -> nearby.address == saved.address } != null
+					// only update on value change
+					if (saved.isNearby != isNearby) {
+						saved.copy(isNearby = isNearby)
+					} else {
+						saved
+					}
+				}
+			}
+			.collectLatest {
+				_uiState.value = _uiState.value.copy(savedDevices = it)
+			}
+	}
 }

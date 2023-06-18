@@ -4,21 +4,21 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import com.penguino.data.local.models.RegistrationInfo
+import com.penguino.data.local.models.RegistrationInfoEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 abstract class DeviceDao {
-	@Query("SELECT * FROM RegistrationInfo")
-	abstract fun getAll(): Flow<List<RegistrationInfo>>
+	@Query("SELECT * FROM RegistrationInfoEntity")
+	abstract fun getAll(): Flow<List<RegistrationInfoEntity>>
 
 	@Insert
-	abstract fun saveDevice(regInfo: RegistrationInfo)
+	abstract fun saveDevice(regInfo: RegistrationInfoEntity)
 
-	@Delete
-	abstract fun removeDevice(regInfo: RegistrationInfo)
+	@Query("DELETE FROM RegistrationInfoEntity WHERE address = :id")
+	abstract fun removeDeviceById(id: String)
 
-	@Query("SELECT COUNT(*) FROM (SELECT * FROM RegistrationInfo WHERE address = :address)")
+	@Query("SELECT COUNT(*) FROM (SELECT * FROM RegistrationInfoEntity WHERE address = :address)")
 	abstract fun deviceExists(address: String): Boolean
 
 }

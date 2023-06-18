@@ -33,7 +33,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.penguino.data.local.models.DeviceInfo
-import com.penguino.data.local.models.RegistrationInfo
+import com.penguino.data.local.models.RegistrationInfoEntity
+import com.penguino.models.PetInfo
 import com.penguino.ui.components.ConfirmationAlert
 import com.penguino.ui.components.CustomTopBar
 import com.penguino.ui.components.MenuButton
@@ -47,7 +48,7 @@ fun PetInfoScreen(
 	uiState: PetInfoViewModel.PetInfoUiState,
 	onDeleteClicked: () -> Unit = {},
 	onNavigateToHome: () -> Unit = {},
-	onNavigateToRc: (RegistrationInfo) -> Unit = {},
+	onNavigateToRc: (PetInfo) -> Unit = {},
 	onBackPressed: (() -> Unit)? = {}
 ) {
 	val petInfo by remember { mutableStateOf(uiState.selectedDevice) }
@@ -60,7 +61,7 @@ fun PetInfoScreen(
 	) {
 		PetInfoHeader(
 //			image = null,
-			petName = petInfo.petName,
+			petName = petInfo.name,
 			onBackPressed = onBackPressed,
 			headerButtons = {
 				var expanded by remember {
@@ -174,8 +175,8 @@ private val petInfoSectionTextModifier = Modifier.padding(vertical = 8.dp)
 @Composable
 private fun PetInfoSection(
 	modifier: Modifier = Modifier,
-	petInfo: RegistrationInfo,
-	onNavigateToRc: (RegistrationInfo) -> Unit
+	petInfo: PetInfo,
+	onNavigateToRc: (PetInfo) -> Unit
 ) {
 	Column(
 		modifier = modifier,
@@ -185,7 +186,7 @@ private fun PetInfoSection(
 		TitledText(
 			modifier = petInfoSectionTextModifier,
 			title = "Address",
-			text = petInfo.device.address
+			text = petInfo.address
 		)
 		Row {
 			TitledText(
@@ -218,12 +219,9 @@ private fun PetInfoSection(
 fun PreviewPetInfoScreen() {
 	PenguinoTheme {
 		val uiState = PetInfoViewModel.PetInfoUiState(
-			RegistrationInfo(
-				device = DeviceInfo(
-					"xx:xx:xx:xx",
-					"Penguno"
-				),
-				petName = "Ketchup",
+			PetInfo(
+				address = "xx:xx:xx:xx",
+				name = "Ketchup",
 				personality = "Cute",
 				age = 5
 			)

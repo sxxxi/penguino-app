@@ -1,6 +1,6 @@
 package com.penguino.data.local
 
-import com.penguino.data.local.models.RegistrationInfo
+import com.penguino.data.local.models.RegistrationInfoEntity
 
 /**
  * A contract for reading and writing RegistrationInfo in the
@@ -8,7 +8,7 @@ import com.penguino.data.local.models.RegistrationInfo
  * share a single RegistrationInfo
  */
 interface RegInfoCache {
-	fun getRegInfo(): RegistrationInfo?
-	fun saveRegInfo(regInfo: RegistrationInfo)
+	fun getRegInfo(): RegistrationInfoEntity?
+	fun saveRegInfo(regInfo: RegistrationInfoEntity)
 	fun clearRegInfo()
 }

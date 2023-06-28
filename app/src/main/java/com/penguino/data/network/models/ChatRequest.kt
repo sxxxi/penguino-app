@@ -1,5 +1,7 @@
 package com.penguino.data.network.models
 
+import com.penguino.data.models.ChatMessage
+
 // TODO: https://platform.openai.com/docs/api-reference/chat/create?lang=python
 
 data class ChatRequest(

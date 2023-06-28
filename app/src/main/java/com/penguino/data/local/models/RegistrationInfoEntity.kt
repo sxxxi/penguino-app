@@ -3,7 +3,7 @@ package com.penguino.data.local.models
 import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
-import com.penguino.models.PetInfo
+import com.penguino.data.models.PetInfo
 import kotlinx.serialization.Serializable
 
 @Serializable

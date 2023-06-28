@@ -5,8 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.penguino.data.repositories.bluetooth.DeviceDiscoveryRepository
 import com.penguino.data.repositories.registration.RegistrationRepository
-import com.penguino.models.PetInfo
+import com.penguino.data.models.PetInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
@@ -47,9 +48,9 @@ class HomeViewModel @Inject constructor(
 	 * Set private local job reference holder so that it can be
 	 * cancelled by other functions (onScreenExit)
 	 */
-	fun onScreenLaunch() {
+	fun onScreenLaunch(scope: CoroutineScope) {
 		Log.i("FOO", "STARTING STARTUP JOB")
-		launchedJob = updateNearbyDevices()
+		launchedJob = updateNearbyDevices(scope = scope)
 	}
 
 	/**
@@ -63,7 +64,7 @@ class HomeViewModel @Inject constructor(
 		}
 	}
 
-	private fun updateNearbyDevices() = viewModelScope.launch(Dispatchers.Default) {
+	fun updateNearbyDevices(scope: CoroutineScope = viewModelScope) = scope.launch(Dispatchers.Default) {
 		/**
 		 * This coroutine will handle scanning nearby devices
 		 * once every 10 seconds

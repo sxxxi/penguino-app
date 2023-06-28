@@ -4,6 +4,7 @@ import com.penguino.data.local.models.DeviceInfo
 import kotlinx.coroutines.flow.StateFlow
 
 interface BleRepository {
+    val connectionState: StateFlow<Int>
     fun bindService()
     fun unbindService()
 

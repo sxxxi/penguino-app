@@ -4,10 +4,9 @@ import android.util.Log
 import androidx.compose.material3.SnackbarDuration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.penguino.data.local.RegInfoCache
+import com.penguino.data.cache.RegInfoCache
 import com.penguino.data.local.models.DeviceInfo
 import com.penguino.data.local.models.RegistrationInfoEntity
-import com.penguino.data.repositories.bluetooth.BleRepository
 import com.penguino.data.repositories.bluetooth.DeviceDiscoveryRepository
 import com.penguino.data.repositories.registration.RegistrationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel

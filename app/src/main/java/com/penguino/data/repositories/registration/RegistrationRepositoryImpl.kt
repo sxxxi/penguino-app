@@ -4,7 +4,7 @@ import android.util.Log
 import com.penguino.data.local.models.RegistrationInfoEntity
 import com.penguino.data.local.dao.DeviceDao
 import com.penguino.data.network.RegistrationNetworkDataSource
-import com.penguino.models.PetInfo
+import com.penguino.data.models.PetInfo
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -15,7 +15,7 @@ import retrofit2.Callback
 import javax.inject.Inject
 
 /**
- * Prioritizes local database before managing remote storage
+ * Prioritize local database before managing remote storage
  */
 class RegistrationRepositoryImpl @Inject constructor(
 	private val registrationDao: DeviceDao,
@@ -24,7 +24,6 @@ class RegistrationRepositoryImpl @Inject constructor(
 	override suspend fun getSavedDevices(): Flow<List<PetInfo>> =
 		withContext(Dispatchers.IO) {
 			registrationDao.getAll().mapLatest { li ->
-				Log.d("FOO", li.toString())
 				li.map { it.toModel() }
 			}
 		}
@@ -43,11 +42,4 @@ class RegistrationRepositoryImpl @Inject constructor(
 	override fun deviceExists(address: String): Boolean {
 		return registrationDao.deviceExists(address)
 	}
-
-//	private fun postDevice(
-//		device: RegistrationInfo,
-//		callback: Callback<String>
-//	) {
-//		registrationApi.addDeviceInfo(device).enqueue(callback)
-//	}
 }

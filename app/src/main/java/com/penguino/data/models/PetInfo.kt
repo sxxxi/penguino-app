@@ -1,4 +1,4 @@
-package com.penguino.models
+package com.penguino.data.models
 
 data class PetInfo(
 	val name: String = "",

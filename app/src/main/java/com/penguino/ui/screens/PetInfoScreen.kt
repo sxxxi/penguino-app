@@ -32,20 +32,22 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.penguino.data.local.models.DeviceInfo
 import com.penguino.data.local.models.RegistrationInfoEntity
-import com.penguino.models.PetInfo
+import com.penguino.data.models.PetInfo
 import com.penguino.ui.components.ConfirmationAlert
 import com.penguino.ui.components.CustomTopBar
 import com.penguino.ui.components.MenuButton
 import com.penguino.ui.components.TitledText
 import com.penguino.ui.theme.PenguinoTheme
 import com.penguino.ui.viewmodels.PetInfoViewModel
+import com.penguino.ui.viewmodels.PetInfoViewModel.PetInfoUiState
 
 @Composable
 fun PetInfoScreen(
 	modifier: Modifier = Modifier,
-	uiState: PetInfoViewModel.PetInfoUiState,
+	uiState: PetInfoUiState = PetInfoUiState(),
 	onDeleteClicked: () -> Unit = {},
 	onNavigateToHome: () -> Unit = {},
 	onNavigateToRc: (PetInfo) -> Unit = {},
@@ -68,6 +70,7 @@ fun PetInfoScreen(
 					mutableStateOf(false)
 				}
 				MenuButton(
+					tint = MaterialTheme.colorScheme.onBackground,
 					expanded = expanded,
 					onClick = { expanded = !expanded },
 					onDismiss = { expanded = false },
@@ -127,7 +130,7 @@ private fun PetInfoHeader(
 ) {
 	Column(
 		modifier = Modifier
-			.background(MaterialTheme.colorScheme.primary)
+			.background(MaterialTheme.colorScheme.background)
 	) {
 		CustomTopBar(
 			navButton = {
@@ -136,7 +139,7 @@ private fun PetInfoHeader(
 						Icon(
 							imageVector = Icons.Default.ArrowBack,
 							contentDescription = "Back",
-							tint = MaterialTheme.colorScheme.onPrimary
+							tint = MaterialTheme.colorScheme.onBackground
 						)
 					}
 				}
@@ -153,7 +156,7 @@ private fun PetInfoHeader(
 				modifier = Modifier
 					.width(200.dp)
 					.clip(RoundedCornerShape(100))
-					.border(2.dp, MaterialTheme.colorScheme.onPrimary, RoundedCornerShape(100)),
+					.border(2.dp, MaterialTheme.colorScheme.onBackground, RoundedCornerShape(100)),
 				imageBitmap = image
 			)
 			Spacer(modifier = Modifier.padding(10.dp))
@@ -161,7 +164,7 @@ private fun PetInfoHeader(
 				text = petName,
 				fontWeight = FontWeight.Bold,
 				style = MaterialTheme.typography.displayLarge,
-				color = MaterialTheme.colorScheme.onPrimary
+				color = MaterialTheme.colorScheme.onBackground
 			)
 		}
 	}
@@ -218,15 +221,7 @@ private fun PetInfoSection(
 @Composable
 fun PreviewPetInfoScreen() {
 	PenguinoTheme {
-		val uiState = PetInfoViewModel.PetInfoUiState(
-			PetInfo(
-				address = "xx:xx:xx:xx",
-				name = "Ketchup",
-				personality = "Cute",
-				age = 5
-			)
-		)
-		PetInfoScreen(uiState = uiState)
+		PetInfoScreen()
 	}
 }
 

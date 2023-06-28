@@ -1,30 +1,28 @@
 package com.penguino.ui.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Icon
+import androidx.compose.material3.Card
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -36,79 +34,69 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.lifecycleScope
 import com.penguino.R
-import com.penguino.data.local.models.DeviceInfo
-import com.penguino.data.local.models.RegistrationInfoEntity
-import com.penguino.models.PetInfo
+import com.penguino.data.models.PetInfo
+import com.penguino.utils.ObserveLifecycle
+import com.penguino.ui.components.Mods
+import com.penguino.ui.components.SimpleTopBar
 import com.penguino.ui.theme.PenguinoTheme
-import com.penguino.ui.viewmodels.HomeViewModel
 import com.penguino.ui.viewmodels.HomeViewModel.HomeUiState
+import kotlinx.coroutines.CoroutineScope
 
-val deviceListItemModifier = Modifier
-	.padding(20.dp)
-	.fillMaxWidth()
-
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomePage(
 	modifier: Modifier = Modifier,
-	homeViewModel: HomeViewModel = hiltViewModel(),
+	uiState: HomeUiState = HomeUiState(),
+	onScreenLaunched: (CoroutineScope) -> Unit = {},
+	onScreenExit: () -> Unit = {},
 	onSavedPetClicked: (PetInfo) -> Unit = {},
-	onNavigateToScan: () -> Unit = {},
 ) {
-	val uiState by homeViewModel.uiState.collectAsState()
-
-	/**
-	 * TODO: Modularize this later
-	 */
-	val lifecycleOwner = LocalLifecycleOwner.current
-	DisposableEffect(key1 = lifecycleOwner) {
-		val observer = LifecycleEventObserver { _, event ->
-			when(event) {
-				Lifecycle.Event.ON_RESUME -> homeViewModel.onScreenLaunch()
-				else -> homeViewModel.onScreenExit()
-			}
+	ObserveLifecycle(lifecycleOwner = LocalLifecycleOwner.current, observer = { owner, event ->
+		when(event) {
+			Lifecycle.Event.ON_RESUME -> onScreenLaunched(owner.lifecycleScope)
+			else -> onScreenExit()
 		}
-		lifecycleOwner.lifecycle.addObserver(observer)
-		onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
-	}
+	})
 
 	Column(
 		modifier = modifier
 			.fillMaxSize(),
 	) {
-		LazyColumn {
-			items(uiState.savedDevices) { dev ->
-				SavedDeviceListItem(
-					modifier = deviceListItemModifier,
-					petName = dev.name,
-					address = dev.address,
-					onClick = { onSavedPetClicked(dev) },
-					isNearby = dev.isNearby
-				)
+		SimpleTopBar(title = "Saved devices")
+		val visibleState = remember {
+			MutableTransitionState(false).apply {
+				this.isIdle
+				targetState = true
 			}
 		}
-
-		Row(
-			modifier = Modifier
-				.clickable(onClick = onNavigateToScan)
-				.then(deviceListItemModifier),
-			horizontalArrangement = Arrangement.Center
+		AnimatedVisibility(
+			visibleState = visibleState,
+			enter = fadeIn(tween(1000)),
+			exit = fadeOut()
 		) {
-			Icon(imageVector = Icons.Filled.Add, contentDescription = "Add pet")
-			Text(text = "Add pet")
+			LazyColumn {
+				items(uiState.savedDevices, key = { it.address }) { dev ->
+					SavedDeviceListItem(
+						modifier = Modifier.animateItemPlacement(),
+						petName = dev.name,
+						address = dev.address,
+						onClick = { onSavedPetClicked(dev) },
+						isNearby = dev.isNearby
+					)
+				}
+			}
 		}
 	}
-
 }
 
 val defaultPfpImageMod = Modifier
 	.width(60.dp)
 	.clip(RoundedCornerShape(15.dp))
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SavedDeviceListItem(
 	modifier: Modifier = Modifier,
@@ -118,12 +106,12 @@ fun SavedDeviceListItem(
 	isNearby: Boolean = false,
 	onClick: () -> Unit = {}
 ) {
-	Box(modifier = Modifier
-		.clickable(onClick = onClick)
-		.then(modifier)
+	Card(
+		modifier = Mods.verticalListItem.then(modifier),
+		onClick = onClick
 	) {
 		Row(
-			modifier = modifier,
+			modifier = Mods.verticalListItemContent,
 		) {
 			PetPfp(
 				imageBitmap = imageBitmap,
@@ -180,6 +168,17 @@ fun PetPfp(
 @Composable
 fun PreviewHomeScreen() {
 	PenguinoTheme {
-		HomePage()
+		HomePage(uiState = HomeUiState(
+			savedDevices = listOf(
+				PetInfo(
+					name = "Ketchup",
+					personality = "Cute",
+					age = 3,
+					address = "I can smell your bones",
+					isNearby = true
+				)
+			)
+		)
+		)
 	}
 }

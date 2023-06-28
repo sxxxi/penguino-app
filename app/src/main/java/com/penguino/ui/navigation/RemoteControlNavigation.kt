@@ -1,13 +1,13 @@
 package com.penguino.ui.navigation
 
-import android.util.Log
+import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.penguino.data.local.models.RegistrationInfoEntity
-import com.penguino.models.PetInfo
+import com.penguino.data.models.PetInfo
 import com.penguino.ui.viewmodels.RemoteControlViewModel
 import com.penguino.ui.screens.RemoteControlScreen
 import com.squareup.moshi.Moshi
@@ -22,19 +22,23 @@ internal data class RemoteControlArgs(
 	val regInfo: PetInfo? = adapter.fromJson(checkNotNull(savedStateHandle[rcDeviceArg]) as String)
 }
 
-fun NavGraphBuilder.remoteControlScreen(
-	onNavigateToHome: () -> Unit
-) {
+fun NavGraphBuilder.remoteControlScreen() {
 	composable(
 		route = Screen.RemoteControlScreen.routeWithArgs,
 		arguments = Screen.RemoteControlScreen.arguments
 	) {
-		val rcVm = hiltViewModel<RemoteControlViewModel>()
+		val remoteControlViewModel = hiltViewModel<RemoteControlViewModel>()
+		val uiState by remoteControlViewModel.uiState.collectAsStateWithLifecycle()
+		val connectionState by remoteControlViewModel.connectionState.collectAsStateWithLifecycle()
 		RemoteControlScreen(
-			uiState = rcVm.uiState,
-			rcVm = rcVm,
-			onNavigateToHome = onNavigateToHome,
-			chatFunc = rcVm::chat
+			uiState = uiState,
+			chatFunc = remoteControlViewModel::chat,
+			btConnectionState = connectionState,
+			btServiceBind = remoteControlViewModel::bindService,
+			btServiceUnbind = remoteControlViewModel::unbindService,
+			btConnect = remoteControlViewModel::connect,
+			btDisconnect = remoteControlViewModel::disconnect,
+			btMessageSend = remoteControlViewModel::sendMessage
 		)
 	}
 }

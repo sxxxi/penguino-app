@@ -1,4 +1,4 @@
-package com.penguino.data.network.models
+package com.penguino.data.models
 
 data class ChatMessage(
 	val role: String = USER,

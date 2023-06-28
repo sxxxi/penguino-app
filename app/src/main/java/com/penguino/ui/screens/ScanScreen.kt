@@ -1,5 +1,8 @@
 package com.penguino.ui.screens
 
+import androidx.activity.ComponentActivity
+import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -29,17 +33,21 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.penguino.data.local.models.DeviceInfo
+import com.penguino.ui.components.Loader
+import com.penguino.ui.components.Mods
+import com.penguino.ui.components.SimpleIconButton
+import com.penguino.ui.components.SimpleTopBar
 import com.penguino.ui.theme.PenguinoTheme
 import com.penguino.ui.viewmodels.ScanViewModel
 import com.penguino.ui.viewmodels.ScanViewModel.ScanUiState
@@ -48,7 +56,6 @@ import kotlinx.coroutines.launch
 
 private const val TAG = "ScanPage"
 
-// TODO: Make btEnabled reactive. Change value when bluetooth status is changed.
 // TODO: EDIT SCREEN
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,11 +63,9 @@ private const val TAG = "ScanPage"
 fun ScanScreen (
 	modifier: Modifier = Modifier,
 	uiState: ScanUiState = ScanUiState(),
-    scanViewModel: ScanViewModel = hiltViewModel(),
 	onDeviceSelected: (device: DeviceInfo) -> Boolean = { false },
 	onScanButtonClicked: () -> Unit = {},
 	onNavigateToRegistration: () -> Unit = {},
-	onBackPressed: () -> Unit = {}
 ) {
     val scope = rememberCoroutineScope()
     val devicesFound = uiState.devicesFound
@@ -84,19 +89,15 @@ fun ScanScreen (
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(text = "Select Device")
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackPressed) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                },
+            SimpleTopBar(
+                title = "Select device",
                 actions = {
-                    IconButton(onClick = { onScanButtonClicked() }, enabled = !uiState.scanning) {
-                        Icon(imageVector = Icons.Default.Refresh, contentDescription = "Rescan")
-                    }
+                    SimpleIconButton(
+                        iconVector = Icons.Default.Refresh,
+                        description = "Rescan",
+                        enabled = !uiState.scanning,
+                        onClick = onScanButtonClicked
+                    )
                 }
             )
         },
@@ -105,53 +106,42 @@ fun ScanScreen (
         }
     ) { pad ->
         Column(modifier.padding(pad)) {
-            if (uiState.devicesFound.isEmpty() && uiState.scanning) {
-                Column(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Row(
-                        modifier = Modifier.padding(8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
+            Crossfade(targetState = uiState) { uiState ->
+                // Scanning state
+                if (uiState.devicesFound.isEmpty() && uiState.scanning) {
+                    Loader("Searching for devices")
+                } else {
+                    Column(
+                        modifier = modifier
+                            .fillMaxSize()
                     ) {
-                        CircularProgressIndicator()
-                        Spacer(modifier = Modifier.padding(4.dp))
-                        Text(text = "Searching for devices")
-                    }
-                }
-
-            } else {
-                Column(
-                    modifier = modifier
-                        .fillMaxSize()
-                ) {
-                    if (uiState.devicesFound.isEmpty()) {
-                        Column(
-                            modifier = modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(text = "No compatible devices found")
-                            TextButton(onClick = onScanButtonClicked) {
-                                Text(text = "Refresh")
+                        // No devices found
+                        if (uiState.devicesFound.isEmpty()) {
+                            Column(
+                                modifier = modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.Center,
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(text = "No compatible devices found")
+                                TextButton(onClick = onScanButtonClicked) {
+                                    Text(text = "Refresh")
+                                }
                             }
-                        }
-                    } else {
-                        DeviceList(
-                            modifier = modifier.weight(1F),
-                            devices = devicesFound,
-                            onItemClick = {
-                                scope.launch(Dispatchers.IO) {
-                                    if (onDeviceSelected(it)) {
-                                        scope.launch(Dispatchers.Main) {
-                                            onNavigateToRegistration()
+                        } else {
+                            DeviceList(
+                                modifier = modifier.weight(1F),
+                                devices = devicesFound,
+                                onItemClick = {
+                                    scope.launch(Dispatchers.IO) {
+                                        if (onDeviceSelected(it)) {
+                                            scope.launch(Dispatchers.Main) {
+                                                onNavigateToRegistration()
+                                            }
                                         }
                                     }
                                 }
-                            }
-                        )
+                            )
+                        }
                     }
                 }
             }
@@ -159,26 +149,19 @@ fun ScanScreen (
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun DeviceList(
 	modifier: Modifier = Modifier,
 	devices: List<DeviceInfo>,
 	onItemClick: (device: DeviceInfo) -> Unit = { }
 ) {
-    LazyColumn(
-        modifier = modifier
-            .border(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.background,
-                shape = RoundedCornerShape(1)
-            )
-            .padding(8.dp)
-
-    ) {
+    LazyColumn {
         this.items(devices) { deviceInfo ->
             DeviceListItem(
                 modifier = modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .animateItemPlacement(),
                 onClick = { onItemClick(deviceInfo) },
                 device = deviceInfo
             )
@@ -187,6 +170,7 @@ private fun DeviceList(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DeviceListItem(
 	modifier: Modifier = Modifier,
@@ -196,21 +180,18 @@ private fun DeviceListItem(
 //    val deviceSupported by remember { mutableStateOf(device.name.equals("PENGUINO", true)) }
     val deviceSupported = true
 
-    Surface(
-        modifier = modifier
-            .clickable(
-                enabled = deviceSupported,
-                onClick = { onClick(device) }
-            ),
-        shape = MaterialTheme.shapes.small,
-        shadowElevation = 4.dp
+    Card(
+        modifier = Mods.verticalListItem.then(modifier),
+        enabled = deviceSupported,
+        onClick = { onClick(device) }
+
     ) {
         Column(
-            modifier = modifier
-                .padding(
-                    horizontal = 36.dp,
-                    vertical = 24.dp
-                )
+            modifier = Mods.verticalListItemContent
+//                .padding(
+//                    horizontal = 36.dp,
+//                    vertical = 24.dp
+//                )
         ) {
             Text(
                 style = MaterialTheme.typography.titleMedium,
@@ -228,13 +209,9 @@ private fun DeviceListItem(
 @Preview
 @Composable
 fun ScanPagePreview() {
-    val testDevices = remember { mutableStateListOf<DeviceInfo>(
-        DeviceInfo("Dev 1", "Addr 1"),
-        DeviceInfo("Dev 2", "Addr 2"),
-    ) }
     PenguinoTheme {
         Surface {
-//            DeviceList(devices = testDevices, onItemClick = {})
+            ScanPagePreview()
         }
     }
 }

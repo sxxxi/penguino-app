@@ -3,7 +3,6 @@ package com.penguino.data.network.models
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-// This will become obsolete once I learn paging >:)
 class FocusedList<T>(window: Int = 5): Collection<T> {
 	override val size: Int
 		get() {
@@ -30,7 +29,6 @@ class FocusedList<T>(window: Int = 5): Collection<T> {
 
 	fun getChunk(): List<T> {
 		updatePtr()	// Make sure ptr is fresh and crispy
-
 		return if(ptr < 0) {
 			listOf()
 		} else {

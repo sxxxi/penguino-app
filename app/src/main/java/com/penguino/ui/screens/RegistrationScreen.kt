@@ -3,63 +3,49 @@ package com.penguino.ui.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.text.isDigitsOnly
 import com.penguino.data.local.models.RegistrationInfoEntity
-import com.penguino.models.PetInfo
+import com.penguino.ui.components.SimpleTopBar
 import com.penguino.ui.components.TextInput
 import com.penguino.ui.components.TextInputWithSuggestion
-import com.penguino.ui.viewmodels.RegistrationViewModel
+import com.penguino.ui.theme.PenguinoTheme
 import com.penguino.ui.viewmodels.RegistrationViewModel.RegistrationUiState
-
-private const val TAG = "RegistrationPage"
 
 @Composable
 fun RegistrationScreen(
 	modifier: Modifier = Modifier,
-	regVM: RegistrationViewModel,
-	uiState: RegistrationUiState,
-	onNavigateToRemoteControl: (PetInfo) -> Unit = {}
+	uiState: RegistrationUiState = RegistrationUiState(regInfo = RegistrationInfoEntity()),
+	onInputChange: ((RegistrationInfoEntity) -> RegistrationInfoEntity) -> Unit = {},
+	onRegInfoPost: () -> Unit = {},
+	onNavigateToHome: () -> Unit = {},
+	onBack: () -> Unit = {}
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .padding(8.dp),
-    ) {
-        Text(
-            modifier = modifier.padding(horizontal = 12.dp, vertical = 32.dp),
-            text = "Register",
-            style = MaterialTheme.typography.headlineLarge,
-        )
-
-        TextFields(
-            modifier = modifier
-                .align(Alignment.CenterHorizontally),
-            updater = regVM::updateRegInfo,
-            suggestions = uiState.suggestions,
-            regInfo = uiState.regInfo
-        )
-
-        Button(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(vertical = 12.dp),
-            onClick = {
-                regVM.postRegInfo()
-                onNavigateToRemoteControl(uiState.regInfo.toModel())
-            }) {
-            Text(text = "Let's go!")
-        }
-    }
+	Column(
+		modifier = modifier.fillMaxSize(),
+		horizontalAlignment = Alignment.CenterHorizontally
+	) {
+		SimpleTopBar(title = "Enter info", onNavBack = onBack)
+		TextFields(
+			modifier = modifier
+				.align(Alignment.CenterHorizontally),
+			suggestions = uiState.suggestions,
+			regInfo = uiState.regInfo,
+			regInfoUpdate = onInputChange,
+			onPostRequest = {
+				onRegInfoPost()
+				onNavigateToHome()
+			}
+		)
+	}
 }
 
 @Composable
@@ -67,41 +53,61 @@ private fun TextFields(
 	modifier: Modifier = Modifier,
 	suggestions: List<String>,
 	regInfo: RegistrationInfoEntity,
-	updater: ((RegistrationInfoEntity) -> Unit) -> Unit
+	regInfoUpdate: ((RegistrationInfoEntity) -> RegistrationInfoEntity) -> Unit,
+	onPostRequest: () -> Unit = {}
 ) {
-    Column (
-        modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        // Get suggested names and store in a mutable state here :)
-        TextInputWithSuggestion(
-            value = regInfo.petName,
-            stateUpdater = updater,
-            label = "Name",
-            suggestions = suggestions
-        ) { newValue, updatable ->
-            updatable.petName = newValue
-        }
+	Column(
+		modifier = modifier.fillMaxSize(),
+		horizontalAlignment = Alignment.CenterHorizontally,
+		verticalArrangement = Arrangement.Center
+	) {
+		TextInputWithSuggestion(
+			value = regInfo.petName,
+			suggestions = suggestions,
+			onValueChange = { name ->
+				regInfoUpdate { regInfo ->
+					regInfo.copy(petName = name)
+				}
+			}
+		) { Text(text = "Name") }
 
-        TextInput(
-            value = regInfo.personality,
-            updater = updater, 
-            label = { Text("Personality") }
-        ) { newVal, updatable ->
-            updatable.personality = newVal
-        }
+		TextInput(
+			value = regInfo.personality,
+			onValueChange = { newVal ->
+				regInfoUpdate { regInfo ->
+					regInfo.copy(personality = newVal)
+				}
+			}
+		) { Text(text = "Personality") }
 
-        TextInput(
-            value = regInfo.age.toString(),
-            updater = updater,
-            keyboardType = KeyboardType.Number,
-            label = { Text("Age") }
-        ) { newVal, updatable ->
-            updatable.age = if (newVal.isNotEmpty() && newVal.isDigitsOnly())
-                newVal.toInt()
-            else 0
-        }
-    }
+		TextInput(
+			value = regInfo.age.toString(),
+			keyboardType = KeyboardType.Number,
+			onValueChange = { newInt ->
+				regInfoUpdate { regInfo ->
+					newInt.toIntOrNull()?.let {
+						regInfo.copy(age = it)
+					} ?: regInfo
+				}
+			}
+		) { Text(text = "Age") }
+
+		Button(
+			modifier = modifier.padding(vertical = 8.dp, horizontal = 16.dp),
+			onClick = onPostRequest
+		) {
+			Text(text = "Register")
+		}
+	}
+}
+
+@Preview
+@Composable
+fun PreviewRegistrationScreen() {
+	PenguinoTheme {
+		Surface {
+			RegistrationScreen()
+		}
+	}
 }
 

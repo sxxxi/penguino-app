@@ -1,18 +1,13 @@
 package com.penguino.data.local
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Service
 import android.bluetooth.*
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Binder
 import android.os.IBinder
 import android.util.Log
-import androidx.core.app.ActivityCompat
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
 import java.util.*
 
@@ -20,21 +15,26 @@ private const val TAG = "BluetoothLeService"
 @SuppressLint("MissingPermission")
 class BleServiceDataSource : Service() {
     private var btAdapter: BluetoothAdapter? = null
-    private val _connectionState= MutableStateFlow(STATE_DISCONNECTED)
     private var bluetoothGatt: BluetoothGatt? = null
 
     private val gattCallback: BluetoothGattCallback = object: BluetoothGattCallback() {
         override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
             super.onConnectionStateChange(gatt, status, newState)
+            Log.d("BAR", newState.toString())
+
+            broadcastUpdate(
+                when(newState) {
+                    BluetoothProfile.STATE_CONNECTING -> ACTION_GATT_CONNECTING
+                    BluetoothProfile.STATE_CONNECTED -> ACTION_GATT_CONNECTED
+                    BluetoothProfile.STATE_DISCONNECTING -> ACTION_GATT_DISCONNECTING
+                    BluetoothProfile.STATE_DISCONNECTED -> ACTION_GATT_DISCONNECTED
+                    else -> ACTION_GATT_DISCONNECTED        // TODO: This might throw an error :/
+                }
+            )
+
             when (newState) {
                 BluetoothProfile.STATE_CONNECTED -> {
-                    broadcastUpdate(ACTION_GATT_CONNECTED)
-                    _connectionState.value = STATE_CONNECTED
                     bluetoothGatt?.discoverServices()
-                }
-                BluetoothProfile.STATE_DISCONNECTED -> {
-                    broadcastUpdate(ACTION_GATT_DISCONNECTED)
-                    _connectionState.value = STATE_DISCONNECTED
                 }
             }
         }
@@ -116,14 +116,10 @@ class BleServiceDataSource : Service() {
         return true
     }
 
-    fun getGattServices(): List<BluetoothGattService?>? {
-        return bluetoothGatt?.services
-    }
-
-    suspend fun writeToPengu(control: String): Unit = withContext(Dispatchers.IO) {
-        val UUID_CONST = "-0000-1000-8000-00805f9b34fb"
-        val chars = bluetoothGatt?.getService(UUID.fromString("0000aaa0$UUID_CONST"))
-            ?.getCharacteristic(UUID.fromString("0000aaaa$UUID_CONST"))
+    suspend fun writeToPenguino(control: String): Unit = withContext(Dispatchers.IO) {
+        val uuidConst = "-0000-1000-8000-00805f9b34fb"
+        val chars = bluetoothGatt?.getService(UUID.fromString("0000aaa0$uuidConst"))
+            ?.getCharacteristic(UUID.fromString("0000aaaa$uuidConst"))
 
         // Write characteristic here. wish me luck
         chars?.let {
@@ -143,12 +139,18 @@ class BleServiceDataSource : Service() {
     companion object {
         const val ACTION_GATT_CONNECTED =
             "sheridan.bautisse.ble.BluetoothLeService.ACTION_GATT_CONNECTED"
+        const val ACTION_GATT_CONNECTING =
+            "sheridan.bautisse.ble.BluetoothLeService.ACTION_GATT_CONNECTING"
+        const val ACTION_GATT_DISCONNECTING =
+            "sheridan.bautisse.ble.BluetoothLeService.ACTION_GATT_DISCONNECTING"
         const val ACTION_GATT_DISCONNECTED =
             "sheridan.bautisse.ble.BluetoothLeService.ACTION_GATT_DISCONNECTED"
         const val ACTION_GATT_SERVICES_DISCOVERED =
             "sheridan.bautisse.ble.BluetoothLeService.ACTION_GATT_SERVICES_DISCOVERED"
 
-        const val STATE_DISCONNECTED = 0
-        private const val STATE_CONNECTED = 2
+        const val STATE_DISCONNECTED = BluetoothProfile.STATE_DISCONNECTED
+        const val STATE_DISCONNECTING = BluetoothProfile.STATE_DISCONNECTING
+        const val STATE_CONNECTING = BluetoothProfile.STATE_CONNECTING
+        const val STATE_CONNECTED = BluetoothProfile.STATE_CONNECTED
     }
 }

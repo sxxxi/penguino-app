@@ -1,7 +1,7 @@
 package com.penguino.data.repositories.registration
 
 import com.penguino.data.local.models.RegistrationInfoEntity
-import com.penguino.models.PetInfo
+import com.penguino.data.models.PetInfo
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Callback
 

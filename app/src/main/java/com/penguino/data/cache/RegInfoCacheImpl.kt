@@ -1,4 +1,4 @@
-package com.penguino.data.local
+package com.penguino.data.cache
 
 import android.content.SharedPreferences
 import com.penguino.data.local.models.RegistrationInfoEntity

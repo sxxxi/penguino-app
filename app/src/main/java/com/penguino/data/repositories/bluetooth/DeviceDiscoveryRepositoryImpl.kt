@@ -48,9 +48,6 @@ class DeviceDiscoveryRepositoryImpl(
 				}
 			}
 		}
-		override fun onScanFailed(errorCode: Int) {
-			super.onScanFailed(errorCode)
-		}
 	}
 
 	override fun scanDevices(durationMillis: Long) {

@@ -1,17 +1,17 @@
 package com.penguino.ui.viewmodels
 
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.penguino.data.local.RegInfoCache
+import com.penguino.data.cache.RegInfoCache
 import com.penguino.data.local.models.RegistrationInfoEntity
 import com.penguino.data.repositories.registration.RegistrationRepositoryImpl
 import com.penguino.data.network.RegistrationNetworkDataSource
 import com.squareup.moshi.Moshi
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Retrofit
@@ -23,17 +23,18 @@ private const val TAG = "RegistrationVM"
 
 @HiltViewModel
 class RegistrationViewModel @Inject constructor(
-    retrofit: Retrofit,
-    private val moshi: Moshi,
-    private val regInfoCache: RegInfoCache,
-    private val regRepo: RegistrationRepositoryImpl
+	retrofit: Retrofit,
+	private val moshi: Moshi,
+	private val regInfoCache: RegInfoCache,
+	private val regRepo: RegistrationRepositoryImpl,
 ) : ViewModel() {
     private val petsApi = retrofit.create(RegistrationNetworkDataSource::class.java)
-    var uiState by mutableStateOf(
-		RegistrationUiState(
-        regInfo = regInfoCache.getRegInfo() ?: RegistrationInfoEntity()
+    private val _uiState = MutableStateFlow(
+        RegistrationUiState(
+            regInfo = regInfoCache.getRegInfo() ?: RegistrationInfoEntity()
+        )
     )
-	)
+    val uiState: StateFlow<RegistrationUiState> = _uiState
 
     init {
 //        getSuggestedNames()
@@ -44,11 +45,13 @@ class RegistrationViewModel @Inject constructor(
         val regInfo: RegistrationInfoEntity
     )
 
-    fun updateRegInfo(updateLambda: (RegistrationInfoEntity) -> Unit) {
-        val copy = uiState.regInfo.copy()
-        updateLambda(copy)
-        uiState = uiState.copy(regInfo = copy)
-        regInfoCache.saveRegInfo(copy)
+    fun updateRegInfo(updateLambda: (RegistrationInfoEntity) -> RegistrationInfoEntity) {
+        _uiState.update { uiState ->
+           updateLambda(uiState.regInfo).let { regInfo ->
+               regInfoCache.saveRegInfo(regInfo)
+               uiState.copy(regInfo = updateLambda(regInfo))
+           }
+        }
     }
 
     private fun getSuggestedNames() = viewModelScope.launch {
@@ -58,19 +61,32 @@ class RegistrationViewModel @Inject constructor(
                 response: Response<List<String>>
             ) {
                 if (response.isSuccessful) {
-                    uiState = uiState.copy(
-                        suggestions = response.body()?.toList() ?: listOf()
-                    )
-
+                    _uiState.update { uiState ->
+                       uiState.copy(suggestions = response.body()?.toList() ?: listOf())
+                    }
                 }
             }
 
             override fun onFailure(call: Call<List<String>>, t: Throwable) {}
         })
     }
-
+    fun postRegInfo(int: Int) {
+        viewModelScope.launch {
+            regRepo.saveDevice(
+                device = uiState.value.regInfo,
+                callback = object : Callback<String> {
+                    override fun onResponse(call: Call<String>, response: Response<String>) {
+                        if (response.isSuccessful) {
+                            regInfoCache.clearRegInfo()
+                        }
+                    }
+                    override fun onFailure(call: Call<String>, t: Throwable) {}
+                })
+            regInfoCache.clearRegInfo()
+        }
+    }
     fun postRegInfo() = viewModelScope.launch {
-        regRepo.saveDevice(device = uiState.regInfo, callback = object: Callback<String> {
+        regRepo.saveDevice(device = uiState.value.regInfo, callback = object: Callback<String> {
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 if (response.isSuccessful) {
                     Log.d("FOO", response.body() ?: "Ok")
@@ -82,7 +98,6 @@ class RegistrationViewModel @Inject constructor(
         })
         regInfoCache.clearRegInfo()
     }
-
 }
 
 

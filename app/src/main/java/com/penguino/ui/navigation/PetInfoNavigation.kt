@@ -1,12 +1,13 @@
 package com.penguino.ui.navigation
 
+import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.penguino.data.local.models.RegistrationInfoEntity
-import com.penguino.models.PetInfo
+import com.penguino.data.models.PetInfo
 import com.penguino.ui.screens.PetInfoScreen
 import com.penguino.ui.viewmodels.PetInfoViewModel
 import com.squareup.moshi.Moshi
@@ -34,8 +35,9 @@ fun NavGraphBuilder.petInfo(
 ) {
 	composable(route = Screen.PetInfoScreen.routeWithArgs, arguments = Screen.PetInfoScreen.arguments) {
 		val viewModel: PetInfoViewModel = hiltViewModel()
+		val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 		PetInfoScreen(
-			uiState = viewModel.uiState,
+			uiState = uiState,
 			onDeleteClicked = viewModel::deleteRegInfo,
 			onNavigateToHome = onNavigateToHome,
 			onNavigateToRc = onNavigateToRc,
@@ -49,6 +51,8 @@ fun NavController.navigateToPetInfo(registrationInfoEntity: PetInfo) {
 		.add(KotlinJsonAdapterFactory())
 		.build()
 		.adapter(PetInfo::class.java)
-	navigate("${Screen.PetInfoScreen.route}/${adapter.toJson(registrationInfoEntity)}")
+	navigate("${Screen.PetInfoScreen.route}/${adapter.toJson(registrationInfoEntity)}") {
+//		popUpTo(Screen.HomeScreen.route) {inclusive = true}
+	}
 
 }

@@ -5,7 +5,7 @@ import com.penguino.data.models.ChatMessage
 import com.penguino.data.network.ChatNetworkDataSource
 import com.penguino.data.network.models.ChatRequest
 import com.penguino.data.network.models.ChatResponse
-import com.penguino.data.network.models.FocusedList
+import com.penguino.utils.FocusedList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import retrofit2.Call

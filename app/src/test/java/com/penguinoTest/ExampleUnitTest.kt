@@ -1,4 +1,4 @@
-package com.penguino
+package com.penguinoTest
 
 import org.junit.Test
 

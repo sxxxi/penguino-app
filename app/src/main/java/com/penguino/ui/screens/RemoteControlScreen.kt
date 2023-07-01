@@ -3,6 +3,7 @@ package com.penguino.ui.screens
 import android.bluetooth.BluetoothProfile
 import android.content.Intent
 import android.speech.RecognizerIntent
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -44,15 +45,20 @@ fun RemoteControlScreen(
     btMessageSend: (String) -> Unit = {},
     chatFunc: (String) -> Unit = {},
 ) {
-    ObserveLifecycle(lifecycleOwner = LocalLifecycleOwner.current, observer = { _, event ->
-        when(event) {
-            Lifecycle.Event.ON_CREATE -> btServiceBind()
-            Lifecycle.Event.ON_RESUME -> btConnect()
-            Lifecycle.Event.ON_PAUSE -> btDisconnect()
-            Lifecycle.Event.ON_DESTROY -> btServiceUnbind()
-            else -> {}
+    ObserveLifecycle(lifecycleOwner = LocalLifecycleOwner.current,
+        observer = { _, event ->
+            when(event) {
+                Lifecycle.Event.ON_CREATE -> btServiceBind()
+                Lifecycle.Event.ON_RESUME -> btConnect()
+                Lifecycle.Event.ON_PAUSE -> btDisconnect()
+                Lifecycle.Event.ON_DESTROY -> btServiceUnbind()
+                else -> {}
+            }
+        },
+        final = {
+            btServiceUnbind()
         }
-    })
+    )
 
     val speechRecognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
         .putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)

@@ -1,6 +1,6 @@
-package com.penguino.unit.models.chat
+package com.penguinoTest.unit.com.penguino.utils
 
-import com.penguino.data.network.models.FocusedList
+import com.penguino.utils.FocusedList
 import org.junit.Test
 
 class FocusedListTest {

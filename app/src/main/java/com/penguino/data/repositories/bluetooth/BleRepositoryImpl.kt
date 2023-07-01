@@ -21,37 +21,39 @@ class BleRepositoryImpl @Inject constructor(
 	private val context: Context,
 	private val blAdapter: BluetoothAdapter,
 ): BleRepository {
-    private var bleServiceDataSource = MutableStateFlow<BleServiceDataSource?>(null)
+    private var bleServiceDataSource: BleServiceDataSource? = null
     private val statusReceiver = BleStatusReceiver()
     override val connectionState = statusReceiver.connectionState
 
     // Callbacks for binding BluetoothLeService
     private val bluetoothServiceConn = object : ServiceConnection {
-        private val TAG = "BluetoothServiceConnection"
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-			Log.i(TAG, "BluetoothLeService Bound")
-            bleServiceDataSource.value = (service as BleServiceDataSource.ServiceBinder).getService()
-            bleServiceDataSource.value?.let { bluetooth ->
+
+            Log.i(TAG, "Registering broadcast receiver")
+            context.registerReceiver(statusReceiver, IntentFilter().apply {
+                addAction(BleServiceDataSource.ACTION_GATT_CONNECTING)
+                addAction(BleServiceDataSource.ACTION_GATT_CONNECTED)
+                addAction(BleServiceDataSource.ACTION_GATT_DISCONNECTING)
+                addAction(BleServiceDataSource.ACTION_GATT_DISCONNECTED)
+            })
+
+            bleServiceDataSource = (service as BleServiceDataSource.ServiceBinder).getService()
+            bleServiceDataSource?.let { bluetooth ->
                 // Connect here and do stuff here on service created
                 if (!bluetooth.initialize()) {
 					Log.e(TAG, "Unable to initialize service")
+                } else {
+                    Log.i(TAG, "BLE service bound")
                 }
-                Log.d("BAR", "SERVICE BOUND")
             }
         }
 
+        // TODO: LORD, WHY IS THIS NOT GETTING CALLED!?
         override fun onServiceDisconnected(name: ComponentName?) {
-			Log.d(TAG, "Service Unbound")
+			Log.i(TAG, "Unbinding status receiver")
+            context.unregisterReceiver(statusReceiver)
+            Log.i(TAG, "Service Unbound")
         }
-    }
-
-    init {
-    	context.registerReceiver(statusReceiver, IntentFilter().apply {
-            addAction(BleServiceDataSource.ACTION_GATT_CONNECTING)
-            addAction(BleServiceDataSource.ACTION_GATT_CONNECTED)
-            addAction(BleServiceDataSource.ACTION_GATT_DISCONNECTING)
-            addAction(BleServiceDataSource.ACTION_GATT_DISCONNECTED)
-        })
     }
 
     override fun bindService() {
@@ -69,19 +71,22 @@ class BleRepositoryImpl @Inject constructor(
     }
 
     override fun unbindService() {
-        context.unbindService(bluetoothServiceConn)
+        Intent(context, BleServiceDataSource::class.java).also {
+            context.stopService(it)
+            context.unbindService(bluetoothServiceConn)
+        }
     }
 
     override suspend fun sendMessage(message: String): Unit = withContext(Dispatchers.IO) {
-        bleServiceDataSource.value?.writeToPenguino(message)
+        bleServiceDataSource?.writeToPenguino(message)
     }
 
     override fun connect(address: String): Boolean {
-        return bleServiceDataSource.value?.connect(address) ?: false
+        return bleServiceDataSource?.connect(address) ?: false
     }
 
     override fun disconnect() {
-        bleServiceDataSource.value?.disconnect()
+        bleServiceDataSource?.disconnect()
     }
 
     override fun btEnabled(): Boolean {
@@ -89,6 +94,6 @@ class BleRepositoryImpl @Inject constructor(
     }
 
     companion object {
-        const val TAG = "BleRepository"
+        private const val TAG = "BleRepository"
     }
 }

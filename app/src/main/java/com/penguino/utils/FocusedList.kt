@@ -1,4 +1,4 @@
-package com.penguino.data.network.models
+package com.penguino.utils
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +27,9 @@ class FocusedList<T>(window: Int = 5): Collection<T> {
 		else history.value.size - windowSize
 	}
 
+	/**
+	 * Retrieve up to the size of `window` from the end of the list
+	 */
 	fun getChunk(): List<T> {
 		updatePtr()	// Make sure ptr is fresh and crispy
 		return if(ptr < 0) {

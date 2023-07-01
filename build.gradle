@@ -6,6 +6,12 @@ buildscript {
         okhttp_version = '4.10.0'
         nav_version = '2.5.3'
         room_version = '2.5.1'
+        androidXTestVersion0 = '1.5.0'
+        testRunnerVersion = '1.5.2'
+        testRulesVersion = '1.5.0'
+        testJunitVersion = '1.1.5'
+        truthVersion = '1.5.0'
+        espressoVersion = '3.5.1'
     }
 }
 
@@ -14,6 +20,5 @@ plugins {
     id 'com.android.library' version '8.0.1' apply false
     id 'org.jetbrains.kotlin.android' version '1.8.20' apply false
     id 'com.google.dagger.hilt.android' version "$hilt_version" apply false
-//    id 'org.jetbrains.kotlin.jvm' version '1.8.20'
-    id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.20'
+    id 'org.jetbrains.kotlin.plugin.serialization' version '1.8.20' apply false
 }

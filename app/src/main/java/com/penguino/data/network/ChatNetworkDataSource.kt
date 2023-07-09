@@ -1,5 +1,6 @@
 package com.penguino.data.network
 
+import com.penguino.BuildConfig
 import com.penguino.data.network.models.ChatRequest
 import com.penguino.data.network.models.ChatResponse
 import com.penguino.data.network.models.ModelListResponse
@@ -9,7 +10,7 @@ import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.POST
 
-private const val API_KEY = ""
+private const val API_KEY = BuildConfig.GPT_KEY
 
 interface ChatNetworkDataSource {
 	@GET("/v1/models")

@@ -30,6 +30,8 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+
+        buildConfigField "String", "GPT_KEY", '"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"';
     }
 
     buildTypes {
@@ -53,6 +55,7 @@ android {
     buildFeatures {
         viewBinding true
         compose true
+        buildConfig true
     }
     composeOptions {
         kotlinCompilerExtensionVersion '1.4.6'

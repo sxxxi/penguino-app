@@ -20,6 +20,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -45,12 +49,30 @@ fun RemoteControlScreen(
     btMessageSend: (String) -> Unit = {},
     chatFunc: (String) -> Unit = {},
 ) {
+    /**
+     * Use this variable to tell the screen when not to disconnect to the device when an
+     * action requires to pause. Check the body of ON_RESUME and ON_PAUSE inside the
+     * ObserveLifecycle composable
+     */
+    var intentionalPause by rememberSaveable {
+        mutableStateOf(false)
+    }
+
     ObserveLifecycle(lifecycleOwner = LocalLifecycleOwner.current,
         observer = { _, event ->
             when(event) {
                 Lifecycle.Event.ON_CREATE -> btServiceBind()
-                Lifecycle.Event.ON_RESUME -> btConnect()
-                Lifecycle.Event.ON_PAUSE -> btDisconnect()
+                Lifecycle.Event.ON_RESUME -> {
+                    if (!intentionalPause) {
+                        btConnect()
+                    }
+                    intentionalPause = false
+                }
+                Lifecycle.Event.ON_PAUSE -> {
+                    if (!intentionalPause) {
+                        btDisconnect()
+                    }
+                }
                 Lifecycle.Event.ON_DESTROY -> btServiceUnbind()
                 else -> {}
             }
@@ -73,6 +95,15 @@ fun RemoteControlScreen(
         })
 
     when(btConnectionState) {
+        BluetoothProfile.STATE_CONNECTING -> {
+            Column(
+                Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Loader(text = "Connecting")
+            }
+        }
         BleServiceDataSource.STATE_CONNECTED -> {
             Column(modifier.fillMaxSize()) {
                 Column(
@@ -101,7 +132,10 @@ fun RemoteControlScreen(
                             Text(text = "Off")
                         }
                     }
-                    IconButton(onClick = { speechLaunch.launch(speechRecognizerIntent) }) {
+                    IconButton(onClick = {
+                        intentionalPause = true
+                        speechLaunch.launch(speechRecognizerIntent)
+                    }) {
                         Icon(
                             imageVector = Icons.Default.Star,
                             contentDescription = "Mic",
@@ -111,15 +145,7 @@ fun RemoteControlScreen(
                 }
             }
         }
-        BluetoothProfile.STATE_CONNECTING -> {
-            Column(
-                Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Loader(text = "Connecting")
-            }
-        }
+
         else -> {
             Column(
                 Modifier.fillMaxSize(),
@@ -127,7 +153,7 @@ fun RemoteControlScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(text = "Cannot connect to device")
-            } 
+            }
         }
     }
 

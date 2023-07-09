@@ -26,7 +26,7 @@ class RemoteControlViewModel @Inject constructor(
 	private val chatRepository: ChatRepository,
 ): ViewModel() {
 	private val args = RemoteControlArgs(savedStateHandle = savedStateHandle, moshi = moshi)
-	private val _uiState = MutableStateFlow(
+	private val _uiState = MutableStateFlow<RemoteControlUiState>(
 		RemoteControlUiState(
 			deviceInfo = args.regInfo ?: PetInfo()
 		)
@@ -49,7 +49,7 @@ class RemoteControlViewModel @Inject constructor(
 		}
 	}
 
-	data class RemoteControlUiState(
+	data class RemoteControlUiState (
 		val deviceInfo: PetInfo,
 		val latestResponse: ChatMessage? = null
 	)

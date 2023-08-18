@@ -51,8 +51,5 @@ fun NavController.navigateToPetInfo(registrationInfoEntity: PetInfo) {
 		.add(KotlinJsonAdapterFactory())
 		.build()
 		.adapter(PetInfo::class.java)
-	navigate("${Screen.PetInfoScreen.route}/${adapter.toJson(registrationInfoEntity)}") {
-//		popUpTo(Screen.HomeScreen.route) {inclusive = true}
-	}
-
+	navigate("${Screen.PetInfoScreen.route}/${adapter.toJson(registrationInfoEntity)}")
 }

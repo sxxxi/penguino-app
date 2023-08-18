@@ -21,7 +21,7 @@ fun NavGraphBuilder.registrationScreen(
 			onNavigateToHome = onNavigateToHome,
 			onBack = onBackPressed,
 			onInputChange = registrationViewModel::updateRegInfo,
-			onRegInfoPost = registrationViewModel::postRegInfo
+			onRegInfoPost = registrationViewModel::postRegInfo,
 		)
 	}
 }

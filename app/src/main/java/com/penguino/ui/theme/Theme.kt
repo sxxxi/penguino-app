@@ -17,26 +17,25 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = GreenDark500,
+    onPrimary = GreenDark50,
+    primaryContainer = GreenDark50,
+    onPrimaryContainer = GreenDark900,
+    secondary = GreenDark500,
+    secondaryContainer = GreenDark500,
+    onSecondaryContainer = GreenDark50
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40,
-
-
-    /* Other default colors to override */
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    /**/
+    background = Color.White,
+    onBackground = Color.Black,
+    primary = Green400,
+    onPrimary = Green50,
+    primaryContainer = Green50,
+    onPrimaryContainer = Green900,
+    secondary = Green500,
+    secondaryContainer = Green500,
+    onSecondaryContainer = Green50
 )
 
 @Composable
@@ -47,7 +46,7 @@ fun PenguinoTheme(
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+        dynamicColor -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }

@@ -76,8 +76,8 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'com.google.android.material:material:1.9.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.5.3'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.5.3'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.0'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.7.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
     implementation 'androidx.activity:activity-compose:1.7.2'
     implementation platform('androidx.compose:compose-bom:2022.10.00')
@@ -89,9 +89,6 @@ dependencies {
 
     // Lint
     lintChecks project(':app')
-
-    // Fragments
-    implementation "androidx.fragment:fragment-ktx:$fragment_version"
 
     // OKHttp
     implementation "com.squareup.okhttp3:okhttp:$okhttp_version"
@@ -122,11 +119,11 @@ dependencies {
 
     // Moshi
     implementation "com.squareup.moshi:moshi-kotlin:1.14.0"
-    implementation "com.squareup.retrofit2:converter-moshi:2.4.0"
+    implementation "com.squareup.retrofit2:converter-moshi:2.9.0"
 
     // Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.2.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 
     // Room
     implementation "androidx.room:room-runtime:$room_version"

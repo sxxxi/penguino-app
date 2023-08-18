@@ -3,7 +3,6 @@ package com.penguino.ui.screens
 import android.bluetooth.BluetoothProfile
 import android.content.Intent
 import android.speech.RecognizerIntent
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -32,130 +31,133 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import com.penguino.data.local.BleServiceDataSource
 import com.penguino.data.models.PetInfo
-import com.penguino.utils.ObserveLifecycle
 import com.penguino.ui.components.Loader
 import com.penguino.ui.theme.PenguinoTheme
 import com.penguino.ui.viewmodels.RemoteControlViewModel.RemoteControlUiState
+import com.penguino.utils.ObserveLifecycle
 
 @Composable
 fun RemoteControlScreen(
-    modifier: Modifier = Modifier,
-    uiState: RemoteControlUiState = RemoteControlUiState(PetInfo()),
-    btConnectionState: Int = BluetoothProfile.STATE_CONNECTED,
-    btServiceBind: () -> Unit = {},
-    btServiceUnbind: () -> Unit = {},
-    btConnect: () -> Unit = {},
-    btDisconnect: () -> Unit = {},
-    btMessageSend: (String) -> Unit = {},
-    chatFunc: (String) -> Unit = {},
+	modifier: Modifier = Modifier,
+	uiState: RemoteControlUiState = RemoteControlUiState(PetInfo()),
+	btConnectionState: Int = BluetoothProfile.STATE_CONNECTED,
+	btServiceBind: () -> Unit = {},
+	btServiceUnbind: () -> Unit = {},
+	btConnect: () -> Unit = {},
+	btDisconnect: () -> Unit = {},
+	btMessageSend: (String) -> Unit = {},
+	chatFunc: (String) -> Unit = {},
 ) {
-    /**
-     * Use this variable to tell the screen when not to disconnect to the device when an
-     * action requires to pause. Check the body of ON_RESUME and ON_PAUSE inside the
-     * ObserveLifecycle composable
-     */
-    var intentionalPause by rememberSaveable {
-        mutableStateOf(false)
-    }
+	/**
+	 * Use this variable to tell the screen when not to disconnect to the device when an
+	 * action requires to pause. Check the body of ON_RESUME and ON_PAUSE inside the
+	 * ObserveLifecycle composable
+	 */
+	var intentionalPause by rememberSaveable {
+		mutableStateOf(false)
+	}
 
-    ObserveLifecycle(lifecycleOwner = LocalLifecycleOwner.current,
-        observer = { _, event ->
-            when(event) {
-                Lifecycle.Event.ON_CREATE -> btServiceBind()
-                Lifecycle.Event.ON_RESUME -> {
-                    if (!intentionalPause) {
-                        btConnect()
-                    }
-                    intentionalPause = false
-                }
-                Lifecycle.Event.ON_PAUSE -> {
-                    if (!intentionalPause) {
-                        btDisconnect()
-                    }
-                }
-                Lifecycle.Event.ON_DESTROY -> btServiceUnbind()
-                else -> {}
-            }
-        },
-        final = {
-            btServiceUnbind()
-        }
-    )
+	ObserveLifecycle(lifecycleOwner = LocalLifecycleOwner.current,
+		observer = { _, event ->
+			when (event) {
+				Lifecycle.Event.ON_CREATE -> btServiceBind()
+				Lifecycle.Event.ON_RESUME -> {
+					if (!intentionalPause) {
+						btConnect()
+					}
+					intentionalPause = false
+				}
 
-    val speechRecognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
-        .putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-        .putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US")
+				Lifecycle.Event.ON_PAUSE -> {
+					if (!intentionalPause) {
+						btDisconnect()
+					}
+				}
 
-    val speechLaunch = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = {
-            it.data?.extras?.getStringArrayList(RecognizerIntent.EXTRA_RESULTS)?.first()?.let { input ->
-                chatFunc(input)
-            }
-        })
+				else -> {}
+			}
+		},
+		final = {
+			btServiceUnbind()
+		}
+	)
 
-    when(btConnectionState) {
-        BluetoothProfile.STATE_CONNECTING -> {
-            Column(
-                Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Loader(text = "Connecting")
-            }
-        }
-        BleServiceDataSource.STATE_CONNECTED -> {
-            Column(modifier.fillMaxSize()) {
-                Column(
-                    modifier = Modifier
+	val speechRecognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
+		.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+		.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US")
+
+	val speechLaunch = rememberLauncherForActivityResult(
+		contract = ActivityResultContracts.StartActivityForResult(),
+		onResult = {
+			it.data?.extras?.getStringArrayList(RecognizerIntent.EXTRA_RESULTS)?.first()
+				?.let { input ->
+					chatFunc(input)
+				}
+		})
+
+	when (btConnectionState) {
+		BluetoothProfile.STATE_CONNECTING -> {
+			Column(
+				Modifier.fillMaxSize(),
+				verticalArrangement = Arrangement.Center,
+				horizontalAlignment = Alignment.CenterHorizontally
+			) {
+				Loader(text = "Connecting")
+			}
+		}
+
+		BleServiceDataSource.STATE_CONNECTED -> {
+			Column(modifier.fillMaxSize()) {
+				Column(
+					modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    uiState.latestResponse?.let {
-                        Text(text = it.content, color = MaterialTheme.colorScheme.onBackground)
-                    }
-                }
+					verticalArrangement = Arrangement.Center,
+					horizontalAlignment = Alignment.CenterHorizontally
+				) {
+					uiState.latestResponse?.let {
+						Text(text = it.content, color = MaterialTheme.colorScheme.onBackground)
+					}
+				}
 
-                Column(
-                    modifier = Modifier
+				Column(
+					modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-                        Button(onClick = { btMessageSend("ON") }) {
-                            Text(text = "On")
-                        }
-                        Button(onClick = { btMessageSend("OFF") }) {
-                            Text(text = "Off")
-                        }
-                    }
-                    IconButton(onClick = {
-                        intentionalPause = true
-                        speechLaunch.launch(speechRecognizerIntent)
-                    }) {
-                        Icon(
-                            imageVector = Icons.Default.Star,
-                            contentDescription = "Mic",
-                            tint = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-                }
-            }
-        }
+					horizontalAlignment = Alignment.CenterHorizontally
+				) {
+					Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+						Button(onClick = { btMessageSend("ON") }) {
+							Text(text = "On")
+						}
+						Button(onClick = { btMessageSend("OFF") }) {
+							Text(text = "Off")
+						}
+					}
+					IconButton(onClick = {
+						intentionalPause = true
+						speechLaunch.launch(speechRecognizerIntent)
+					}) {
+						Icon(
+							imageVector = Icons.Default.Star,
+							contentDescription = "Mic",
+							tint = MaterialTheme.colorScheme.onBackground
+						)
+					}
+				}
+			}
+		}
 
-        else -> {
-            Column(
-                Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(text = "Cannot connect to device")
-            }
-        }
-    }
+		else -> {
+			Column(
+				Modifier.fillMaxSize(),
+				verticalArrangement = Arrangement.Center,
+				horizontalAlignment = Alignment.CenterHorizontally
+			) {
+				Text(text = "Cannot connect to device")
+			}
+		}
+	}
 
 
 }
@@ -163,8 +165,8 @@ fun RemoteControlScreen(
 @Preview
 @Composable
 fun PreviewRcScreen() {
-    PenguinoTheme {
-        RemoteControlScreen()
-    }
+	PenguinoTheme {
+		RemoteControlScreen()
+	}
 }
 

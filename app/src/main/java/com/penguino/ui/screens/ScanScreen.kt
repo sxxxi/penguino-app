@@ -30,188 +30,220 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
 import com.penguino.data.local.models.DeviceInfo
-import com.penguino.ui.components.Loader
-import com.penguino.ui.components.Mods
-import com.penguino.ui.components.SimpleIconButton
-import com.penguino.ui.components.SimpleTopBar
+import com.penguino.ui.components.ListComponent
+import com.penguino.ui.components.ListComponentHeader
 import com.penguino.ui.theme.PenguinoTheme
-import com.penguino.ui.viewmodels.ScanViewModel
 import com.penguino.ui.viewmodels.ScanViewModel.ScanUiState
+import com.penguino.utils.ObserveLifecycle
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-private const val TAG = "ScanPage"
-
 // TODO: EDIT SCREEN
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScanScreen (
-	modifier: Modifier = Modifier,
+fun ScanScreen(
 	uiState: ScanUiState = ScanUiState(),
 	onDeviceSelected: (device: DeviceInfo) -> Boolean = { false },
 	onScanButtonClicked: () -> Unit = {},
+	onScanStop: () -> Unit = {},
 	onNavigateToRegistration: () -> Unit = {},
 ) {
-    val scope = rememberCoroutineScope()
-    val devicesFound = uiState.devicesFound
-    val snackHost = remember { SnackbarHostState() }
+	val scope = rememberCoroutineScope()
+	val snackHost = remember { SnackbarHostState() }
+	val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(key1 = uiState.isError) {
-        if (uiState.isError) {
-            scope.launch {
-                snackHost.showSnackbar(
-                    message = uiState.errorMessage,
-                    duration = uiState.errorDuration
-                )
-            }
-        }
-    }
+	ObserveLifecycle(
+		lifecycleOwner = lifecycleOwner,
+		observer = { _, event ->
+			when (event) {
+				Lifecycle.Event.ON_START -> {
+					onScanButtonClicked()
+				}
 
-    // Only run once
-    LaunchedEffect(key1 = Unit) {
-        onScanButtonClicked()
-    }
+				Lifecycle.Event.ON_PAUSE, Lifecycle.Event.ON_STOP -> {
+					onScanStop()
+				}
 
-    Scaffold(
-        topBar = {
-            SimpleTopBar(
-                title = "Select device",
-                actions = {
-                    SimpleIconButton(
-                        iconVector = Icons.Default.Refresh,
-                        description = "Rescan",
-                        enabled = !uiState.scanning,
-                        onClick = onScanButtonClicked
-                    )
-                }
-            )
-        },
-        snackbarHost = {
-            SnackbarHost(hostState = snackHost)
-        }
-    ) { pad ->
-        Column(modifier.padding(pad)) {
-            Crossfade(targetState = uiState) { uiState ->
-                // Scanning state
-                if (uiState.devicesFound.isEmpty() && uiState.scanning) {
-                    Loader("Searching for devices")
-                } else {
-                    Column(
-                        modifier = modifier
-                            .fillMaxSize()
-                    ) {
-                        // No devices found
-                        if (uiState.devicesFound.isEmpty()) {
-                            Column(
-                                modifier = modifier.fillMaxSize(),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(text = "No compatible devices found")
-                                TextButton(onClick = onScanButtonClicked) {
-                                    Text(text = "Refresh")
-                                }
-                            }
-                        } else {
-                            DeviceList(
-                                modifier = modifier.weight(1F),
-                                devices = devicesFound,
-                                onItemClick = {
-                                    scope.launch(Dispatchers.IO) {
-                                        if (onDeviceSelected(it)) {
-                                            scope.launch(Dispatchers.Main) {
-                                                onNavigateToRegistration()
-                                            }
-                                        }
-                                    }
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
+				else -> {}
+			}
+		}
+	)
+
+	LaunchedEffect(key1 = uiState.isError) {
+		if (uiState.isError) {
+			scope.launch {
+				snackHost.showSnackbar(
+					message = uiState.errorMessage,
+					duration = uiState.errorDuration
+				)
+			}
+		}
+	}
+
+	Scaffold(
+		snackbarHost = {
+			SnackbarHost(hostState = snackHost)
+		}
+	) { pad ->
+		Column(
+			modifier = Modifier
+				.fillMaxSize()
+				.padding(pad),
+			verticalArrangement = Arrangement.Center,
+			horizontalAlignment = Alignment.CenterHorizontally
+		) {
+			AnimatedContent(
+				targetState = uiState.scanning, label = "",
+				transitionSpec = { fadeIn(tween(500)) togetherWith fadeOut(tween(500)) }
+			) { scanning ->
+				if (scanning) {
+					Text(
+						text = "Scanning",
+						style = MaterialTheme.typography.displaySmall +
+								TextStyle(fontWeight = FontWeight.Bold)
+					)
+				} else {
+					DevicesDiscovered(
+						scope = scope,
+						devicesFound = uiState.devicesFound,
+						onRescan = onScanButtonClicked,
+						onDeviceSelected = {
+							scope.launch(Dispatchers.Default) {
+								if (onDeviceSelected(it)) {
+									launch(Dispatchers.Main) {
+										onNavigateToRegistration()
+									}
+								}
+							}
+						}
+					)
+				}
+			}
+		}
+	}
 }
 
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
-private fun DeviceList(
-	modifier: Modifier = Modifier,
-	devices: List<DeviceInfo>,
-	onItemClick: (device: DeviceInfo) -> Unit = { }
+fun DevicesDiscovered(
+	scanning: Boolean = false,
+	scope: CoroutineScope,
+	devicesFound: List<DeviceInfo>,
+	onDeviceSelected: (DeviceInfo) -> Unit,
+	onRescan: () -> Unit
 ) {
-    LazyColumn {
-        this.items(devices) { deviceInfo ->
-            DeviceListItem(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .animateItemPlacement(),
-                onClick = { onItemClick(deviceInfo) },
-                device = deviceInfo
-            )
-            Spacer(modifier = modifier.height(4.dp))
-        }
-    }
-}
+	var listVisible by remember { mutableStateOf(false) }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun DeviceListItem(
-	modifier: Modifier = Modifier,
-	device: DeviceInfo,
-	onClick: (DeviceInfo) -> Unit = {}
-) {
-//    val deviceSupported by remember { mutableStateOf(device.name.equals("PENGUINO", true)) }
-    val deviceSupported = true
+	LaunchedEffect(key1 = scanning) {
+		if (!scanning) {
+			scope.launch {
+				delay(800)
+				listVisible = true
+			}
+		}
+	}
 
-    Card(
-        modifier = Mods.verticalListItem.then(modifier),
-        enabled = deviceSupported,
-        onClick = { onClick(device) }
+	Column(
+		modifier = Modifier
+			.padding(16.dp),
+	) {
+		AnimatedVisibility(visible = listVisible) {
+			ListComponentHeader(
+				text = "Results",
+				actions = {
+					IconButton(
+						enabled = !scanning,
+						onClick = {
+							scope.launch {
+								listVisible = false
+								delay(500)
+								onRescan()
+							}
+						},
+					) {
+						Icon(imageVector = Icons.Default.Refresh, contentDescription = "Rescan")
+					}
+				}
+			)
+		}
+		AnimatedVisibility(
+			visible = listVisible,
+			enter = slideInVertically(tween(500)) + fadeIn(tween(500)),
+			exit = slideOutVertically(tween(500)) + fadeOut(tween(500))
+		) {
+			ListComponent(
+				listItems = devicesFound,
+				onListEmpty = {
+					Text(
+						text = "No devices found",
+						style = MaterialTheme.typography.titleLarge + TextStyle(
+							fontWeight = FontWeight.Bold,
+							color = MaterialTheme.colorScheme.surfaceVariant
+						)
+					)
+				}
+			) { dev ->
+				Surface(
+					modifier = Modifier
+						.animateItemPlacement()
+						.padding(4.dp)
+						.fillMaxWidth()
+						.clip(RoundedCornerShape(15.dp)),
+					onClick = { onDeviceSelected(dev) }
+				) {
+					Column(
+						modifier = Modifier
+							.padding(vertical = 24.dp, horizontal = 32.dp)
+					) {
+						Text(
+							text = dev.deviceName,
+							style = MaterialTheme.typography.titleLarge +
+									TextStyle(fontWeight = FontWeight.Bold)
+						)
+						Text(text = dev.address)
+					}
+				}
+			}
+		}
 
-    ) {
-        Column(
-            modifier = Mods.verticalListItemContent
-//                .padding(
-//                    horizontal = 36.dp,
-//                    vertical = 24.dp
-//                )
-        ) {
-            Text(
-                style = MaterialTheme.typography.titleMedium,
-                text = device.deviceName
-            )
-            Text(
-                text = device.address,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.secondary
-            )
-        }
-    }
+	}
 }
 
 @Preview
 @Composable
 fun ScanPagePreview() {
-    PenguinoTheme {
-        Surface {
-            ScanPagePreview()
-        }
-    }
+	PenguinoTheme {
+		Surface {
+			ScanScreen(
+				uiState = ScanUiState(
+					scanning = false,
+					devicesFound = listOf(
+						DeviceInfo(
+							deviceName = "Mayonaise",
+							address = "I smell your bones"
+						)
+					)
+				)
+			)
+		}
+	}
 }

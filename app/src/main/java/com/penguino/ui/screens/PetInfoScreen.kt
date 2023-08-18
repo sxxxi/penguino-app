@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,16 +31,12 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.penguino.data.local.models.DeviceInfo
-import com.penguino.data.local.models.RegistrationInfoEntity
 import com.penguino.data.models.PetInfo
 import com.penguino.ui.components.ConfirmationAlert
 import com.penguino.ui.components.CustomTopBar
 import com.penguino.ui.components.MenuButton
 import com.penguino.ui.components.TitledText
 import com.penguino.ui.theme.PenguinoTheme
-import com.penguino.ui.viewmodels.PetInfoViewModel
 import com.penguino.ui.viewmodels.PetInfoViewModel.PetInfoUiState
 
 @Composable
@@ -62,7 +57,6 @@ fun PetInfoScreen(
 			.background(MaterialTheme.colorScheme.background)
 	) {
 		PetInfoHeader(
-//			image = null,
 			petName = petInfo.name,
 			onBackPressed = onBackPressed,
 			headerButtons = {
@@ -152,12 +146,11 @@ private fun PetInfoHeader(
 				.fillMaxWidth(),
 			horizontalAlignment = Alignment.CenterHorizontally
 		) {
-			PetPfp(
+			PetPic(
 				modifier = Modifier
 					.width(200.dp)
 					.clip(RoundedCornerShape(100))
 					.border(2.dp, MaterialTheme.colorScheme.onBackground, RoundedCornerShape(100)),
-				imageBitmap = image
 			)
 			Spacer(modifier = Modifier.padding(10.dp))
 			Text(
@@ -191,20 +184,6 @@ private fun PetInfoSection(
 			title = "Address",
 			text = petInfo.address
 		)
-		Row {
-			TitledText(
-				modifier = petInfoSectionTextModifier,
-				title = "Personality",
-				text = petInfo.personality
-			)
-			Spacer(modifier = Modifier.padding(4.dp))
-			TitledText(
-				modifier = petInfoSectionTextModifier,
-				title = "Age",
-				text = petInfo.age.toString()
-			)
-
-		}
 	}
 	Button(
 		modifier = Modifier

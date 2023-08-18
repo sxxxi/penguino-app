@@ -2,4 +2,4 @@
 The controller for our hardware application utilizing Bluetooth Low Energy to enable remote communication and OKHttp to communicate with our web application.
 
 ## Demo
-![](https://github.com/sxxxi/penguino-app/blob/main/repo/media/demo.gif)
+<img src="https://github.com/sxxxi/penguino-app/blob/main/repo/media/demo.gif" width="250" />

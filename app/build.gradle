@@ -4,12 +4,13 @@ plugins {
     id 'kotlin-kapt'
     id 'com.google.dagger.hilt.android'
     id 'org.jetbrains.kotlin.plugin.serialization'
+    id 'com.google.protobuf'
 }
 
 android {
     namespace 'com.penguino'
     testNamespace 'com.penguinoTest'
-    compileSdk 33
+    compileSdk 34
 
     useLibrary 'android.test.runner'
     useLibrary 'android.test.base'
@@ -22,7 +23,7 @@ android {
     defaultConfig {
         applicationId "com.penguino"
         minSdk 33
-        targetSdk 33
+        targetSdk 34
         versionCode 1
         versionName "1.0"
 
@@ -136,6 +137,11 @@ dependencies {
     // Preference DataStore
     implementation "androidx.datastore:datastore-preferences:1.0.0"
 
+    // Protobuf
+    implementation "androidx.datastore:datastore:1.0.0"
+    implementation 'com.google.protobuf:protobuf-javalite:3.23.4'
+    implementation 'com.google.protobuf:protobuf-kotlin-lite:3.23.4'
+
     // Testing
     // Core library
     androidTestImplementation "androidx.test:core:$androidXTestVersion0"
@@ -170,4 +176,24 @@ dependencies {
 
 kapt {
     correctErrorTypes true
+}
+
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.23.4'
+    }
+    generateProtoTasks {
+        all().each { task ->
+            task.builtins {
+                java {
+                    option 'lite'
+                }
+                kotlin {
+                    option 'lite'
+                }
+            }
+
+        }
+    }
 }

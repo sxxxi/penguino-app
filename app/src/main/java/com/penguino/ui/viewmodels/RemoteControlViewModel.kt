@@ -26,7 +26,7 @@ class RemoteControlViewModel @Inject constructor(
 	private val chatRepository: ChatRepository,
 ): ViewModel() {
 	private val args = RemoteControlArgs(savedStateHandle = savedStateHandle, moshi = moshi)
-	private val _uiState = MutableStateFlow<RemoteControlUiState>(
+	private val _uiState = MutableStateFlow(
 		RemoteControlUiState(
 			deviceInfo = args.regInfo ?: PetInfo()
 		)
@@ -43,25 +43,24 @@ class RemoteControlViewModel @Inject constructor(
 			}
 
 		}
-
 		viewModelScope.launch {
-			chatRepository.setSystemMessage("You are a super helpful assistant. Your responses must be in the shortest form")
+			chatRepository.setSystemMessage("You are a super helpful assistant. Your responses " +
+					"must be in the shortest form")
 		}
 	}
 
-	data class RemoteControlUiState (
-		val deviceInfo: PetInfo,
-		val latestResponse: ChatMessage? = null
-	)
-
 	fun bindService() = btRepository.bindService()
+
 	fun unbindService() = btRepository.unbindService()
+
 	fun connect() {
 		viewModelScope.launch(Dispatchers.IO) {
 			btRepository.connect(uiState.value.deviceInfo.address)
 		}
 	}
+
 	fun disconnect() = btRepository.disconnect()
+
 	fun sendMessage(msg: String) {
 		viewModelScope.launch {
 			btRepository.sendMessage(msg)
@@ -71,4 +70,9 @@ class RemoteControlViewModel @Inject constructor(
 	fun chat(message: String) {
 		chatRepository.chat(message = message)
 	}
+
+	data class RemoteControlUiState (
+		val deviceInfo: PetInfo,
+		val latestResponse: ChatMessage? = null
+	)
 }

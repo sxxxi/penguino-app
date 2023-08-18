@@ -5,99 +5,84 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.penguino.data.cache.RegInfoCache
 import com.penguino.data.local.models.RegistrationInfoEntity
-import com.penguino.data.repositories.registration.RegistrationRepositoryImpl
 import com.penguino.data.network.RegistrationNetworkDataSource
-import com.squareup.moshi.Moshi
+import com.penguino.data.repositories.registration.RegistrationRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import retrofit2.Call
-import retrofit2.Retrofit
-import javax.inject.Inject
 import retrofit2.Callback
 import retrofit2.Response
-
-private const val TAG = "RegistrationVM"
+import retrofit2.Retrofit
+import javax.inject.Inject
 
 @HiltViewModel
 class RegistrationViewModel @Inject constructor(
 	retrofit: Retrofit,
-	private val moshi: Moshi,
 	private val regInfoCache: RegInfoCache,
 	private val regRepo: RegistrationRepositoryImpl,
 ) : ViewModel() {
-    private val petsApi = retrofit.create(RegistrationNetworkDataSource::class.java)
-    private val _uiState = MutableStateFlow(
-        RegistrationUiState(
-            regInfo = regInfoCache.getRegInfo() ?: RegistrationInfoEntity()
-        )
-    )
-    val uiState: StateFlow<RegistrationUiState> = _uiState
+	private val petsApi = retrofit.create(RegistrationNetworkDataSource::class.java)
+	private val _uiState = MutableStateFlow(
+		RegistrationUiState(
+			regInfo = regInfoCache.getRegInfo() ?: RegistrationInfoEntity()
+		)
+	)
+	val uiState: StateFlow<RegistrationUiState> = _uiState
 
-    init {
-//        getSuggestedNames()
-    }
+	fun updateRegInfo(updateLambda: (RegistrationInfoEntity) -> RegistrationInfoEntity) {
+		_uiState.update { uiState ->
+			updateLambda(uiState.regInfo).let { regInfo ->
+				regInfoCache.saveRegInfo(regInfo)
+				uiState.copy(regInfo = updateLambda(regInfo))
+			}
+		}
+	}
 
-    data class RegistrationUiState(
-        val suggestions: List<String> = listOf(),
-        val regInfo: RegistrationInfoEntity
-    )
+	private fun getSuggestedNames() = viewModelScope.launch {
+		petsApi.suggestNames(8).enqueue(object : Callback<List<String>> {
+			override fun onResponse(
+				call: Call<List<String>>,
+				response: Response<List<String>>
+			) {
+				if (response.isSuccessful) {
+					_uiState.update { uiState ->
+						uiState.copy(suggestions = response.body()?.toList() ?: listOf())
+					}
+				}
+			}
 
-    fun updateRegInfo(updateLambda: (RegistrationInfoEntity) -> RegistrationInfoEntity) {
-        _uiState.update { uiState ->
-           updateLambda(uiState.regInfo).let { regInfo ->
-               regInfoCache.saveRegInfo(regInfo)
-               uiState.copy(regInfo = updateLambda(regInfo))
-           }
-        }
-    }
+			override fun onFailure(call: Call<List<String>>, t: Throwable) {}
+		})
+	}
 
-    private fun getSuggestedNames() = viewModelScope.launch {
-        petsApi.suggestNames(8).enqueue(object: Callback<List<String>> {
-            override fun onResponse(
-                call: Call<List<String>>,
-                response: Response<List<String>>
-            ) {
-                if (response.isSuccessful) {
-                    _uiState.update { uiState ->
-                       uiState.copy(suggestions = response.body()?.toList() ?: listOf())
-                    }
-                }
-            }
+	fun postRegInfo() = viewModelScope.launch {
+		// Sanitize inputs
+		updateRegInfo { state ->
+			state.copy(
+				petName = state.petName.trim().replaceFirstChar { it.uppercase() }
+			)
+		}
 
-            override fun onFailure(call: Call<List<String>>, t: Throwable) {}
-        })
-    }
-    fun postRegInfo(int: Int) {
-        viewModelScope.launch {
-            regRepo.saveDevice(
-                device = uiState.value.regInfo,
-                callback = object : Callback<String> {
-                    override fun onResponse(call: Call<String>, response: Response<String>) {
-                        if (response.isSuccessful) {
-                            regInfoCache.clearRegInfo()
-                        }
-                    }
-                    override fun onFailure(call: Call<String>, t: Throwable) {}
-                })
-            regInfoCache.clearRegInfo()
-        }
-    }
-    fun postRegInfo() = viewModelScope.launch {
-        regRepo.saveDevice(device = uiState.value.regInfo, callback = object: Callback<String> {
-            override fun onResponse(call: Call<String>, response: Response<String>) {
-                if (response.isSuccessful) {
-                    Log.d("FOO", response.body() ?: "Ok")
-                    regInfoCache.clearRegInfo()
-                }
-            }
+		regRepo.saveDevice(device = uiState.value.regInfo, callback = object : Callback<String> {
+			override fun onResponse(call: Call<String>, response: Response<String>) {
+				if (response.isSuccessful) {
+					Log.d("FOO", response.body() ?: "Ok")
+					regInfoCache.clearRegInfo()
+				}
+			}
 
-            override fun onFailure(call: Call<String>, t: Throwable) {}
-        })
-        regInfoCache.clearRegInfo()
-    }
+			override fun onFailure(call: Call<String>, t: Throwable) {}
+		})
+		regInfoCache.clearRegInfo()
+	}
+
+	data class RegistrationUiState(
+		val suggestions: List<String> = listOf(),
+		val regInfo: RegistrationInfoEntity
+	)
 }
 
 
@@ -114,7 +99,7 @@ class RegistrationViewModel @Inject constructor(
 //        }
 //    }
 
-/**
+/*
  * Please don't use: _mutTest, test, and testUpdate.
  * This is only for experimenting with SavedStateHandle and
  * will be removed in the future.

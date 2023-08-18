@@ -29,15 +29,6 @@ class ScanViewModel @Inject constructor(
 	private var _uiState = MutableStateFlow(ScanUiState())
 	val uiState: StateFlow<ScanUiState> = _uiState
 
-	data class ScanUiState (
-		val bluetoothEnabled: Boolean = false,
-		val scanning: Boolean = false,
-		val devicesFound: List<DeviceInfo> = listOf(),
-		val isError: Boolean = false,
-		val errorMessage: String = "",
-		val errorDuration: SnackbarDuration = SnackbarDuration.Short
-	)
-
 	init {
 		viewModelScope.launch {
 			// <Structured concurrency>
@@ -56,7 +47,7 @@ class ScanViewModel @Inject constructor(
 
 	fun scanDevices() {
 		viewModelScope.launch {
-			btRepo.scanDevices(5000L)
+			btRepo.scanDevices(3000L)
 		}
 	}
 
@@ -94,4 +85,13 @@ class ScanViewModel @Inject constructor(
 		}
 		return true
 	}
+
+	data class ScanUiState (
+		val bluetoothEnabled: Boolean = false,
+		val scanning: Boolean = true,
+		val devicesFound: List<DeviceInfo> = listOf(),
+		val isError: Boolean = false,
+		val errorMessage: String = "",
+		val errorDuration: SnackbarDuration = SnackbarDuration.Short
+	)
 }

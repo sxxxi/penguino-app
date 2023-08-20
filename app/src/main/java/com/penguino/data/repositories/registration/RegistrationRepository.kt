@@ -1,18 +1,15 @@
 package com.penguino.data.repositories.registration
 
-import com.penguino.data.local.models.RegistrationInfoEntity
-import com.penguino.data.models.PetInfo
+import com.penguino.data.models.PetInformation
+import com.penguino.data.models.forms.PetRegistrationForm
 import kotlinx.coroutines.flow.Flow
-import retrofit2.Callback
 
 interface RegistrationRepository {
-	suspend fun getSavedDevices(): Flow<List<PetInfo>>
-	suspend fun saveDevice(
-		device: RegistrationInfoEntity,
-		callback: Callback<String>
-	)
-	suspend fun forgetDevice(device: PetInfo)
-
 	fun deviceExists(address: String): Boolean
+
+	suspend fun save(reg: PetRegistrationForm)
+	suspend fun getById(id: String): PetInformation?
+	suspend fun delete(id: String)
+	suspend fun getSaved(): Flow<List<PetInformation>>
 
 }

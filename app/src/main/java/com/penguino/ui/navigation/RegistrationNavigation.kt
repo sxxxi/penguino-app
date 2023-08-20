@@ -20,8 +20,9 @@ fun NavGraphBuilder.registrationScreen(
 			uiState = uiState,
 			onNavigateToHome = onNavigateToHome,
 			onBack = onBackPressed,
-			onInputChange = registrationViewModel::updateRegInfo,
-			onRegInfoPost = registrationViewModel::postRegInfo,
+			onInputChange = registrationViewModel::updateRegForm,
+			onSubmit = registrationViewModel::onFormSubmit,
+			onPfpChange = registrationViewModel::onPfpChange
 		)
 	}
 }

@@ -1,87 +1,61 @@
 package com.penguino.ui.viewmodels
 
-import android.util.Log
+import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.penguino.data.cache.RegInfoCache
+import com.penguino.data.cache.DeviceInfoCache
+import com.penguino.data.local.models.DeviceInfo
 import com.penguino.data.local.models.RegistrationInfoEntity
-import com.penguino.data.network.RegistrationNetworkDataSource
+import com.penguino.data.models.Image
+import com.penguino.data.models.forms.PetRegistrationForm
 import com.penguino.data.repositories.registration.RegistrationRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
 import javax.inject.Inject
 
 @HiltViewModel
 class RegistrationViewModel @Inject constructor(
-	retrofit: Retrofit,
-	private val regInfoCache: RegInfoCache,
+	deviceInfoCache: DeviceInfoCache,
 	private val regRepo: RegistrationRepositoryImpl,
 ) : ViewModel() {
-	private val petsApi = retrofit.create(RegistrationNetworkDataSource::class.java)
 	private val _uiState = MutableStateFlow(
 		RegistrationUiState(
-			regInfo = regInfoCache.getRegInfo() ?: RegistrationInfoEntity()
+			regInfo = RegistrationInfoEntity(),
+			regForm = PetRegistrationForm(
+				device = deviceInfoCache.getSelectedDevice() ?: DeviceInfo()
+			)
 		)
 	)
 	val uiState: StateFlow<RegistrationUiState> = _uiState
 
-	fun updateRegInfo(updateLambda: (RegistrationInfoEntity) -> RegistrationInfoEntity) {
+	fun onFormSubmit() {
+		viewModelScope.launch {
+			regRepo.save(uiState.value.regForm)
+		}
+	}
+
+	fun updateRegForm(updateLambda: (PetRegistrationForm) -> PetRegistrationForm) {
 		_uiState.update { uiState ->
-			updateLambda(uiState.regInfo).let { regInfo ->
-				regInfoCache.saveRegInfo(regInfo)
-				uiState.copy(regInfo = updateLambda(regInfo))
+			updateLambda(uiState.regForm).let { regForm ->
+				uiState.copy(regForm = updateLambda(regForm))
 			}
 		}
 	}
 
-	private fun getSuggestedNames() = viewModelScope.launch {
-		petsApi.suggestNames(8).enqueue(object : Callback<List<String>> {
-			override fun onResponse(
-				call: Call<List<String>>,
-				response: Response<List<String>>
-			) {
-				if (response.isSuccessful) {
-					_uiState.update { uiState ->
-						uiState.copy(suggestions = response.body()?.toList() ?: listOf())
-					}
-				}
-			}
-
-			override fun onFailure(call: Call<List<String>>, t: Throwable) {}
-		})
-	}
-
-	fun postRegInfo() = viewModelScope.launch {
-		// Sanitize inputs
-		updateRegInfo { state ->
-			state.copy(
-				petName = state.petName.trim().replaceFirstChar { it.uppercase() }
-			)
+	fun onPfpChange(pfp: Image?) {
+		_uiState.update { state ->
+			state.copy(regForm = state.regForm.copy(pfp = pfp))
 		}
-
-		regRepo.saveDevice(device = uiState.value.regInfo, callback = object : Callback<String> {
-			override fun onResponse(call: Call<String>, response: Response<String>) {
-				if (response.isSuccessful) {
-					Log.d("FOO", response.body() ?: "Ok")
-					regInfoCache.clearRegInfo()
-				}
-			}
-
-			override fun onFailure(call: Call<String>, t: Throwable) {}
-		})
-		regInfoCache.clearRegInfo()
 	}
 
 	data class RegistrationUiState(
 		val suggestions: List<String> = listOf(),
-		val regInfo: RegistrationInfoEntity
+		val regInfo: RegistrationInfoEntity,
+		val pfp: Bitmap? = null,
+		val regForm: PetRegistrationForm = PetRegistrationForm()
 	)
 }
 

@@ -19,11 +19,4 @@ sealed class Screen(
 			navArgument(rcDeviceArg) {type = NavType.StringType}
 		)
 	)
-	object PetInfoScreen: Screen(
-		route = "petInfo",
-		routeWithArgs = "petInfo/{$petInfoSelectedDeviceArg}",
-		arguments = listOf(
-			navArgument(petInfoSelectedDeviceArg) {type = NavType.StringType}
-		)
-	)
 }

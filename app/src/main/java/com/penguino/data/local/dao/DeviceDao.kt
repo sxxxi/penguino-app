@@ -12,6 +12,9 @@ abstract class DeviceDao {
 	@Query("SELECT * FROM RegistrationInfoEntity")
 	abstract fun getAll(): Flow<List<RegistrationInfoEntity>>
 
+	@Query("SELECT * FROM RegistrationInfoEntity WHERE address = :id")
+	abstract fun getById(id: String): RegistrationInfoEntity?
+
 	@Insert
 	abstract fun saveDevice(regInfo: RegistrationInfoEntity)
 

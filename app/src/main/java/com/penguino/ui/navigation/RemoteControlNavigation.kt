@@ -7,19 +7,16 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.penguino.data.models.PetInfo
 import com.penguino.ui.viewmodels.RemoteControlViewModel
 import com.penguino.ui.screens.RemoteControlScreen
 import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 
-const val rcDeviceArg = "rcDevice"
+const val rcDeviceArg = "devId"
 internal data class RemoteControlArgs(
 	private val moshi: Moshi,
 	private val savedStateHandle: SavedStateHandle,
 ) {
-	private val adapter by lazy { moshi.adapter(PetInfo::class.java) }
-	val regInfo: PetInfo? = adapter.fromJson(checkNotNull(savedStateHandle[rcDeviceArg]) as String)
+	val devId: String? = savedStateHandle.get<String>(rcDeviceArg)
 }
 
 fun NavGraphBuilder.remoteControlScreen() {
@@ -43,12 +40,8 @@ fun NavGraphBuilder.remoteControlScreen() {
 	}
 }
 
-fun NavController.navigateToRemoteControl(rcDevice: PetInfo, popToHome: Boolean = false) {
-	val adapter = Moshi.Builder()
-		.add(KotlinJsonAdapterFactory())
-		.build()
-		.adapter(PetInfo::class.java)
-	val routeWithArgs = "${Screen.RemoteControlScreen.route}/${adapter.toJson(rcDevice)}"
+fun NavController.navigateToRemoteControl(devId: String, popToHome: Boolean = false) {
+	val routeWithArgs = "${Screen.RemoteControlScreen.route}/$devId"
 	navigate(routeWithArgs) {
 		if (popToHome) {
 			popUpTo(Screen.HomeScreen.route)

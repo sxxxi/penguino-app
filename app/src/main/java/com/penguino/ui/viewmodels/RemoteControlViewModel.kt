@@ -7,7 +7,8 @@ import com.penguino.data.models.ChatMessage
 import com.penguino.ui.navigation.RemoteControlArgs
 import com.penguino.data.repositories.bluetooth.BleRepository
 import com.penguino.data.repositories.chat.ChatRepository
-import com.penguino.data.models.PetInfo
+import com.penguino.data.models.PetInformation
+import com.penguino.data.repositories.registration.RegistrationRepository
 import com.squareup.moshi.Moshi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -24,17 +25,24 @@ class RemoteControlViewModel @Inject constructor(
 	moshi: Moshi,
 	private val btRepository: BleRepository,
 	private val chatRepository: ChatRepository,
+	private val registrationRepo: RegistrationRepository
 ): ViewModel() {
 	private val args = RemoteControlArgs(savedStateHandle = savedStateHandle, moshi = moshi)
-	private val _uiState = MutableStateFlow(
-		RemoteControlUiState(
-			deviceInfo = args.regInfo ?: PetInfo()
-		)
+	private val _uiState: MutableStateFlow<RemoteControlUiState> = MutableStateFlow(
+		RemoteControlUiState(deviceInfo = PetInformation())
 	)
 	val uiState: StateFlow<RemoteControlUiState> = _uiState
 	val connectionState: StateFlow<Int> = btRepository.connectionState
 
 	init {
+		// fetch device
+		viewModelScope.launch {
+			args.devId?.let {
+				val pet = registrationRepo.getById(args.devId)
+				_uiState.update { it.copy(deviceInfo = pet ?: PetInformation()) }
+			}
+		}
+
 		viewModelScope.launch {
 			chatRepository.latestResponse.collectLatest { response ->
 				_uiState.update { uiState ->
@@ -72,7 +80,7 @@ class RemoteControlViewModel @Inject constructor(
 	}
 
 	data class RemoteControlUiState (
-		val deviceInfo: PetInfo,
+		val deviceInfo: PetInformation,
 		val latestResponse: ChatMessage? = null
 	)
 }

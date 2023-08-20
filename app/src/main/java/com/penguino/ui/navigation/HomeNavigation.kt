@@ -6,12 +6,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.penguino.data.models.PetInfo
 import com.penguino.ui.screens.HomePage
 import com.penguino.ui.viewmodels.HomeViewModel
 
 fun NavGraphBuilder.homeScreen(
-	onSavedPetClicked: (PetInfo) -> Unit,
+//	onSavedPetClicked: (PetInfo) -> Unit,
+	onNavigateToRemoteControl: (String) -> Unit,
 	onPetAdd: () -> Unit
 ) {
 	composable(Screen.HomeScreen.route) {
@@ -19,9 +19,11 @@ fun NavGraphBuilder.homeScreen(
 		val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
 		HomePage(
 			uiState = uiState,
-			onSavedPetClicked = onSavedPetClicked,
+//			onSavedPetClicked = onSavedPetClicked,
 			onNavigateToScan = onPetAdd,
-			onPetDelete = homeViewModel::forgetDevice
+			onPetDelete = homeViewModel::forgetDevice,
+			setViewablePet = homeViewModel::setFocusedPet,
+			onNavigateToRemoteControl = onNavigateToRemoteControl
 		)
 	}
 }

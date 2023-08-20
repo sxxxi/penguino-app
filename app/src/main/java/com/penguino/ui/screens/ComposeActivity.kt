@@ -24,11 +24,9 @@ import androidx.navigation.compose.rememberNavController
 import com.penguino.ui.navigation.Screen
 import com.penguino.ui.navigation.homeScreen
 import com.penguino.ui.navigation.navigateToHome
-import com.penguino.ui.navigation.navigateToPetInfo
 import com.penguino.ui.navigation.navigateToRegistration
 import com.penguino.ui.navigation.navigateToRemoteControl
 import com.penguino.ui.navigation.navigateToScan
-import com.penguino.ui.navigation.petInfo
 import com.penguino.ui.navigation.registrationScreen
 import com.penguino.ui.navigation.remoteControlScreen
 import com.penguino.ui.navigation.scanScreen
@@ -87,16 +85,11 @@ private fun MainScreen(
 			}
 		) {
 			homeScreen(
-				onSavedPetClicked = navController::navigateToPetInfo,
-				onPetAdd = navController::navigateToScan
+				onPetAdd = navController::navigateToScan,
+				onNavigateToRemoteControl = navController::navigateToRemoteControl
 			)
 			scanScreen(onNavigateToRegistration = navController::navigateToRegistration)
 			remoteControlScreen()
-			petInfo(
-				onNavigateToHome = navController::navigateToHome,
-				onNavigateToRc = navController::navigateToRemoteControl,
-				onBackPressed = navController::popBackStack
-			)
 			registrationScreen(
 				onNavigateToHome = navController::navigateToHome,
 				onBackPressed = navController::popBackStack

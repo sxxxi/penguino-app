@@ -4,9 +4,8 @@ import android.util.Log
 import androidx.compose.material3.SnackbarDuration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.penguino.data.cache.RegInfoCache
+import com.penguino.data.cache.DeviceInfoCache
 import com.penguino.data.local.models.DeviceInfo
-import com.penguino.data.local.models.RegistrationInfoEntity
 import com.penguino.data.repositories.bluetooth.DeviceDiscoveryRepository
 import com.penguino.data.repositories.registration.RegistrationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +23,7 @@ import javax.inject.Inject
 class ScanViewModel @Inject constructor(
 	private val btRepo: DeviceDiscoveryRepository,
 	private val regRepo: RegistrationRepository,
-	private val regInfoCache: RegInfoCache
+	private val deviceInfoCache: DeviceInfoCache
 ) : ViewModel() {
 	private var _uiState = MutableStateFlow(ScanUiState())
 	val uiState: StateFlow<ScanUiState> = _uiState
@@ -71,22 +70,20 @@ class ScanViewModel @Inject constructor(
 		val exists = regRepo.deviceExists(deviceInfo.address)
 
 		if (exists) {
-			viewModelScope.launch(Dispatchers.Main) {
+			viewModelScope.launch(Dispatchers.IO) {
 				makeError("Device already exists")
 			}
 			return false
 		}
 
-		viewModelScope.launch(Dispatchers.Main) {
-			val regInfo = regInfoCache.getRegInfo() ?: RegistrationInfoEntity()
-			regInfo.device = deviceInfo
-			regInfoCache.saveRegInfo(regInfo = regInfo)
-			Log.d("FOO", regInfoCache.getRegInfo().toString())
+		viewModelScope.launch(Dispatchers.IO) {
+			deviceInfoCache.saveSelectedDevice(deviceInfo)
+			Log.d("FOO", deviceInfoCache.getSelectedDevice().toString())
 		}
 		return true
 	}
 
-	data class ScanUiState (
+	data class ScanUiState(
 		val bluetoothEnabled: Boolean = false,
 		val scanning: Boolean = true,
 		val devicesFound: List<DeviceInfo> = listOf(),

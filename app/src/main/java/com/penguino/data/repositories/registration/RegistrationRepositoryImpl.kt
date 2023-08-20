@@ -1,17 +1,14 @@
 package com.penguino.data.repositories.registration
 
-import android.util.Log
-import com.penguino.data.local.models.RegistrationInfoEntity
 import com.penguino.data.local.dao.DeviceDao
-import com.penguino.data.network.RegistrationNetworkDataSource
-import com.penguino.data.models.PetInfo
+import com.penguino.data.local.models.RegistrationInfoEntity
+import com.penguino.data.models.PetInformation
+import com.penguino.data.models.forms.PetRegistrationForm
+import com.penguino.data.utils.mappers.PetInfoMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.withContext
-import retrofit2.Callback
 import javax.inject.Inject
 
 /**
@@ -19,27 +16,56 @@ import javax.inject.Inject
  */
 class RegistrationRepositoryImpl @Inject constructor(
 	private val registrationDao: DeviceDao,
-	private val registrationApi: RegistrationNetworkDataSource,
-): RegistrationRepository {
-	override suspend fun getSavedDevices(): Flow<List<PetInfo>> =
-		withContext(Dispatchers.IO) {
-			registrationDao.getAll().mapLatest { li ->
-				li.map { it.toModel() }
-			}
-		}
-
-	override suspend fun saveDevice(
-		device: RegistrationInfoEntity,
-		callback: Callback<String>
-	) = withContext(Dispatchers.IO) {
-		registrationDao.saveDevice(device)
-	}
-
-	override suspend fun forgetDevice(device: PetInfo) = withContext(Dispatchers.IO) {
-		registrationDao.removeDeviceById(device.address)
-	}
-
+	private val imageStore: ImageStore,
+	private val petInfoMapper: PetInfoMapper
+) : RegistrationRepository {
 	override fun deviceExists(address: String): Boolean {
 		return registrationDao.deviceExists(address)
+	}
+
+	override suspend fun save(reg: PetRegistrationForm) {
+		withContext(Dispatchers.IO) {
+			// init db entity
+			var entity = RegistrationInfoEntity(
+				device = reg.device,
+				petName = reg.name,
+				birthDate = reg.birthDay
+			)
+
+			// insert pfp and update pfpPath in entity
+			reg.pfp?.let { img ->
+				imageStore.saveImage(img)
+				entity = entity.copy(pfpPath = img.filePath)
+			}
+
+			registrationDao.saveDevice(regInfo = entity)
+		}
+	}
+
+	override suspend fun getById(id: String): PetInformation? = withContext(Dispatchers.IO) {
+		return@withContext registrationDao.getById(id)?.let { found ->
+			petInfoMapper.entityToDomain(found)
+		}
+	}
+
+	override suspend fun delete(id: String) {
+		withContext(Dispatchers.IO) {
+			val entity = registrationDao.getById(id)
+
+			// delete pfp first
+			entity?.pfpPath?.let { pfp ->
+				imageStore.deleteImage(pfp)
+			}
+
+			registrationDao.removeDeviceById(id)
+		}
+	}
+
+	override suspend fun getSaved(): Flow<List<PetInformation>> {
+		return registrationDao.getAll().map {
+			it.map { entity ->
+				petInfoMapper.entityToDomain(entity)
+			}
+		}
 	}
 }

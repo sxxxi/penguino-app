@@ -30,7 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import com.penguino.data.local.BleServiceDataSource
-import com.penguino.data.models.PetInfo
+import com.penguino.data.models.PetInformation
 import com.penguino.ui.components.Loader
 import com.penguino.ui.theme.PenguinoTheme
 import com.penguino.ui.viewmodels.RemoteControlViewModel.RemoteControlUiState
@@ -39,7 +39,7 @@ import com.penguino.utils.ObserveLifecycle
 @Composable
 fun RemoteControlScreen(
 	modifier: Modifier = Modifier,
-	uiState: RemoteControlUiState = RemoteControlUiState(PetInfo()),
+	uiState: RemoteControlUiState = RemoteControlUiState(PetInformation()),
 	btConnectionState: Int = BluetoothProfile.STATE_CONNECTED,
 	btServiceBind: () -> Unit = {},
 	btServiceUnbind: () -> Unit = {},

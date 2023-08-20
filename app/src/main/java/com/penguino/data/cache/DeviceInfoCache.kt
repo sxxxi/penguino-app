@@ -1,14 +1,14 @@
 package com.penguino.data.cache
 
-import com.penguino.data.local.models.RegistrationInfoEntity
+import com.penguino.data.local.models.DeviceInfo
 
 /**
  * A contract for reading and writing RegistrationInfo in the
  * SharedPreferences acting as a cache enabling viewModels to
  * share a single RegistrationInfo
  */
-interface RegInfoCache {
-	fun getRegInfo(): RegistrationInfoEntity?
-	fun saveRegInfo(regInfo: RegistrationInfoEntity)
-	fun clearRegInfo()
+interface DeviceInfoCache {
+	fun getSelectedDevice(): DeviceInfo?
+	fun saveSelectedDevice(regInfo: DeviceInfo)
+	fun clearSelectedDevice()
 }

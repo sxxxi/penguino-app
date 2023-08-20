@@ -1,11 +1,11 @@
 package com.penguino.ui.screens
 
 import android.Manifest
-import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -64,6 +64,8 @@ import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.exifinterface.media.ExifInterface
 import com.penguino.data.local.models.RegistrationInfoEntity
+import com.penguino.data.models.Image
+import com.penguino.data.models.forms.PetRegistrationForm
 import com.penguino.ui.components.TextInput
 import com.penguino.ui.theme.PenguinoTheme
 import com.penguino.ui.viewmodels.RegistrationViewModel.RegistrationUiState
@@ -75,13 +77,16 @@ import java.io.File
 @Composable
 fun RegistrationScreen(
 	uiState: RegistrationUiState = RegistrationUiState(regInfo = RegistrationInfoEntity()),
-	onInputChange: ((RegistrationInfoEntity) -> RegistrationInfoEntity) -> Unit = {},
-	onPfpChange: (Bitmap?) -> Unit = {},
-	onRegInfoPost: (Context) -> Unit = {},
+	onInputChange: ((PetRegistrationForm) -> PetRegistrationForm) -> Unit = {},
+	onPfpChange: (Image?) -> Unit = {},
+	onSubmit: () -> Unit = {},
 	onNavigateToHome: () -> Unit = {},
 	onBack: () -> Unit = {},
 ) {
-	val context = LocalContext.current
+
+	LaunchedEffect(key1 = uiState.regForm) {
+		Log.d("PFP", "${uiState.regForm.pfp}")
+	}
 	ScreenHolder(
 		screens = listOf(
 			{
@@ -89,14 +94,14 @@ fun RegistrationScreen(
 					name = uiState.regInfo.petName,
 					onInputChange = { newName ->
 						onInputChange { state ->
-							state.copy(petName = newName)
+							state.copy(name = newName)
 						}
 					}
 				)
 			},
 			{
 				ImagePrompt(
-					pfp = uiState.pfp,
+					registrationForm = uiState.regForm,
 					onPfpChange = onPfpChange
 				)
 			},
@@ -109,7 +114,7 @@ fun RegistrationScreen(
 		},
 		onNavigateToHome = onNavigateToHome,
 		onNavigateToPrevious = onBack,
-		onSubmit = { onRegInfoPost(context) },
+		onSubmit = { onSubmit() },
 	)
 }
 
@@ -290,67 +295,69 @@ private fun ColumnScope.NamePrompt(
 
 @Composable
 fun ColumnScope.ImagePrompt(
-	pfp: Bitmap? = null,
-	onPfpChange: (Bitmap?) -> Unit = {}
+	registrationForm: PetRegistrationForm = PetRegistrationForm(),
+	onPfpChange: (Image?) -> Unit = {}
 ) {
 	// Get and store cache photo -> registerForResult
 	// Compress bitmap to Jpeg
 	// Store in specific directory
-	var image by remember { mutableStateOf<Bitmap?>(null) }
+	val pfp = registrationForm.pfp
+	val context = LocalContext.current
 	val cacheDir = LocalContext.current.cacheDir
 	var tempImageCache by remember { mutableStateOf(Uri.EMPTY) }
-	val context = LocalContext.current
 	var permissionGranted by remember { mutableStateOf(false) }
-
 	var tempFile by remember {
 		mutableStateOf<File?>(null)
 	}
-
-	val launchCamera = rememberLauncherForActivityResult(
-		contract = ActivityResultContracts.TakePicture(),
-		onResult = { success ->
-			if (success) {
-				// Get image orientation from image EXIF
-
-				context.contentResolver.openInputStream(tempFile!!.toUri())?.use { iStream ->
-					val rotate = ExifInterface(iStream).getAttributeInt(
-						ExifInterface.TAG_ORIENTATION,
-						ExifInterface.ORIENTATION_UNDEFINED
-					).let { orientation ->
-						when (orientation) {
-							ExifInterface.ORIENTATION_ROTATE_90 -> 90f
-							ExifInterface.ORIENTATION_ROTATE_180 -> 180f
-							ExifInterface.ORIENTATION_ROTATE_270 -> 270f
-							else -> 0f
-						}
-					}
-
-					// rotate temp file
-					tempFile?.let { file ->
-						val bitmap = BitmapFactory.decodeFile(file.path)
-						val matrix = Matrix()
-						matrix.postRotate(rotate)
-						Bitmap.createBitmap(
-							bitmap,
-							0,
-							0,
-							bitmap.width,
-							bitmap.height,
-							matrix,
-							true
-						)
-					}.let {
-						onPfpChange(it)
-					}
-				}
-			}
-		}
-	)
-
 	val cameraPermission = rememberLauncherForActivityResult(
 		contract = ActivityResultContracts.RequestPermission(),
 		onResult = {
 			permissionGranted = it
+		}
+	)
+	val launchCamera = rememberLauncherForActivityResult(
+		contract = ActivityResultContracts.TakePicture(),
+		onResult = { success ->
+			if (success) {
+				val image = tempFile?.let { temp ->
+					// Get image orientation from image EXIF
+					context.contentResolver.openInputStream(temp.toUri())?.use { iStream ->
+						val rotate = ExifInterface(iStream).getAttributeInt(
+							ExifInterface.TAG_ORIENTATION,
+							ExifInterface.ORIENTATION_UNDEFINED
+						).let { orientation ->
+							when (orientation) {
+								ExifInterface.ORIENTATION_ROTATE_90 -> 90f
+								ExifInterface.ORIENTATION_ROTATE_180 -> 180f
+								ExifInterface.ORIENTATION_ROTATE_270 -> 270f
+								else -> 0f
+							}
+						}
+
+						// rotate temp file
+						tempFile?.let { file ->
+							val bitmap = BitmapFactory.decodeFile(file.path)
+							val matrix = Matrix()
+							matrix.postRotate(rotate)
+							Bitmap.createBitmap(
+								bitmap,
+								0,
+								0,
+								bitmap.width,
+								bitmap.height,
+								matrix,
+								true
+							)
+						}?.let { bitmap ->
+							Image(
+								bitmap = bitmap,
+								filePath = "${context.filesDir}/${registrationForm.device.address}.jpg"
+							)
+						}
+					}
+				}
+				onPfpChange(image)
+			}
 		}
 	)
 
@@ -360,7 +367,10 @@ fun ColumnScope.ImagePrompt(
 
 	Box(
 		modifier = Modifier
+			.size(78.dp)
+			.clip(RoundedCornerShape(100))
 			.clickable {
+				Log.d("Clickable", permissionGranted.toString())
 				if (permissionGranted) {
 					tempFile = File
 						.createTempFile("pfp_cache", ".jpg", cacheDir)
@@ -374,10 +384,10 @@ fun ColumnScope.ImagePrompt(
 							launchCamera.launch(tempImageCache)
 							it
 						}
+				} else {
+					cameraPermission.launch(Manifest.permission.CAMERA)
 				}
 			}
-			.size(78.dp)
-			.clip(RoundedCornerShape(100))
 	) {
 		Column(
 			modifier = Modifier
@@ -386,10 +396,10 @@ fun ColumnScope.ImagePrompt(
 			horizontalAlignment = Alignment.CenterHorizontally,
 			verticalArrangement = Arrangement.Center
 		) {
-			pfp?.let { bitmap ->
+			pfp?.let { image ->
 				Image(
 					modifier = Modifier.fillMaxSize(),
-					bitmap = bitmap.asImageBitmap(),
+					bitmap = image.bitmap.asImageBitmap(),
 					contentDescription = "preview",
 					contentScale = ContentScale.Crop
 				)

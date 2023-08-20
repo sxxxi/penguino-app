@@ -1,6 +1,7 @@
 package com.penguino.data.cache
 
 import com.penguino.data.local.models.RegistrationInfoEntity
+import com.penguino.data.models.forms.PetRegistrationForm
 
 /**
  * A contract for reading and writing RegistrationInfo in the
@@ -8,7 +9,7 @@ import com.penguino.data.local.models.RegistrationInfoEntity
  * share a single RegistrationInfo
  */
 interface RegInfoCache {
-	fun getRegInfo(): RegistrationInfoEntity?
-	fun saveRegInfo(regInfo: RegistrationInfoEntity)
+	fun getRegInfo(): PetRegistrationForm?
+	fun saveRegInfo(regInfo: PetRegistrationForm)
 	fun clearRegInfo()
 }

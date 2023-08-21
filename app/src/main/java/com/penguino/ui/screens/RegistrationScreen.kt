@@ -61,6 +61,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
+import androidx.core.net.toFile
 import androidx.core.net.toUri
 import androidx.exifinterface.media.ExifInterface
 import com.penguino.data.local.models.RegistrationInfoEntity
@@ -72,6 +73,8 @@ import com.penguino.ui.viewmodels.RegistrationViewModel.RegistrationUiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
+import java.io.FileInputStream
+import java.io.InputStream
 
 
 @Composable
@@ -298,17 +301,11 @@ fun ColumnScope.ImagePrompt(
 	registrationForm: PetRegistrationForm = PetRegistrationForm(),
 	onPfpChange: (Image?) -> Unit = {}
 ) {
-	// Get and store cache photo -> registerForResult
-	// Compress bitmap to Jpeg
-	// Store in specific directory
 	val pfp = registrationForm.pfp
 	val context = LocalContext.current
 	val cacheDir = LocalContext.current.cacheDir
 	var tempImageCache by remember { mutableStateOf(Uri.EMPTY) }
 	var permissionGranted by remember { mutableStateOf(false) }
-	var tempFile by remember {
-		mutableStateOf<File?>(null)
-	}
 	val cameraPermission = rememberLauncherForActivityResult(
 		contract = ActivityResultContracts.RequestPermission(),
 		onResult = {
@@ -319,61 +316,51 @@ fun ColumnScope.ImagePrompt(
 		contract = ActivityResultContracts.TakePicture(),
 		onResult = { success ->
 			if (success) {
-				val image = tempFile?.let { temp ->
-					// Get image orientation from image EXIF
-					context.contentResolver.openInputStream(temp.toUri())?.use { iStream ->
-						val rotate = ExifInterface(iStream).getAttributeInt(
-							ExifInterface.TAG_ORIENTATION,
-							ExifInterface.ORIENTATION_UNDEFINED
-						).let { orientation ->
-							when (orientation) {
-								ExifInterface.ORIENTATION_ROTATE_90 -> 90f
-								ExifInterface.ORIENTATION_ROTATE_180 -> 180f
-								ExifInterface.ORIENTATION_ROTATE_270 -> 270f
-								else -> 0f
+				tempImageCache?.path?.let { path ->
+					val file = File(context.dataDir, path)
+					val bitmap = BitmapFactory.decodeFile(file.path).let { decoded ->
+						// Fix image orientation
+						val matrix = Matrix()
+						val rotation = file.inputStream().use { iStream ->
+							ExifInterface(iStream).getAttributeInt(
+								ExifInterface.TAG_ORIENTATION,
+								ExifInterface.ORIENTATION_UNDEFINED
+							).let { orientation ->
+								when (orientation) {
+									ExifInterface.ORIENTATION_ROTATE_90 -> 90f
+									ExifInterface.ORIENTATION_ROTATE_180 -> 180f
+									ExifInterface.ORIENTATION_ROTATE_270 -> 270f
+									else -> 0f
+								}
 							}
 						}
-
-						// rotate temp file
-						tempFile?.let { file ->
-							val bitmap = BitmapFactory.decodeFile(file.path)
-							val matrix = Matrix()
-							matrix.postRotate(rotate)
-							Bitmap.createBitmap(
-								bitmap,
-								0,
-								0,
-								bitmap.width,
-								bitmap.height,
-								matrix,
-								true
-							)
-						}?.let { bitmap ->
-							Image(
-								bitmap = bitmap,
-								filePath = "${context.filesDir}/${registrationForm.device.address}.jpg"
-							)
-						}
+						matrix.postRotate(rotation)
+						Bitmap.createBitmap(decoded, 0, 0, decoded.width, decoded.height,
+							matrix, true)
 					}
+					val img = Image(
+						filePath = "${context.filesDir}/${registrationForm.device.address}.jpg",
+						bitmap = bitmap
+					)
+					onPfpChange(img)
+
+					// Delete temp file
+					file.delete()
 				}
-				onPfpChange(image)
 			}
 		}
 	)
-
-	LaunchedEffect(key1 = Unit) {
-		cameraPermission.launch(Manifest.permission.CAMERA)
-	}
 
 	Box(
 		modifier = Modifier
 			.size(78.dp)
 			.clip(RoundedCornerShape(100))
 			.clickable {
-				Log.d("Clickable", permissionGranted.toString())
+				if (!permissionGranted) {
+					cameraPermission.launch(Manifest.permission.CAMERA)
+				}
 				if (permissionGranted) {
-					tempFile = File
-						.createTempFile("pfp_cache", ".jpg", cacheDir)
+					File.createTempFile("pfp_cache", ".jpg", cacheDir)
 						.apply {
 							createNewFile()
 						}
@@ -384,8 +371,6 @@ fun ColumnScope.ImagePrompt(
 							launchCamera.launch(tempImageCache)
 							it
 						}
-				} else {
-					cameraPermission.launch(Manifest.permission.CAMERA)
 				}
 			}
 	) {

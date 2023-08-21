@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -27,6 +26,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -40,7 +40,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -61,8 +60,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
-import androidx.core.net.toFile
-import androidx.core.net.toUri
 import androidx.exifinterface.media.ExifInterface
 import com.penguino.data.local.models.RegistrationInfoEntity
 import com.penguino.data.models.Image
@@ -73,8 +70,6 @@ import com.penguino.ui.viewmodels.RegistrationViewModel.RegistrationUiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.io.File
-import java.io.FileInputStream
-import java.io.InputStream
 
 
 @Composable
@@ -86,10 +81,6 @@ fun RegistrationScreen(
 	onNavigateToHome: () -> Unit = {},
 	onBack: () -> Unit = {},
 ) {
-
-	LaunchedEffect(key1 = uiState.regForm) {
-		Log.d("PFP", "${uiState.regForm.pfp}")
-	}
 	ScreenHolder(
 		screens = listOf(
 			{
@@ -152,9 +143,9 @@ private fun ProgressIndicator(
 
 @Composable
 private fun ScreenHolder(
-	screens: List<@Composable ColumnScope.() -> Unit>,
-	loadingScreen: @Composable ColumnScope.() -> Unit = {},
-	confirmationScreen: @Composable ColumnScope.() -> Unit = {},
+	screens: List<@Composable () -> Unit>,
+	loadingScreen: @Composable () -> Unit = {},
+	confirmationScreen: @Composable () -> Unit = {},
 	coroutineScope: CoroutineScope = rememberCoroutineScope(),
 	onSubmit: () -> Unit = {},
 	onNavigateToPrevious: () -> Unit,
@@ -274,15 +265,14 @@ private fun ScreenHolder(
 }
 
 @Composable
-private fun ColumnScope.NamePrompt(
+private fun NamePrompt(
 	name: String,
 	onInputChange: (String) -> Unit
 ) {
-	Spacer(modifier = Modifier.weight(0.5f))
 	Column(
-		Modifier
-			.weight(0.5f)
+		Modifier.fillMaxSize()
 	) {
+		Spacer(modifier = Modifier.fillMaxHeight(0.5f))
 		Text(
 			text = "What is your new \nfriend's name?",
 			style = MaterialTheme.typography.displaySmall + TextStyle(fontWeight = FontWeight.Bold)
@@ -297,7 +287,7 @@ private fun ColumnScope.NamePrompt(
 }
 
 @Composable
-fun ColumnScope.ImagePrompt(
+fun ImagePrompt(
 	registrationForm: PetRegistrationForm = PetRegistrationForm(),
 	onPfpChange: (Image?) -> Unit = {}
 ) {
@@ -335,8 +325,10 @@ fun ColumnScope.ImagePrompt(
 							}
 						}
 						matrix.postRotate(rotation)
-						Bitmap.createBitmap(decoded, 0, 0, decoded.width, decoded.height,
-							matrix, true)
+						Bitmap.createBitmap(
+							decoded, 0, 0, decoded.width, decoded.height,
+							matrix, true
+						)
 					}
 					val img = Image(
 						filePath = "${context.filesDir}/${registrationForm.device.address}.jpg",
@@ -360,7 +352,8 @@ fun ColumnScope.ImagePrompt(
 					cameraPermission.launch(Manifest.permission.CAMERA)
 				}
 				if (permissionGranted) {
-					File.createTempFile("pfp_cache", ".jpg", cacheDir)
+					File
+						.createTempFile("pfp_cache", ".jpg", cacheDir)
 						.apply {
 							createNewFile()
 						}
@@ -400,7 +393,7 @@ fun ColumnScope.ImagePrompt(
 }
 
 @Composable
-private fun ColumnScope.ConfirmationScreen() {
+private fun ConfirmationScreen() {
 	Text(
 		text = "You're all set!",
 		style = MaterialTheme.typography.displaySmall + TextStyle(fontWeight = FontWeight.Bold)

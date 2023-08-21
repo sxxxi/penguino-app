@@ -1,13 +1,6 @@
 package com.penguino.ui.screens
 
-import android.Manifest
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Matrix
-import android.net.Uri
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
@@ -17,13 +10,10 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -31,11 +21,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -52,24 +38,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.content.FileProvider
-import androidx.exifinterface.media.ExifInterface
 import com.penguino.data.local.models.RegistrationInfoEntity
 import com.penguino.data.models.Image
 import com.penguino.data.models.forms.PetRegistrationForm
+import com.penguino.ui.components.ImageCapture
 import com.penguino.ui.components.TextInput
 import com.penguino.ui.theme.PenguinoTheme
 import com.penguino.ui.viewmodels.RegistrationViewModel.RegistrationUiState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import java.io.File
 
 
 @Composable
@@ -291,101 +272,11 @@ fun ImagePrompt(
 	registrationForm: PetRegistrationForm = PetRegistrationForm(),
 	onPfpChange: (Image?) -> Unit = {}
 ) {
-	val pfp = registrationForm.pfp
-	val context = LocalContext.current
-	val cacheDir = LocalContext.current.cacheDir
-	var tempImageCache by remember { mutableStateOf(Uri.EMPTY) }
-	var permissionGranted by remember { mutableStateOf(false) }
-	val cameraPermission = rememberLauncherForActivityResult(
-		contract = ActivityResultContracts.RequestPermission(),
-		onResult = {
-			permissionGranted = it
-		}
+	ImageCapture(
+		registrationForm,
+		pfp = registrationForm.pfp,
+		onPfpChange = onPfpChange
 	)
-	val launchCamera = rememberLauncherForActivityResult(
-		contract = ActivityResultContracts.TakePicture(),
-		onResult = { success ->
-			if (success) {
-				tempImageCache?.path?.let { path ->
-					val file = File(context.dataDir, path)
-					val bitmap = BitmapFactory.decodeFile(file.path).let { decoded ->
-						// Fix image orientation
-						val matrix = Matrix()
-						val rotation = file.inputStream().use { iStream ->
-							ExifInterface(iStream).getAttributeInt(
-								ExifInterface.TAG_ORIENTATION,
-								ExifInterface.ORIENTATION_UNDEFINED
-							).let { orientation ->
-								when (orientation) {
-									ExifInterface.ORIENTATION_ROTATE_90 -> 90f
-									ExifInterface.ORIENTATION_ROTATE_180 -> 180f
-									ExifInterface.ORIENTATION_ROTATE_270 -> 270f
-									else -> 0f
-								}
-							}
-						}
-						matrix.postRotate(rotation)
-						Bitmap.createBitmap(
-							decoded, 0, 0, decoded.width, decoded.height,
-							matrix, true
-						)
-					}
-					val img = Image(
-						filePath = "${context.filesDir}/${registrationForm.device.address}.jpg",
-						bitmap = bitmap
-					)
-					onPfpChange(img)
-
-					// Delete temp file
-					file.delete()
-				}
-			}
-		}
-	)
-
-	Box(
-		modifier = Modifier
-			.size(78.dp)
-			.clip(RoundedCornerShape(100))
-			.clickable {
-				if (!permissionGranted) {
-					cameraPermission.launch(Manifest.permission.CAMERA)
-				}
-				if (permissionGranted) {
-					File
-						.createTempFile("pfp_cache", ".jpg", cacheDir)
-						.apply {
-							createNewFile()
-						}
-						.let {
-							tempImageCache = FileProvider.getUriForFile(
-								context, "com.penguino.FileProvider", it
-							)
-							launchCamera.launch(tempImageCache)
-							it
-						}
-				}
-			}
-	) {
-		Column(
-			modifier = Modifier
-				.background(Color.Gray)
-				.fillMaxSize(),
-			horizontalAlignment = Alignment.CenterHorizontally,
-			verticalArrangement = Arrangement.Center
-		) {
-			pfp?.let { image ->
-				Image(
-					modifier = Modifier.fillMaxSize(),
-					bitmap = image.bitmap.asImageBitmap(),
-					contentDescription = "preview",
-					contentScale = ContentScale.Crop
-				)
-			} ?: Icon(imageVector = Icons.Default.Add, contentDescription = "add")
-		}
-	}
-
-
 	Text(
 		text = "Take a photo of your new friend!",
 		style = MaterialTheme.typography.displaySmall + TextStyle(fontWeight = FontWeight.Bold)
@@ -411,9 +302,8 @@ fun PreviewRegistrationScreen() {
 			horizontalAlignment = Alignment.CenterHorizontally,
 			verticalArrangement = Arrangement.Center
 		) {
-			ImagePrompt(onPfpChange = {})
-//			RegistrationScreen()
+//			ImagePrompt(onPfpChange = {})
+			RegistrationScreen()
 		}
 	}
 }
-

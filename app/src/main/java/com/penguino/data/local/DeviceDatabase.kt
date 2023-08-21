@@ -5,7 +5,7 @@ import androidx.room.RoomDatabase
 import com.penguino.data.local.models.RegistrationInfoEntity
 import com.penguino.data.local.dao.DeviceDao
 
-@Database(entities = [RegistrationInfoEntity::class], version = 2)
+@Database(entities = [RegistrationInfoEntity::class], version = 1)
 abstract class DeviceDatabase: RoomDatabase() {
 	abstract fun dao(): DeviceDao
 }

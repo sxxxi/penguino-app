@@ -92,7 +92,7 @@ object HiltModule {
             .databaseBuilder(
                 context = ctx,
                 klass = DeviceDatabase::class.java,
-                name = "SavedDevicesDatabase")
+                name = "SavedDevicesDb")
             .build()
             .dao()
     }

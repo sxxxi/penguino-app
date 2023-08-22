@@ -45,6 +45,7 @@ import java.io.File
 
 @Composable
 fun ImageCapture(
+	modifier: Modifier = Modifier,
 	registrationForm: PetRegistrationForm = PetRegistrationForm(),
 	scope: CoroutineScope = rememberCoroutineScope(),
 	pfp: Image? = null,
@@ -114,11 +115,11 @@ fun ImageCapture(
 
 	Box(
 		modifier = Modifier
-			.size(78.dp)
 			.clip(RoundedCornerShape(100))
 			.clickable {
 				cameraPermission.launch(Manifest.permission.CAMERA)
 			}
+			.then(modifier)
 	) {
 		Column(
 			modifier = Modifier

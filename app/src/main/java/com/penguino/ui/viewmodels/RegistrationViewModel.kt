@@ -33,6 +33,9 @@ class RegistrationViewModel @Inject constructor(
 
 	fun onFormSubmit() {
 		viewModelScope.launch {
+			_uiState.update {
+				it.copy(regForm = it.regForm.copy(name = it.regForm.name.replaceFirstChar { ch -> ch.uppercase() }))
+			}
 			regRepo.save(uiState.value.regForm)
 		}
 	}

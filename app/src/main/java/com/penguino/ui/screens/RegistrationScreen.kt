@@ -10,6 +10,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -20,7 +21,9 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -38,6 +41,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -253,7 +257,20 @@ private fun NamePrompt(
 	Column(
 		Modifier.fillMaxSize()
 	) {
-		Spacer(modifier = Modifier.fillMaxHeight(0.5f))
+		Column(
+			modifier = Modifier
+				.fillMaxHeight(0.5f)
+				.fillMaxWidth(),
+			verticalArrangement = Arrangement.Center,
+			horizontalAlignment = Alignment.CenterHorizontally
+		) {
+			Image(
+				modifier = Modifier.fillMaxWidth(0.8f),
+				painter = painterResource(id = com.penguino.R.drawable.new_friend_screen),
+				contentDescription = ""
+			)
+
+		}
 		Text(
 			text = "What is your new \nfriend's name?",
 			style = MaterialTheme.typography.displaySmall + TextStyle(fontWeight = FontWeight.Bold)
@@ -272,15 +289,36 @@ fun ImagePrompt(
 	registrationForm: PetRegistrationForm = PetRegistrationForm(),
 	onPfpChange: (Image?) -> Unit = {}
 ) {
-	ImageCapture(
-		registrationForm,
-		pfp = registrationForm.pfp,
-		onPfpChange = onPfpChange
-	)
-	Text(
-		text = "Take a photo of your new friend!",
-		style = MaterialTheme.typography.displaySmall + TextStyle(fontWeight = FontWeight.Bold)
-	)
+	Column {
+		Box(
+			modifier = Modifier.size(350.dp)
+		) {
+			Image(
+				modifier = Modifier.fillMaxSize(),
+				painter = painterResource(id = com.penguino.R.drawable.image_capture_screen),
+				contentDescription = ""
+			)
+			Column(
+				modifier = Modifier
+					.fillMaxWidth(0.46f)
+					.fillMaxHeight(0.92f)
+				,
+				horizontalAlignment = Alignment.End,
+				verticalArrangement = Arrangement.Bottom
+			) {
+				ImageCapture(
+					modifier = Modifier.size(60.dp),
+					registrationForm = registrationForm,
+					pfp = registrationForm.pfp,
+					onPfpChange = onPfpChange
+				)
+			}
+		}
+		Text(
+			text = "Take a photo of your new friend!",
+			style = MaterialTheme.typography.displaySmall + TextStyle(fontWeight = FontWeight.Bold)
+		)
+	}
 }
 
 @Composable

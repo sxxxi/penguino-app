@@ -2,8 +2,9 @@ package com.penguino.data.repositories.bluetooth
 
 import kotlinx.coroutines.flow.StateFlow
 
-interface BleRepository {
+interface DeviceConnectionRepository {
 	val connectionState: StateFlow<Int>
+
 	fun bindService()
 	fun unbindService()
 

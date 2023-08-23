@@ -1,9 +1,7 @@
-package com.penguino.data.di
+package com.penguino.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.penguino.utils.NotificationTool
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

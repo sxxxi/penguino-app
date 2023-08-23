@@ -29,7 +29,7 @@
         android:theme="@style/Theme.Penguino"
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".ui.screens.ComposeActivity"
+            android:name=".ComposeActivity"
             android:exported="true"
             android:label="@string/title_activity_compose"
             android:theme="@style/Theme.Penguino">
@@ -39,22 +39,21 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".data.local.BleServiceDataSource"
+            android:name=".data.bluetooth.PenguinoGattService"
             android:exported="false" />
-
-        <receiver android:name=".data.receivers.BleStatusReceiver"
+        <receiver android:name=".data.bluetooth.receiver.GattConnectionStatusReceiver"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.penguino.BleServiceDataSource.ACTION_GATT_CONNECTING" />
-                <action android:name="com.penguino.BleServiceDataSource.ACTION_GATT_CONNECTED" />
-                <action android:name="com.penguino.BleServiceDataSource.ACTION_GATT_DISCONNECTING" />
-                <action android:name="com.penguino.BleServiceDataSource.ACTION_GATT_DISCONNECTED" />
+                <action android:name="com.penguino.PenguinoGattService.ACTION_GATT_CONNECTING" />
+                <action android:name="com.penguino.PenguinoGattService.ACTION_GATT_CONNECTED" />
+                <action android:name="com.penguino.PenguinoGattService.ACTION_GATT_DISCONNECTING" />
+                <action android:name="com.penguino.PenguinoGattService.ACTION_GATT_DISCONNECTED" />
             </intent-filter>
         </receiver>
 
         <provider
+            android:name="androidx.core.content.FileProvider"
             android:authorities="com.penguino.FileProvider"
-            android:name=".MyFileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

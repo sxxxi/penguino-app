@@ -1,4 +1,4 @@
-package com.penguino.data.di
+package com.penguino.di
 
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
@@ -13,9 +13,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 abstract class BluetoothModule {
-//	@Binds
-//	abstract fun bleRepo(repo: BleRepositoryImpl): BleRepository
-
 	companion object {
 		@Provides
 		@Singleton
@@ -26,15 +23,4 @@ abstract class BluetoothModule {
 		}
 
 	}
-
-
-//	@Provides
-//	@Singleton
-//	fun provideBluetoothManagement(
-//		@ApplicationContext context: Context,
-//		bluetoothAdapter: BluetoothAdapter
-//	): BleRepository {
-//		return BleRepositoryImpl(context, bluetoothAdapter)
-//	}
-
 }

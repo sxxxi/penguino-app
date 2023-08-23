@@ -1,17 +1,10 @@
 package com.penguino.ui.screens
 
-import android.Manifest
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
@@ -30,42 +23,10 @@ import com.penguino.ui.navigation.navigateToScan
 import com.penguino.ui.navigation.registrationScreen
 import com.penguino.ui.navigation.remoteControlScreen
 import com.penguino.ui.navigation.scanScreen
-import com.penguino.ui.theme.PenguinoTheme
-import dagger.hilt.android.AndroidEntryPoint
-
-
-@AndroidEntryPoint
-class ComposeActivity : ComponentActivity() {
-	// A popup for granting access. This is temporary and I am looking for better alternatives.
-	private val multiplePermissionLauncher: ActivityResultLauncher<Array<String>> =
-		registerForActivityResult(
-			ActivityResultContracts.RequestMultiplePermissions()
-		) { }
-
-	override fun onCreate(savedInstanceState: Bundle?) {
-		super.onCreate(savedInstanceState)
-		setContent {
-			PenguinoTheme {
-				MainScreen(Modifier.fillMaxSize())
-			}
-		}
-
-		// Ask permission on application launch
-		multiplePermissionLauncher.launch(
-			arrayOf(
-				Manifest.permission.BLUETOOTH_CONNECT,
-				Manifest.permission.BLUETOOTH_SCAN,
-				Manifest.permission.ACCESS_FINE_LOCATION,
-				Manifest.permission.ACCESS_COARSE_LOCATION,
-				Manifest.permission.POST_NOTIFICATIONS
-			)
-		)
-	}
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun MainScreen(
+fun MainScreen(
 	modifier: Modifier = Modifier,
 	navController: NavHostController = rememberNavController()
 ) {

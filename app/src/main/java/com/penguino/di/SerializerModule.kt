@@ -1,4 +1,4 @@
-package com.penguino.data.di
+package com.penguino.di
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory

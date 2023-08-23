@@ -1,4 +1,4 @@
-package com.penguino.utils
+package com.penguino.data.utils
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

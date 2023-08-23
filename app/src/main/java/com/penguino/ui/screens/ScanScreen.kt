@@ -1,5 +1,6 @@
 package com.penguino.ui.screens
 
+import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -47,7 +48,7 @@ import com.penguino.ui.components.ListComponent
 import com.penguino.ui.components.ListComponentHeader
 import com.penguino.ui.theme.PenguinoTheme
 import com.penguino.ui.viewmodels.ScanViewModel.ScanUiState
-import com.penguino.utils.ObserveLifecycle
+import com.penguino.data.utils.ObserveLifecycle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -83,6 +84,10 @@ fun ScanScreen(
 			}
 		}
 	)
+
+	LaunchedEffect(key1 = uiState.scanning) {
+		Log.d("Scanning", "${uiState.scanning}")
+	}
 
 	LaunchedEffect(key1 = uiState.isError) {
 		if (uiState.isError) {

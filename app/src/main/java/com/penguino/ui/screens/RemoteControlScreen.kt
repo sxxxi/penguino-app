@@ -29,12 +29,12 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
-import com.penguino.data.local.BleServiceDataSource
+import com.penguino.data.bluetooth.PenguinoGattService
 import com.penguino.data.models.PetInformation
 import com.penguino.ui.components.Loader
 import com.penguino.ui.theme.PenguinoTheme
 import com.penguino.ui.viewmodels.RemoteControlViewModel.RemoteControlUiState
-import com.penguino.utils.ObserveLifecycle
+import com.penguino.data.utils.ObserveLifecycle
 
 @Composable
 fun RemoteControlScreen(
@@ -96,7 +96,7 @@ fun RemoteControlScreen(
 		})
 
 	when (btConnectionState) {
-		BluetoothProfile.STATE_CONNECTING -> {
+		PenguinoGattService.STATE_GATT_CONNECTING -> {
 			Column(
 				Modifier.fillMaxSize(),
 				verticalArrangement = Arrangement.Center,
@@ -106,12 +106,12 @@ fun RemoteControlScreen(
 			}
 		}
 
-		BleServiceDataSource.STATE_CONNECTED -> {
+		PenguinoGattService.STATE_GATT_CONNECTED -> {
 			Column(modifier.fillMaxSize()) {
 				Column(
 					modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f),
+						.fillMaxWidth()
+						.weight(1f),
 					verticalArrangement = Arrangement.Center,
 					horizontalAlignment = Alignment.CenterHorizontally
 				) {
@@ -122,8 +122,8 @@ fun RemoteControlScreen(
 
 				Column(
 					modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
+						.fillMaxWidth()
+						.padding(8.dp),
 					horizontalAlignment = Alignment.CenterHorizontally
 				) {
 					Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {

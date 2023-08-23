@@ -1,7 +1,6 @@
 package com.penguino.ui.theme
 
 import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -17,55 +16,55 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = GreenDark500,
-    onPrimary = GreenDark50,
-    primaryContainer = GreenDark50,
-    onPrimaryContainer = GreenDark900,
-    secondary = GreenDark500,
-    secondaryContainer = GreenDark500,
-    onSecondaryContainer = GreenDark50
+	primary = GreenDark500,
+	onPrimary = GreenDark50,
+	primaryContainer = GreenDark50,
+	onPrimaryContainer = GreenDark900,
+	secondary = GreenDark500,
+	secondaryContainer = GreenDark500,
+	onSecondaryContainer = GreenDark50
 )
 
 private val LightColorScheme = lightColorScheme(
-    background = Color.White,
-    onBackground = Color.Black,
-    primary = Green400,
-    onPrimary = Green50,
-    primaryContainer = Green50,
-    onPrimaryContainer = Green900,
-    secondary = Green500,
-    secondaryContainer = Green500,
-    onSecondaryContainer = Green50
+	background = Color.White,
+	onBackground = Color.Black,
+	primary = Green400,
+	onPrimary = Green50,
+	primaryContainer = Green50,
+	onPrimaryContainer = Green900,
+	secondary = Green500,
+	secondaryContainer = Green500,
+	onSecondaryContainer = Green50
 )
 
 @Composable
 fun PenguinoTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = false,
-    content: @Composable () -> Unit
+	darkTheme: Boolean = isSystemInDarkTheme(),
+	// Dynamic color is available on Android 12+
+	dynamicColor: Boolean = false,
+	content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
+	val colorScheme = when {
+		dynamicColor -> {
+			val context = LocalContext.current
+			if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+		}
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
-    val view = LocalView.current
-    if (!view.isInEditMode) {
-        SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.background.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
-        }
-    }
+		darkTheme -> DarkColorScheme
+		else -> LightColorScheme
+	}
+	val view = LocalView.current
+	if (!view.isInEditMode) {
+		SideEffect {
+			val window = (view.context as Activity).window
+			window.statusBarColor = colorScheme.background.toArgb()
+			WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+		}
+	}
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+	MaterialTheme(
+		colorScheme = colorScheme,
+		typography = Typography,
+		content = content
+	)
 }

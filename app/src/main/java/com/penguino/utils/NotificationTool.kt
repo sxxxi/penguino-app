@@ -5,12 +5,13 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import androidx.core.app.NotificationCompat
+import javax.inject.Inject
 import kotlin.random.Random
 
 /**
  *
  */
-class NotificationTool(private val context: Context) {
+class NotificationTool @Inject constructor(private val context: Context) {
 	private val nm = context.getSystemService(NotificationManager::class.java)
 
 	fun getOrCreateChannel(channel: NotificationChannel): NotificationChannel {
@@ -40,7 +41,10 @@ class NotificationTool(private val context: Context) {
 			nm.notify(
 				it.id,
 				notificationId,
-				notificationBuilder(context, NotificationCompat.Builder(context, channel.id)).build()
+				notificationBuilder(
+					context,
+					NotificationCompat.Builder(context, channel.id)
+				).build()
 			)
 			notificationId
 		}
@@ -67,8 +71,11 @@ class NotificationTool(private val context: Context) {
 }
 
 object NotificationChannels {
-	val BLUETOOTH_CONNECTION by lazy { NotificationChannel(
-		"bluetooth_notification",
-		"Bluetooth notifications",
-		NotificationManager.IMPORTANCE_DEFAULT) }
+	val BLUETOOTH_CONNECTION by lazy {
+		NotificationChannel(
+			"bluetooth_notification",
+			"Bluetooth notifications",
+			NotificationManager.IMPORTANCE_DEFAULT
+		)
+	}
 }

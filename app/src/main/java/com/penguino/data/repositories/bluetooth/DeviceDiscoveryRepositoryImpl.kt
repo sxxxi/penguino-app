@@ -1,21 +1,18 @@
 package com.penguino.data.repositories.bluetooth
 
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothManager
-import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanResult
-import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import com.penguino.data.local.BleServiceDataSource
 import com.penguino.data.local.models.DeviceInfo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import javax.inject.Inject
 
 @SuppressWarnings("MissingPermission")
-class DeviceDiscoveryRepositoryImpl(
+class DeviceDiscoveryRepositoryImpl @Inject constructor(
 	btAdapter: BluetoothAdapter
 ) : DeviceDiscoveryRepository {
 	private val scanner = btAdapter.bluetoothLeScanner

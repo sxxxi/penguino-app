@@ -1,7 +1,7 @@
-package com.penguino.data.di
+package com.penguino
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
-class BluetoothApp: Application()
+class PenguinoApp: Application()

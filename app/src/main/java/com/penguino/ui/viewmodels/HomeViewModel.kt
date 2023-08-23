@@ -3,7 +3,6 @@ package com.penguino.ui.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.penguino.data.models.PetInformation
-import com.penguino.data.repositories.bluetooth.DeviceDiscoveryRepository
 import com.penguino.data.repositories.registration.RegistrationRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +15,6 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
 	private val registrationRepo: RegistrationRepository,
-	private val deviceDiscoveryRepo: DeviceDiscoveryRepository,
 ) : ViewModel() {
 	private val _uiState = MutableStateFlow(HomeUiState())
 	val uiState: StateFlow<HomeUiState> = _uiState
@@ -25,7 +23,7 @@ class HomeViewModel @Inject constructor(
 		viewModelScope.launch {
 			registrationRepo
 				.getSaved().collectLatest { saved ->
-					_uiState.update {  state ->
+					_uiState.update { state ->
 						state.copy(savedDevices = saved)
 					}
 				}
@@ -35,7 +33,7 @@ class HomeViewModel @Inject constructor(
 	fun forgetDevice(id: String) {
 		viewModelScope.launch {
 			// clear focused pet before deleting
-			uiState.value.focusedPet?.let {pet ->
+			uiState.value.focusedPet?.let { pet ->
 				if (pet.address == id) {
 					setFocusedPet(null)
 				}

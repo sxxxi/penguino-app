@@ -1,15 +1,15 @@
 package com.penguino.data.network.models
 
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
 
 data class ModelListResponse(
-	@SerializedName("data") val data: List<Model>,
-	@SerializedName("object") val obj: String,
+	@Json(name="data") val data: List<Model>,
+	@Json(name="object") val obj: String,
 )
 
 data class Model(
-	@SerializedName("id") val id: String,
-	@SerializedName("object") val obj: String,
-	@SerializedName("owned_by") val owner: String,
+	@Json(name="id") val id: String,
+	@Json(name="object") val obj: String,
+	@Json(name="owned_by") val owner: String,
 //	@SerializedName("permission") val permission: List<String>
 )

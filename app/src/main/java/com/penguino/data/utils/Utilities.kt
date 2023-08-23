@@ -1,4 +1,4 @@
-package com.penguino.utils
+package com.penguino.data.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect

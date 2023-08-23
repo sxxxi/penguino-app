@@ -1,4 +1,4 @@
-package com.penguino.utils
+package com.penguino.data.utils
 
 import android.app.Notification
 import android.app.NotificationChannel

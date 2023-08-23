@@ -1,11 +1,12 @@
 package com.penguino.ui.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.penguino.data.models.ChatMessage
 import com.penguino.ui.navigation.RemoteControlArgs
-import com.penguino.data.repositories.bluetooth.BleRepository
+import com.penguino.data.repositories.bluetooth.DeviceConnectionRepository
 import com.penguino.data.repositories.chat.ChatRepository
 import com.penguino.data.models.PetInformation
 import com.penguino.data.repositories.registration.RegistrationRepository
@@ -23,7 +24,7 @@ import javax.inject.Inject
 class RemoteControlViewModel @Inject constructor(
 	savedStateHandle: SavedStateHandle,
 	moshi: Moshi,
-	private val btRepository: BleRepository,
+	private val btRepository: DeviceConnectionRepository,
 	private val chatRepository: ChatRepository,
 	private val registrationRepo: RegistrationRepository
 ): ViewModel() {
@@ -57,7 +58,9 @@ class RemoteControlViewModel @Inject constructor(
 		}
 	}
 
-	fun bindService() = btRepository.bindService()
+	fun bindService() {
+		btRepository.bindService()
+	}
 
 	fun unbindService() = btRepository.unbindService()
 

@@ -8,6 +8,6 @@ interface DeviceDiscoveryRepository {
 	val btEnabled: StateFlow<Boolean>
 	val scanning: StateFlow<Boolean>
 
-	fun scanDevices(durationMillis: Long)
+	suspend fun scanDevices(durationMillis: Long)
 	fun stopScan()
 }

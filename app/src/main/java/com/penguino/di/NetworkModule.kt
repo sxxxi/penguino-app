@@ -1,4 +1,4 @@
-package com.penguino.data.di
+package com.penguino.di
 
 import com.penguino.data.network.ChatNetworkDataSource
 import com.penguino.data.network.RegistrationNetworkDataSource

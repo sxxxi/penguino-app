@@ -1,4 +1,4 @@
-package com.penguino.data.di
+package com.penguino.di
 
 import android.content.Context
 import androidx.room.Room

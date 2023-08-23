@@ -85,7 +85,7 @@ class ScanViewModel @Inject constructor(
 
 	data class ScanUiState(
 		val bluetoothEnabled: Boolean = false,
-		val scanning: Boolean = true,
+		val scanning: Boolean = false,
 		val devicesFound: List<DeviceInfo> = listOf(),
 		val isError: Boolean = false,
 		val errorMessage: String = "",

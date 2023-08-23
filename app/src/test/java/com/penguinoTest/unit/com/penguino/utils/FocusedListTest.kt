@@ -1,6 +1,6 @@
 package com.penguinoTest.unit.com.penguino.utils
 
-import com.penguino.utils.FocusedList
+import com.penguino.data.utils.FocusedList
 import org.junit.Test
 
 class FocusedListTest {

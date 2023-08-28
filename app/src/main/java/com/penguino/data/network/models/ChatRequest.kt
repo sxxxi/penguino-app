@@ -1,6 +1,6 @@
 package com.penguino.data.network.models
 
-import com.penguino.data.models.ChatMessage
+import com.penguino.domain.models.ChatMessage
 import com.squareup.moshi.Json
 
 // TODO: https://platform.openai.com/docs/api-reference/chat/create?lang=python

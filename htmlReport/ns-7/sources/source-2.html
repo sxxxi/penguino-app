@@ -1,0 +1,81 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > DeviceInfoCache</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.penguino.data.cache</a>
+</div>
+
+<h1>Coverage Summary for Class: DeviceInfoCache (com.penguino.data.cache)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">DeviceInfoCache</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.penguino.data.cache
+&nbsp;
+&nbsp;import com.penguino.data.local.models.DeviceInfo
+&nbsp;
+&nbsp;/**
+&nbsp; * A contract for reading and writing RegistrationInfo in the
+&nbsp; * SharedPreferences acting as a cache enabling viewModels to
+&nbsp; * share a single RegistrationInfo
+&nbsp; */
+&nbsp;interface DeviceInfoCache {
+&nbsp;	fun getSelectedDevice(): DeviceInfo?
+&nbsp;	fun saveSelectedDevice(regInfo: DeviceInfo)
+&nbsp;	fun clearSelectedDevice()
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-08-24 12:14</div>
+</div>
+</body>
+</html>

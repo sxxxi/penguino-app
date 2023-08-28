@@ -1,0 +1,135 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > RemoteControlViewModel_Factory</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.penguino.ui.viewmodels</a>
+</div>
+
+<h1>Coverage Summary for Class: RemoteControlViewModel_Factory (com.penguino.ui.viewmodels)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">RemoteControlViewModel_Factory</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.penguino.ui.viewmodels;
+&nbsp;
+&nbsp;import androidx.lifecycle.SavedStateHandle;
+&nbsp;import com.penguino.data.repositories.bluetooth.DeviceConnectionRepository;
+&nbsp;import com.penguino.data.repositories.chat.ChatRepository;
+&nbsp;import com.penguino.data.repositories.registration.RegistrationRepository;
+&nbsp;import com.squareup.moshi.Moshi;
+&nbsp;import dagger.internal.DaggerGenerated;
+&nbsp;import dagger.internal.Factory;
+&nbsp;import dagger.internal.QualifierMetadata;
+&nbsp;import dagger.internal.ScopeMetadata;
+&nbsp;import javax.annotation.processing.Generated;
+&nbsp;import javax.inject.Provider;
+&nbsp;
+&nbsp;@ScopeMetadata
+&nbsp;@QualifierMetadata
+&nbsp;@DaggerGenerated
+&nbsp;@Generated(
+&nbsp;    value = &quot;dagger.internal.codegen.ComponentProcessor&quot;,
+&nbsp;    comments = &quot;https://dagger.dev&quot;
+&nbsp;)
+&nbsp;@SuppressWarnings({
+&nbsp;    &quot;unchecked&quot;,
+&nbsp;    &quot;rawtypes&quot;,
+&nbsp;    &quot;KotlinInternal&quot;,
+&nbsp;    &quot;KotlinInternalInJava&quot;
+&nbsp;})
+&nbsp;public final class RemoteControlViewModel_Factory implements Factory&lt;RemoteControlViewModel&gt; {
+&nbsp;  private final Provider&lt;SavedStateHandle&gt; savedStateHandleProvider;
+&nbsp;
+&nbsp;  private final Provider&lt;Moshi&gt; moshiProvider;
+&nbsp;
+&nbsp;  private final Provider&lt;DeviceConnectionRepository&gt; btRepositoryProvider;
+&nbsp;
+&nbsp;  private final Provider&lt;ChatRepository&gt; chatRepositoryProvider;
+&nbsp;
+&nbsp;  private final Provider&lt;RegistrationRepository&gt; registrationRepoProvider;
+&nbsp;
+&nbsp;  public RemoteControlViewModel_Factory(Provider&lt;SavedStateHandle&gt; savedStateHandleProvider,
+&nbsp;      Provider&lt;Moshi&gt; moshiProvider, Provider&lt;DeviceConnectionRepository&gt; btRepositoryProvider,
+&nbsp;      Provider&lt;ChatRepository&gt; chatRepositoryProvider,
+&nbsp;      Provider&lt;RegistrationRepository&gt; registrationRepoProvider) {
+&nbsp;    this.savedStateHandleProvider = savedStateHandleProvider;
+&nbsp;    this.moshiProvider = moshiProvider;
+&nbsp;    this.btRepositoryProvider = btRepositoryProvider;
+&nbsp;    this.chatRepositoryProvider = chatRepositoryProvider;
+&nbsp;    this.registrationRepoProvider = registrationRepoProvider;
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public RemoteControlViewModel get() {
+&nbsp;    return newInstance(savedStateHandleProvider.get(), moshiProvider.get(), btRepositoryProvider.get(), chatRepositoryProvider.get(), registrationRepoProvider.get());
+&nbsp;  }
+&nbsp;
+&nbsp;  public static RemoteControlViewModel_Factory create(
+&nbsp;      Provider&lt;SavedStateHandle&gt; savedStateHandleProvider, Provider&lt;Moshi&gt; moshiProvider,
+&nbsp;      Provider&lt;DeviceConnectionRepository&gt; btRepositoryProvider,
+&nbsp;      Provider&lt;ChatRepository&gt; chatRepositoryProvider,
+&nbsp;      Provider&lt;RegistrationRepository&gt; registrationRepoProvider) {
+&nbsp;    return new RemoteControlViewModel_Factory(savedStateHandleProvider, moshiProvider, btRepositoryProvider, chatRepositoryProvider, registrationRepoProvider);
+&nbsp;  }
+&nbsp;
+&nbsp;  public static RemoteControlViewModel newInstance(SavedStateHandle savedStateHandle, Moshi moshi,
+&nbsp;      DeviceConnectionRepository btRepository, ChatRepository chatRepository,
+&nbsp;      RegistrationRepository registrationRepo) {
+&nbsp;    return new RemoteControlViewModel(savedStateHandle, moshi, btRepository, chatRepository, registrationRepo);
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-08-24 12:14</div>
+</div>
+</body>
+</html>

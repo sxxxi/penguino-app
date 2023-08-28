@@ -1,6 +1,6 @@
 package com.penguino.data.repositories.registration
 
-import com.penguino.data.models.Image
+import com.penguino.domain.models.Image
 
 interface ImageStore {
 	fun getImage(path: String): Image?

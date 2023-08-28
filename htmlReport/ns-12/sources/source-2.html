@@ -1,0 +1,110 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > PetInfoMapperImpl_Factory</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.penguino.data.utils.mappers</a>
+</div>
+
+<h1>Coverage Summary for Class: PetInfoMapperImpl_Factory (com.penguino.data.utils.mappers)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">PetInfoMapperImpl_Factory</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.penguino.data.utils.mappers;
+&nbsp;
+&nbsp;import com.penguino.data.repositories.registration.ImageStore;
+&nbsp;import dagger.internal.DaggerGenerated;
+&nbsp;import dagger.internal.Factory;
+&nbsp;import dagger.internal.QualifierMetadata;
+&nbsp;import dagger.internal.ScopeMetadata;
+&nbsp;import javax.annotation.processing.Generated;
+&nbsp;import javax.inject.Provider;
+&nbsp;
+&nbsp;@ScopeMetadata
+&nbsp;@QualifierMetadata
+&nbsp;@DaggerGenerated
+&nbsp;@Generated(
+&nbsp;    value = &quot;dagger.internal.codegen.ComponentProcessor&quot;,
+&nbsp;    comments = &quot;https://dagger.dev&quot;
+&nbsp;)
+&nbsp;@SuppressWarnings({
+&nbsp;    &quot;unchecked&quot;,
+&nbsp;    &quot;rawtypes&quot;,
+&nbsp;    &quot;KotlinInternal&quot;,
+&nbsp;    &quot;KotlinInternalInJava&quot;
+&nbsp;})
+&nbsp;public final class PetInfoMapperImpl_Factory implements Factory&lt;PetInfoMapperImpl&gt; {
+&nbsp;  private final Provider&lt;ImageStore&gt; imageStoreProvider;
+&nbsp;
+&nbsp;  public PetInfoMapperImpl_Factory(Provider&lt;ImageStore&gt; imageStoreProvider) {
+&nbsp;    this.imageStoreProvider = imageStoreProvider;
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public PetInfoMapperImpl get() {
+&nbsp;    return newInstance(imageStoreProvider.get());
+&nbsp;  }
+&nbsp;
+&nbsp;  public static PetInfoMapperImpl_Factory create(Provider&lt;ImageStore&gt; imageStoreProvider) {
+&nbsp;    return new PetInfoMapperImpl_Factory(imageStoreProvider);
+&nbsp;  }
+&nbsp;
+&nbsp;  public static PetInfoMapperImpl newInstance(ImageStore imageStore) {
+&nbsp;    return new PetInfoMapperImpl(imageStore);
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-08-24 12:14</div>
+</div>
+</body>
+</html>

@@ -1,6 +1,6 @@
 package com.penguino.data.network.models
 
-import com.penguino.data.models.ChatMessage
+import com.penguino.domain.models.ChatMessage
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 

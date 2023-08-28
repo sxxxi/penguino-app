@@ -1,9 +1,7 @@
 package com.penguino.data.repositories.chat
 
-import com.penguino.data.models.ChatMessage
-import com.penguino.data.network.models.ChatResponse
+import com.penguino.domain.models.ChatMessage
 import kotlinx.coroutines.flow.StateFlow
-import retrofit2.Callback
 
 interface ChatRepository {
 	val history: StateFlow<List<ChatMessage>>

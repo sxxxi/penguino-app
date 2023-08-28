@@ -2,9 +2,9 @@ package com.penguino.data.repositories.registration
 
 import com.penguino.data.local.dao.DeviceDao
 import com.penguino.data.local.models.RegistrationInfoEntity
-import com.penguino.data.models.PetInformation
-import com.penguino.data.models.forms.PetRegistrationForm
-import com.penguino.data.utils.mappers.PetInfoMapper
+import com.penguino.data.mappers.PetInfoMapper
+import com.penguino.domain.models.PetInformation
+import com.penguino.domain.forms.PetRegistrationForm
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

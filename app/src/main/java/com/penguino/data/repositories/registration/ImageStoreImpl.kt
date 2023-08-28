@@ -2,7 +2,7 @@ package com.penguino.data.repositories.registration
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import com.penguino.data.models.Image
+import com.penguino.domain.models.Image
 import java.io.File
 import javax.inject.Inject
 

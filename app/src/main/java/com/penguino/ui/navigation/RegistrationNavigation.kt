@@ -6,8 +6,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.penguino.ui.viewmodels.RegistrationViewModel
-import com.penguino.ui.screens.RegistrationScreen
+import com.penguino.prestentation.registration.RegistrationScreen
+import com.penguino.prestentation.registration.RegistrationViewModel
 
 fun NavGraphBuilder.registrationScreen(
 	onNavigateToHome: () -> Unit,

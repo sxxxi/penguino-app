@@ -8,7 +8,7 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
-import com.penguino.ui.screens.MainScreen
+import com.penguino.prestentation.MainScreen
 import com.penguino.ui.theme.PenguinoTheme
 import dagger.hilt.android.AndroidEntryPoint
 

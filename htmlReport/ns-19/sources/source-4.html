@@ -1,0 +1,240 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > RegistrationViewModel</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.penguino.ui.viewmodels</a>
+</div>
+
+<h1>Coverage Summary for Class: RegistrationViewModel (com.penguino.ui.viewmodels)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">RegistrationViewModel</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/14)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">RegistrationViewModel$onFormSubmit$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">RegistrationViewModel$RegistrationUiState</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/6)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/23)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.penguino.ui.viewmodels
+&nbsp;
+&nbsp;import android.graphics.Bitmap
+&nbsp;import androidx.lifecycle.ViewModel
+&nbsp;import androidx.lifecycle.viewModelScope
+&nbsp;import com.penguino.data.cache.DeviceInfoCache
+&nbsp;import com.penguino.data.local.models.DeviceInfo
+&nbsp;import com.penguino.data.local.models.RegistrationInfoEntity
+&nbsp;import com.penguino.data.models.Image
+&nbsp;import com.penguino.data.models.forms.PetRegistrationForm
+&nbsp;import com.penguino.data.repositories.registration.RegistrationRepositoryImpl
+&nbsp;import dagger.hilt.android.lifecycle.HiltViewModel
+&nbsp;import kotlinx.coroutines.flow.MutableStateFlow
+&nbsp;import kotlinx.coroutines.flow.StateFlow
+&nbsp;import kotlinx.coroutines.flow.update
+&nbsp;import kotlinx.coroutines.launch
+&nbsp;import javax.inject.Inject
+&nbsp;
+&nbsp;@HiltViewModel
+&nbsp;class RegistrationViewModel @Inject constructor(
+&nbsp;	deviceInfoCache: DeviceInfoCache,
+<b class="nc">&nbsp;	private val regRepo: RegistrationRepositoryImpl,</b>
+<b class="nc">&nbsp;) : ViewModel() {</b>
+<b class="nc">&nbsp;	private val _uiState = MutableStateFlow(</b>
+<b class="nc">&nbsp;		RegistrationUiState(</b>
+<b class="nc">&nbsp;			regInfo = RegistrationInfoEntity(),</b>
+<b class="nc">&nbsp;			regForm = PetRegistrationForm(</b>
+<b class="nc">&nbsp;				device = deviceInfoCache.getSelectedDevice() ?: DeviceInfo()</b>
+&nbsp;			)
+&nbsp;		)
+&nbsp;	)
+<b class="nc">&nbsp;	val uiState: StateFlow&lt;RegistrationUiState&gt; = _uiState</b>
+&nbsp;
+&nbsp;	fun onFormSubmit() {
+<b class="nc">&nbsp;		viewModelScope.launch {</b>
+<b class="nc">&nbsp;			_uiState.update {</b>
+<b class="nc">&nbsp;				it.copy(regForm = it.regForm.copy(name = it.regForm.name.replaceFirstChar { ch -&gt; ch.uppercase() }))</b>
+&nbsp;			}
+<b class="nc">&nbsp;			regRepo.save(uiState.value.regForm)</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	fun updateRegForm(updateLambda: (PetRegistrationForm) -&gt; PetRegistrationForm) {
+<b class="nc">&nbsp;		_uiState.update { uiState -&gt;</b>
+<b class="nc">&nbsp;			updateLambda(uiState.regForm).let { regForm -&gt;</b>
+<b class="nc">&nbsp;				uiState.copy(regForm = updateLambda(regForm))</b>
+&nbsp;			}
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	fun onPfpChange(pfp: Image?) {
+<b class="nc">&nbsp;		_uiState.update { state -&gt;</b>
+<b class="nc">&nbsp;			state.copy(regForm = state.regForm.copy(pfp = pfp))</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+<b class="nc">&nbsp;	data class RegistrationUiState(</b>
+<b class="nc">&nbsp;		val suggestions: List&lt;String&gt; = listOf(),</b>
+<b class="nc">&nbsp;		val regInfo: RegistrationInfoEntity,</b>
+<b class="nc">&nbsp;		val pfp: Bitmap? = null,</b>
+<b class="nc">&nbsp;		val regForm: PetRegistrationForm = PetRegistrationForm()</b>
+&nbsp;	)
+&nbsp;}
+&nbsp;
+&nbsp;
+&nbsp;// REFERENCE
+&nbsp;//    companion object {
+&nbsp;//        private var instance: RegistrationVM? = null
+&nbsp;//        val Factory = object: ViewModelProvider.Factory {
+&nbsp;//            override fun &lt;T : ViewModel&gt; create(modelClass: Class&lt;T&gt;, extras: CreationExtras): T {
+&nbsp;//                if (instance == null) {
+&nbsp;//                    instance = RegistrationVM(extras.createSavedStateHandle())
+&nbsp;//                }
+&nbsp;//                return instance as T
+&nbsp;//            }
+&nbsp;//        }
+&nbsp;//    }
+&nbsp;
+&nbsp;/*
+&nbsp; * Please don&#39;t use: _mutTest, test, and testUpdate.
+&nbsp; * This is only for experimenting with SavedStateHandle and
+&nbsp; * will be removed in the future.
+&nbsp; */
+&nbsp;//    private var _mutTest = MutableStateFlow&lt;RegistrationInfo&gt;(
+&nbsp;//        savedStateHandle.getStateFlow(
+&nbsp;//            SAVED_REG_INFO, RegistrationInfo()).value)
+&nbsp;//    val test = _mutTest.asStateFlow()
+&nbsp;//
+&nbsp;//    fun testUpdate(updateLambda: (RegistrationInfo) -&gt; Unit) {
+&nbsp;//        updateLambda(_mutTest.value)
+&nbsp;//        Log.d(TAG, &quot;Check: ${Json.encodeToString(test.value)}&quot;)
+&nbsp;//    }
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-08-24 12:14</div>
+</div>
+</body>
+</html>

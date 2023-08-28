@@ -35,7 +35,6 @@ class PenguinoGattService : Service(), LeService {
 				STATE_GATT_DISCONNECTED -> ACTION_GATT_DISCONNECTED
 				else -> ACTION_GATT_DISCONNECTED
 			}
-			Log.d(TAG, "$status $action")
 			broadcastUpdate(action)
 			super.onConnectionStateChange(gatt, status, newState)
 		}

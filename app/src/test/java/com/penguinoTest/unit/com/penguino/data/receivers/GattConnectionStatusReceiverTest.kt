@@ -4,13 +4,10 @@ import android.content.Intent
 import com.penguino.data.bluetooth.PenguinoGattService
 import com.penguino.data.bluetooth.receiver.GattConnectionStatusReceiver
 import kotlinx.coroutines.runBlocking
-import org.junit.Test
-import org.junit.runner.RunWith
+import org.junit.jupiter.api.Test
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.`when`
-import org.mockito.junit.MockitoJUnitRunner
 
-@RunWith(MockitoJUnitRunner::class)
 class GattConnectionStatusReceiverTest {
 	private val receiver = GattConnectionStatusReceiver()
 

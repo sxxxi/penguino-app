@@ -1,7 +1,7 @@
 package com.penguino.data.repositories.registration
 
-import com.penguino.data.models.PetInformation
-import com.penguino.data.models.forms.PetRegistrationForm
+import com.penguino.domain.forms.PetRegistrationForm
+import com.penguino.domain.models.PetInformation
 import kotlinx.coroutines.flow.Flow
 
 interface RegistrationRepository {

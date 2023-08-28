@@ -1,0 +1,111 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > HomeViewModel_Factory</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.penguino.ui.viewmodels</a>
+</div>
+
+<h1>Coverage Summary for Class: HomeViewModel_Factory (com.penguino.ui.viewmodels)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">HomeViewModel_Factory</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.penguino.ui.viewmodels;
+&nbsp;
+&nbsp;import com.penguino.data.repositories.registration.RegistrationRepository;
+&nbsp;import dagger.internal.DaggerGenerated;
+&nbsp;import dagger.internal.Factory;
+&nbsp;import dagger.internal.QualifierMetadata;
+&nbsp;import dagger.internal.ScopeMetadata;
+&nbsp;import javax.annotation.processing.Generated;
+&nbsp;import javax.inject.Provider;
+&nbsp;
+&nbsp;@ScopeMetadata
+&nbsp;@QualifierMetadata
+&nbsp;@DaggerGenerated
+&nbsp;@Generated(
+&nbsp;    value = &quot;dagger.internal.codegen.ComponentProcessor&quot;,
+&nbsp;    comments = &quot;https://dagger.dev&quot;
+&nbsp;)
+&nbsp;@SuppressWarnings({
+&nbsp;    &quot;unchecked&quot;,
+&nbsp;    &quot;rawtypes&quot;,
+&nbsp;    &quot;KotlinInternal&quot;,
+&nbsp;    &quot;KotlinInternalInJava&quot;
+&nbsp;})
+&nbsp;public final class HomeViewModel_Factory implements Factory&lt;HomeViewModel&gt; {
+&nbsp;  private final Provider&lt;RegistrationRepository&gt; registrationRepoProvider;
+&nbsp;
+&nbsp;  public HomeViewModel_Factory(Provider&lt;RegistrationRepository&gt; registrationRepoProvider) {
+&nbsp;    this.registrationRepoProvider = registrationRepoProvider;
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public HomeViewModel get() {
+&nbsp;    return newInstance(registrationRepoProvider.get());
+&nbsp;  }
+&nbsp;
+&nbsp;  public static HomeViewModel_Factory create(
+&nbsp;      Provider&lt;RegistrationRepository&gt; registrationRepoProvider) {
+&nbsp;    return new HomeViewModel_Factory(registrationRepoProvider);
+&nbsp;  }
+&nbsp;
+&nbsp;  public static HomeViewModel newInstance(RegistrationRepository registrationRepo) {
+&nbsp;    return new HomeViewModel(registrationRepo);
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-08-24 12:14</div>
+</div>
+</body>
+</html>

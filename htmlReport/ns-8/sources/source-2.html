@@ -1,0 +1,301 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > DeviceDatabase_Impl</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.penguino.data.local</a>
+</div>
+
+<h1>Coverage Summary for Class: DeviceDatabase_Impl (com.penguino.data.local)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DeviceDatabase_Impl</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/34)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">DeviceDatabase_Impl$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/31)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/65)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.penguino.data.local;
+&nbsp;
+&nbsp;import androidx.annotation.NonNull;
+&nbsp;import androidx.room.DatabaseConfiguration;
+&nbsp;import androidx.room.InvalidationTracker;
+&nbsp;import androidx.room.RoomOpenHelper;
+&nbsp;import androidx.room.RoomOpenHelper.Delegate;
+&nbsp;import androidx.room.RoomOpenHelper.ValidationResult;
+&nbsp;import androidx.room.migration.AutoMigrationSpec;
+&nbsp;import androidx.room.migration.Migration;
+&nbsp;import androidx.room.util.DBUtil;
+&nbsp;import androidx.room.util.TableInfo;
+&nbsp;import androidx.room.util.TableInfo.Column;
+&nbsp;import androidx.room.util.TableInfo.ForeignKey;
+&nbsp;import androidx.room.util.TableInfo.Index;
+&nbsp;import androidx.sqlite.db.SupportSQLiteDatabase;
+&nbsp;import androidx.sqlite.db.SupportSQLiteOpenHelper;
+&nbsp;import androidx.sqlite.db.SupportSQLiteOpenHelper.Callback;
+&nbsp;import androidx.sqlite.db.SupportSQLiteOpenHelper.Configuration;
+&nbsp;import com.penguino.data.local.dao.DeviceDao;
+&nbsp;import com.penguino.data.local.dao.DeviceDao_Impl;
+&nbsp;import java.lang.Class;
+&nbsp;import java.lang.Override;
+&nbsp;import java.lang.String;
+&nbsp;import java.lang.SuppressWarnings;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.HashSet;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Set;
+&nbsp;import javax.annotation.processing.Generated;
+&nbsp;
+&nbsp;@Generated(&quot;androidx.room.RoomProcessor&quot;)
+&nbsp;@SuppressWarnings({&quot;unchecked&quot;, &quot;deprecation&quot;})
+<b class="nc">&nbsp;public final class DeviceDatabase_Impl extends DeviceDatabase {</b>
+&nbsp;  private volatile DeviceDao _deviceDao;
+&nbsp;
+&nbsp;  @Override
+&nbsp;  protected SupportSQLiteOpenHelper createOpenHelper(DatabaseConfiguration configuration) {
+<b class="nc">&nbsp;    final SupportSQLiteOpenHelper.Callback _openCallback = new RoomOpenHelper(configuration, new RoomOpenHelper.Delegate(1) {</b>
+&nbsp;      @Override
+&nbsp;      public void createAllTables(SupportSQLiteDatabase _db) {
+<b class="nc">&nbsp;        _db.execSQL(&quot;CREATE TABLE IF NOT EXISTS `RegistrationInfoEntity` (`pfpPath` TEXT, `petName` TEXT NOT NULL, `birthDate` INTEGER NOT NULL, `address` TEXT NOT NULL, `deviceName` TEXT NOT NULL, PRIMARY KEY(`address`))&quot;);</b>
+<b class="nc">&nbsp;        _db.execSQL(&quot;CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)&quot;);</b>
+<b class="nc">&nbsp;        _db.execSQL(&quot;INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, &#39;926bfbb28a4104a11d55d1bb37414be7&#39;)&quot;);</b>
+&nbsp;      }
+&nbsp;
+&nbsp;      @Override
+&nbsp;      public void dropAllTables(SupportSQLiteDatabase _db) {
+<b class="nc">&nbsp;        _db.execSQL(&quot;DROP TABLE IF EXISTS `RegistrationInfoEntity`&quot;);</b>
+<b class="nc">&nbsp;        if (mCallbacks != null) {</b>
+<b class="nc">&nbsp;          for (int _i = 0, _size = mCallbacks.size(); _i &lt; _size; _i++) {</b>
+<b class="nc">&nbsp;            mCallbacks.get(_i).onDestructiveMigration(_db);</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+&nbsp;
+&nbsp;      @Override
+&nbsp;      public void onCreate(SupportSQLiteDatabase _db) {
+<b class="nc">&nbsp;        if (mCallbacks != null) {</b>
+<b class="nc">&nbsp;          for (int _i = 0, _size = mCallbacks.size(); _i &lt; _size; _i++) {</b>
+<b class="nc">&nbsp;            mCallbacks.get(_i).onCreate(_db);</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+&nbsp;
+&nbsp;      @Override
+&nbsp;      public void onOpen(SupportSQLiteDatabase _db) {
+<b class="nc">&nbsp;        mDatabase = _db;</b>
+<b class="nc">&nbsp;        internalInitInvalidationTracker(_db);</b>
+<b class="nc">&nbsp;        if (mCallbacks != null) {</b>
+<b class="nc">&nbsp;          for (int _i = 0, _size = mCallbacks.size(); _i &lt; _size; _i++) {</b>
+<b class="nc">&nbsp;            mCallbacks.get(_i).onOpen(_db);</b>
+&nbsp;          }
+&nbsp;        }
+&nbsp;      }
+&nbsp;
+&nbsp;      @Override
+&nbsp;      public void onPreMigrate(SupportSQLiteDatabase _db) {
+<b class="nc">&nbsp;        DBUtil.dropFtsSyncTriggers(_db);</b>
+&nbsp;      }
+&nbsp;
+&nbsp;      @Override
+&nbsp;      public void onPostMigrate(SupportSQLiteDatabase _db) {
+<b class="nc">&nbsp;      }</b>
+&nbsp;
+&nbsp;      @Override
+&nbsp;      public RoomOpenHelper.ValidationResult onValidateSchema(SupportSQLiteDatabase _db) {
+<b class="nc">&nbsp;        final HashMap&lt;String, TableInfo.Column&gt; _columnsRegistrationInfoEntity = new HashMap&lt;String, TableInfo.Column&gt;(5);</b>
+<b class="nc">&nbsp;        _columnsRegistrationInfoEntity.put(&quot;pfpPath&quot;, new TableInfo.Column(&quot;pfpPath&quot;, &quot;TEXT&quot;, false, 0, null, TableInfo.CREATED_FROM_ENTITY));</b>
+<b class="nc">&nbsp;        _columnsRegistrationInfoEntity.put(&quot;petName&quot;, new TableInfo.Column(&quot;petName&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</b>
+<b class="nc">&nbsp;        _columnsRegistrationInfoEntity.put(&quot;birthDate&quot;, new TableInfo.Column(&quot;birthDate&quot;, &quot;INTEGER&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</b>
+<b class="nc">&nbsp;        _columnsRegistrationInfoEntity.put(&quot;address&quot;, new TableInfo.Column(&quot;address&quot;, &quot;TEXT&quot;, true, 1, null, TableInfo.CREATED_FROM_ENTITY));</b>
+<b class="nc">&nbsp;        _columnsRegistrationInfoEntity.put(&quot;deviceName&quot;, new TableInfo.Column(&quot;deviceName&quot;, &quot;TEXT&quot;, true, 0, null, TableInfo.CREATED_FROM_ENTITY));</b>
+<b class="nc">&nbsp;        final HashSet&lt;TableInfo.ForeignKey&gt; _foreignKeysRegistrationInfoEntity = new HashSet&lt;TableInfo.ForeignKey&gt;(0);</b>
+<b class="nc">&nbsp;        final HashSet&lt;TableInfo.Index&gt; _indicesRegistrationInfoEntity = new HashSet&lt;TableInfo.Index&gt;(0);</b>
+<b class="nc">&nbsp;        final TableInfo _infoRegistrationInfoEntity = new TableInfo(&quot;RegistrationInfoEntity&quot;, _columnsRegistrationInfoEntity, _foreignKeysRegistrationInfoEntity, _indicesRegistrationInfoEntity);</b>
+<b class="nc">&nbsp;        final TableInfo _existingRegistrationInfoEntity = TableInfo.read(_db, &quot;RegistrationInfoEntity&quot;);</b>
+<b class="nc">&nbsp;        if (! _infoRegistrationInfoEntity.equals(_existingRegistrationInfoEntity)) {</b>
+<b class="nc">&nbsp;          return new RoomOpenHelper.ValidationResult(false, &quot;RegistrationInfoEntity(com.penguino.data.local.models.RegistrationInfoEntity).\n&quot;</b>
+&nbsp;                  + &quot; Expected:\n&quot; + _infoRegistrationInfoEntity + &quot;\n&quot;
+&nbsp;                  + &quot; Found:\n&quot; + _existingRegistrationInfoEntity);
+&nbsp;        }
+<b class="nc">&nbsp;        return new RoomOpenHelper.ValidationResult(true, null);</b>
+&nbsp;      }
+&nbsp;    }, &quot;926bfbb28a4104a11d55d1bb37414be7&quot;, &quot;c0bda2e0165c93146ec0836850d104a6&quot;);
+<b class="nc">&nbsp;    final SupportSQLiteOpenHelper.Configuration _sqliteConfig = SupportSQLiteOpenHelper.Configuration.builder(configuration.context)</b>
+<b class="nc">&nbsp;        .name(configuration.name)</b>
+<b class="nc">&nbsp;        .callback(_openCallback)</b>
+<b class="nc">&nbsp;        .build();</b>
+<b class="nc">&nbsp;    final SupportSQLiteOpenHelper _helper = configuration.sqliteOpenHelperFactory.create(_sqliteConfig);</b>
+<b class="nc">&nbsp;    return _helper;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  protected InvalidationTracker createInvalidationTracker() {
+<b class="nc">&nbsp;    final HashMap&lt;String, String&gt; _shadowTablesMap = new HashMap&lt;String, String&gt;(0);</b>
+<b class="nc">&nbsp;    HashMap&lt;String, Set&lt;String&gt;&gt; _viewTables = new HashMap&lt;String, Set&lt;String&gt;&gt;(0);</b>
+<b class="nc">&nbsp;    return new InvalidationTracker(this, _shadowTablesMap, _viewTables, &quot;RegistrationInfoEntity&quot;);</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public void clearAllTables() {
+<b class="nc">&nbsp;    super.assertNotMainThread();</b>
+<b class="nc">&nbsp;    final SupportSQLiteDatabase _db = super.getOpenHelper().getWritableDatabase();</b>
+&nbsp;    try {
+<b class="nc">&nbsp;      super.beginTransaction();</b>
+<b class="nc">&nbsp;      _db.execSQL(&quot;DELETE FROM `RegistrationInfoEntity`&quot;);</b>
+<b class="nc">&nbsp;      super.setTransactionSuccessful();</b>
+&nbsp;    } finally {
+<b class="nc">&nbsp;      super.endTransaction();</b>
+<b class="nc">&nbsp;      _db.query(&quot;PRAGMA wal_checkpoint(FULL)&quot;).close();</b>
+<b class="nc">&nbsp;      if (!_db.inTransaction()) {</b>
+<b class="nc">&nbsp;        _db.execSQL(&quot;VACUUM&quot;);</b>
+&nbsp;      }
+<b class="nc">&nbsp;    }</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  protected Map&lt;Class&lt;?&gt;, List&lt;Class&lt;?&gt;&gt;&gt; getRequiredTypeConverters() {
+<b class="nc">&nbsp;    final HashMap&lt;Class&lt;?&gt;, List&lt;Class&lt;?&gt;&gt;&gt; _typeConvertersMap = new HashMap&lt;Class&lt;?&gt;, List&lt;Class&lt;?&gt;&gt;&gt;();</b>
+<b class="nc">&nbsp;    _typeConvertersMap.put(DeviceDao.class, DeviceDao_Impl.getRequiredConverters());</b>
+<b class="nc">&nbsp;    return _typeConvertersMap;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public Set&lt;Class&lt;? extends AutoMigrationSpec&gt;&gt; getRequiredAutoMigrationSpecs() {
+<b class="nc">&nbsp;    final HashSet&lt;Class&lt;? extends AutoMigrationSpec&gt;&gt; _autoMigrationSpecsSet = new HashSet&lt;Class&lt;? extends AutoMigrationSpec&gt;&gt;();</b>
+<b class="nc">&nbsp;    return _autoMigrationSpecsSet;</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public List&lt;Migration&gt; getAutoMigrations(
+&nbsp;      @NonNull Map&lt;Class&lt;? extends AutoMigrationSpec&gt;, AutoMigrationSpec&gt; autoMigrationSpecsMap) {
+<b class="nc">&nbsp;    return Arrays.asList();</b>
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public DeviceDao dao() {
+<b class="nc">&nbsp;    if (_deviceDao != null) {</b>
+<b class="nc">&nbsp;      return _deviceDao;</b>
+&nbsp;    } else {
+<b class="nc">&nbsp;      synchronized(this) {</b>
+<b class="nc">&nbsp;        if(_deviceDao == null) {</b>
+<b class="nc">&nbsp;          _deviceDao = new DeviceDao_Impl(this);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return _deviceDao;</b>
+<b class="nc">&nbsp;      }</b>
+&nbsp;    }
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-08-24 12:14</div>
+</div>
+</body>
+</html>

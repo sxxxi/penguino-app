@@ -1,0 +1,165 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > FocusedList</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.penguino.data.utils</a>
+</div>
+
+<h1>Coverage Summary for Class: FocusedList (com.penguino.data.utils)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">FocusedList</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/23)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.penguino.data.utils
+&nbsp;
+&nbsp;import kotlinx.coroutines.flow.MutableStateFlow
+&nbsp;import kotlinx.coroutines.flow.StateFlow
+&nbsp;
+<b class="nc">&nbsp;class FocusedList&lt;T&gt;(window: Int = 5): Collection&lt;T&gt; {</b>
+&nbsp;	override val size: Int
+&nbsp;		get() {
+<b class="nc">&nbsp;			return _history.value.size</b>
+&nbsp;		}
+&nbsp;
+<b class="nc">&nbsp;	private var windowSize: Int = window</b>
+&nbsp;		set(value) {
+<b class="nc">&nbsp;			field = value</b>
+<b class="nc">&nbsp;			updatePtr()</b>
+&nbsp;		}
+<b class="nc">&nbsp;	var ptr = -1</b>
+&nbsp;		private set
+<b class="nc">&nbsp;	private var _history = MutableStateFlow&lt;List&lt;T&gt;&gt;(listOf())</b>
+<b class="nc">&nbsp;	val history: StateFlow&lt;List&lt;T&gt;&gt; = _history	// Let&#39;s convert this to a state once we start integrating with the ui.</b>
+&nbsp;
+&nbsp;	private fun updatePtr() {
+<b class="nc">&nbsp;		ptr = if (history.value.isEmpty())</b>
+<b class="nc">&nbsp;			-1</b>
+<b class="nc">&nbsp;		else if (history.value.size &lt; windowSize)</b>
+<b class="nc">&nbsp;			0</b>
+<b class="nc">&nbsp;		else history.value.size - windowSize</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	/**
+&nbsp;	 * Retrieve up to the size of `window` from the end of the list
+&nbsp;	 */
+&nbsp;	fun getChunk(): List&lt;T&gt; {
+<b class="nc">&nbsp;		updatePtr()	// Make sure ptr is fresh and crispy</b>
+<b class="nc">&nbsp;		return if(ptr &lt; 0) {</b>
+<b class="nc">&nbsp;			listOf()</b>
+&nbsp;		} else {
+<b class="nc">&nbsp;			history.value.slice((ptr) until history.value.size)</b>
+&nbsp;		}
+&nbsp;	}
+&nbsp;
+&nbsp;	fun addEntry(entry: List&lt;T&gt;) {
+<b class="nc">&nbsp;		_history.value += entry</b>
+<b class="nc">&nbsp;		updatePtr()</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	override fun contains(element: T): Boolean {
+<b class="nc">&nbsp;		return _history.value.contains(element)</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	override fun containsAll(elements: Collection&lt;T&gt;): Boolean {
+<b class="nc">&nbsp;		return _history.value.containsAll(elements)</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	override fun isEmpty(): Boolean {
+<b class="nc">&nbsp;		return _history.value.isEmpty()</b>
+&nbsp;	}
+&nbsp;
+&nbsp;	override fun iterator(): Iterator&lt;T&gt; {
+<b class="nc">&nbsp;		return _history.value.iterator()</b>
+&nbsp;	}
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-08-24 12:14</div>
+</div>
+</body>
+</html>

@@ -7,8 +7,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.penguino.ui.viewmodels.RemoteControlViewModel
-import com.penguino.ui.screens.RemoteControlScreen
+import com.penguino.prestentation.rc.RemoteControlScreen
+import com.penguino.prestentation.rc.RemoteControlViewModel
 import com.squareup.moshi.Moshi
 
 const val rcDeviceArg = "devId"

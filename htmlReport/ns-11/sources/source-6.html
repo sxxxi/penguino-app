@@ -1,0 +1,110 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <title>Coverage Report > NotificationTool_Factory</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.penguino.data.utils</a>
+</div>
+
+<h1>Coverage Summary for Class: NotificationTool_Factory (com.penguino.data.utils)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">NotificationTool_Factory</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.penguino.data.utils;
+&nbsp;
+&nbsp;import android.content.Context;
+&nbsp;import dagger.internal.DaggerGenerated;
+&nbsp;import dagger.internal.Factory;
+&nbsp;import dagger.internal.QualifierMetadata;
+&nbsp;import dagger.internal.ScopeMetadata;
+&nbsp;import javax.annotation.processing.Generated;
+&nbsp;import javax.inject.Provider;
+&nbsp;
+&nbsp;@ScopeMetadata
+&nbsp;@QualifierMetadata
+&nbsp;@DaggerGenerated
+&nbsp;@Generated(
+&nbsp;    value = &quot;dagger.internal.codegen.ComponentProcessor&quot;,
+&nbsp;    comments = &quot;https://dagger.dev&quot;
+&nbsp;)
+&nbsp;@SuppressWarnings({
+&nbsp;    &quot;unchecked&quot;,
+&nbsp;    &quot;rawtypes&quot;,
+&nbsp;    &quot;KotlinInternal&quot;,
+&nbsp;    &quot;KotlinInternalInJava&quot;
+&nbsp;})
+&nbsp;public final class NotificationTool_Factory implements Factory&lt;NotificationTool&gt; {
+&nbsp;  private final Provider&lt;Context&gt; contextProvider;
+&nbsp;
+&nbsp;  public NotificationTool_Factory(Provider&lt;Context&gt; contextProvider) {
+&nbsp;    this.contextProvider = contextProvider;
+&nbsp;  }
+&nbsp;
+&nbsp;  @Override
+&nbsp;  public NotificationTool get() {
+&nbsp;    return newInstance(contextProvider.get());
+&nbsp;  }
+&nbsp;
+&nbsp;  public static NotificationTool_Factory create(Provider&lt;Context&gt; contextProvider) {
+&nbsp;    return new NotificationTool_Factory(contextProvider);
+&nbsp;  }
+&nbsp;
+&nbsp;  public static NotificationTool newInstance(Context context) {
+&nbsp;    return new NotificationTool(context);
+&nbsp;  }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2023-08-24 12:14</div>
+</div>
+</body>
+</html>

@@ -1,7 +1,7 @@
 package com.penguinoTest.unit.com.penguino.utils
 
 import com.penguino.data.utils.FocusedList
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 class FocusedListTest {
 	@Test

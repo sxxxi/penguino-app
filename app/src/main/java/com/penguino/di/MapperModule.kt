@@ -1,10 +1,9 @@
 package com.penguino.di
 
-import com.penguino.data.utils.mappers.PetInfoMapper
-import com.penguino.data.utils.mappers.PetInfoMapperImpl
+import com.penguino.data.mappers.PetInfoMapper
+import com.penguino.data.mappers.PetInfoMapperImpl
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 

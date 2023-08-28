@@ -5,8 +5,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.penguino.ui.screens.ScanScreen
-import com.penguino.ui.viewmodels.ScanViewModel
+import com.penguino.prestentation.scan.ScanScreen
+import com.penguino.prestentation.scan.ScanViewModel
 
 fun NavGraphBuilder.scanScreen(
 	onNavigateToRegistration: () -> Unit,

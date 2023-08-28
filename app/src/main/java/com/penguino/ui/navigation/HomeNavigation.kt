@@ -6,8 +6,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.penguino.ui.screens.HomePage
-import com.penguino.ui.viewmodels.HomeViewModel
+import com.penguino.prestentation.home.HomePage
+import com.penguino.prestentation.home.HomeViewModel
 
 fun NavGraphBuilder.homeScreen(
 //	onSavedPetClicked: (PetInfo) -> Unit,

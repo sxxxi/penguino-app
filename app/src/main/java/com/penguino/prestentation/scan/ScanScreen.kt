@@ -45,9 +45,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import com.penguino.data.local.models.DeviceInfo
 import com.penguino.data.utils.ObserveLifecycle
-import com.penguino.prestentation.scan.ScanViewModel.ScanUiState
 import com.penguino.prestentation.components.ListComponent
 import com.penguino.prestentation.components.ListComponentHeader
+import com.penguino.prestentation.scan.ScanViewModel.ScanUiState
 import com.penguino.ui.theme.PenguinoTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

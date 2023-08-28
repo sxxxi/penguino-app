@@ -7,8 +7,8 @@ import com.penguino.data.cache.DeviceInfoCache
 import com.penguino.data.local.models.DeviceInfo
 import com.penguino.data.local.models.RegistrationInfoEntity
 import com.penguino.data.repositories.registration.RegistrationRepositoryImpl
-import com.penguino.domain.models.Image
 import com.penguino.domain.forms.PetRegistrationForm
+import com.penguino.domain.models.Image
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

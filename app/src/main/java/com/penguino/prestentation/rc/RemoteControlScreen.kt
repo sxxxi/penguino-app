@@ -32,8 +32,8 @@ import androidx.lifecycle.Lifecycle
 import com.penguino.data.bluetooth.PenguinoGattService
 import com.penguino.data.utils.ObserveLifecycle
 import com.penguino.domain.models.PetInformation
-import com.penguino.prestentation.rc.RemoteControlViewModel.RemoteControlUiState
 import com.penguino.prestentation.components.Loader
+import com.penguino.prestentation.rc.RemoteControlViewModel.RemoteControlUiState
 import com.penguino.ui.theme.PenguinoTheme
 
 @Composable

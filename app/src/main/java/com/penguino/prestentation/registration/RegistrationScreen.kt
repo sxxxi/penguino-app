@@ -46,11 +46,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.penguino.data.local.models.RegistrationInfoEntity
-import com.penguino.domain.models.Image
 import com.penguino.domain.forms.PetRegistrationForm
-import com.penguino.prestentation.registration.RegistrationViewModel.RegistrationUiState
+import com.penguino.domain.models.Image
 import com.penguino.prestentation.components.ImageCapture
 import com.penguino.prestentation.components.TextInput
+import com.penguino.prestentation.registration.RegistrationViewModel.RegistrationUiState
 import com.penguino.ui.theme.PenguinoTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

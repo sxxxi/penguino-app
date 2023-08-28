@@ -56,12 +56,12 @@ import androidx.compose.ui.unit.dp
 import com.penguino.R
 import com.penguino.data.utils.EpochFactory
 import com.penguino.domain.models.PetInformation
-import com.penguino.prestentation.home.HomeViewModel.HomeUiState
 import com.penguino.prestentation.components.ConfirmationAlert
 import com.penguino.prestentation.components.CustomCard
 import com.penguino.prestentation.components.ListComponent
 import com.penguino.prestentation.components.ListComponentHeader
 import com.penguino.prestentation.components.PetPic
+import com.penguino.prestentation.home.HomeViewModel.HomeUiState
 import com.penguino.ui.theme.PenguinoTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

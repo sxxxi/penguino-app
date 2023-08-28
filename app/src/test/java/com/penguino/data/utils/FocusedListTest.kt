@@ -1,4 +1,4 @@
-package com.penguinoTest.unit.com.penguino.utils
+package com.penguino.data.utils
 
 import com.penguino.data.utils.FocusedList
 import org.junit.jupiter.api.Test

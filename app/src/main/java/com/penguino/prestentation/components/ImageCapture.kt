@@ -126,13 +126,15 @@ fun ImageCapture(
 			horizontalAlignment = Alignment.CenterHorizontally,
 			verticalArrangement = Arrangement.Center
 		) {
-			pfp?.let { image ->
-				Image(
-					modifier = Modifier.fillMaxSize(),
-					bitmap = image.bitmap.asImageBitmap(),
-					contentDescription = "preview",
-					contentScale = ContentScale.Crop
-				)
+			pfp?.let { img ->
+				img.bitmap?.let { bitmap ->
+					Image(
+						modifier = Modifier.fillMaxSize(),
+						bitmap = bitmap.asImageBitmap(),
+						contentDescription = "preview",
+						contentScale = ContentScale.Crop
+					)
+				}
 			} ?: Icon(imageVector = Icons.Default.Add, contentDescription = "add")
 		}
 	}

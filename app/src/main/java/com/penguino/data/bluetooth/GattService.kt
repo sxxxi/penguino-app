@@ -15,12 +15,9 @@ import androidx.annotation.RequiresPermission
 import com.penguino.data.bluetooth.contracts.LeService
 import java.util.UUID
 
-class PenguinoGattService : Service(), LeService {
-	var adapter: BluetoothAdapter? = null
-		private set
+class GattService : Service(), LeService {
+	private var adapter: BluetoothAdapter? = null
 	private var gatt: BluetoothGatt? = null
-//		private set
-
 	private val gattCallback = object : BluetoothGattCallback() {
 		@RequiresPermission(value = Manifest.permission.BLUETOOTH_CONNECT)
 		override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
@@ -46,18 +43,6 @@ class PenguinoGattService : Service(), LeService {
 		) {
 			super.onCharacteristicWrite(gatt, characteristic, status)
 			Log.d(TAG, "Writing")
-		}
-	}
-
-	override fun onBind(p0: Intent?): IBinder {
-		return BtServiceBinder()
-	}
-
-	inner class BtServiceBinder : Binder() {
-		fun getService(btAdapter: BluetoothAdapter): PenguinoGattService {
-			return this@PenguinoGattService.apply {
-				adapter = btAdapter
-			}
 		}
 	}
 
@@ -120,6 +105,18 @@ class PenguinoGattService : Service(), LeService {
 
 	private fun broadcastUpdate(state: String) {
 		sendBroadcast(Intent(state))
+	}
+
+	override fun onBind(p0: Intent?): IBinder {
+		return BtServiceBinder()
+	}
+
+	inner class BtServiceBinder : Binder() {
+		fun getService(btAdapter: BluetoothAdapter): GattService {
+			return this@GattService.apply {
+				adapter = btAdapter
+			}
+		}
 	}
 
 	companion object {

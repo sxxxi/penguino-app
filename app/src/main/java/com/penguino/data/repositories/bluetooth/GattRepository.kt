@@ -2,7 +2,7 @@ package com.penguino.data.repositories.bluetooth
 
 import kotlinx.coroutines.flow.StateFlow
 
-interface DeviceConnectionRepository {
+interface GattRepository {
 	val connectionState: StateFlow<Int>
 
 	fun bindService()
@@ -12,5 +12,4 @@ interface DeviceConnectionRepository {
 	fun connect(address: String): Boolean
 	fun disconnect()
 
-	fun btEnabled(): Boolean
 }

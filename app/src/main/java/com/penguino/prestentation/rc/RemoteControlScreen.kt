@@ -29,7 +29,7 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
-import com.penguino.data.bluetooth.PenguinoGattService
+import com.penguino.data.bluetooth.GattService
 import com.penguino.data.utils.ObserveLifecycle
 import com.penguino.domain.models.PetInformation
 import com.penguino.prestentation.components.Loader
@@ -96,7 +96,7 @@ fun RemoteControlScreen(
 		})
 
 	when (btConnectionState) {
-		PenguinoGattService.STATE_GATT_CONNECTING -> {
+		GattService.STATE_GATT_CONNECTING -> {
 			Column(
 				Modifier.fillMaxSize(),
 				verticalArrangement = Arrangement.Center,
@@ -106,7 +106,7 @@ fun RemoteControlScreen(
 			}
 		}
 
-		PenguinoGattService.STATE_GATT_CONNECTED -> {
+		GattService.STATE_GATT_CONNECTED -> {
 			Column(modifier.fillMaxSize()) {
 				Column(
 					modifier = Modifier

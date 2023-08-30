@@ -39,7 +39,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".data.bluetooth.PenguinoGattService"
+            android:name=".data.bluetooth.GattService"
             android:exported="false" />
         <receiver android:name=".data.bluetooth.receiver.GattConnectionStatusReceiver"
             android:exported="false">

@@ -3,6 +3,11 @@ package com.penguino.di
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
+import com.penguino.data.bluetooth.BleScanServiceImpl
+import com.penguino.data.bluetooth.GattServiceManagerImpl
+import com.penguino.data.bluetooth.contracts.BleScanService
+import com.penguino.data.bluetooth.contracts.GattServiceManager
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -23,4 +28,10 @@ abstract class BluetoothModule {
 		}
 
 	}
+
+	@Binds
+	abstract fun leServiceManager(impl: GattServiceManagerImpl): GattServiceManager
+
+	@Binds
+	abstract fun bleScan(impl: BleScanServiceImpl): BleScanService
 }

@@ -3,7 +3,7 @@ package com.penguino.prestentation.rc
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.penguino.data.repositories.bluetooth.DeviceConnectionRepository
+import com.penguino.data.repositories.bluetooth.GattRepository
 import com.penguino.data.repositories.chat.ChatRepository
 import com.penguino.data.repositories.registration.RegistrationRepository
 import com.penguino.domain.models.ChatMessage
@@ -23,7 +23,7 @@ import javax.inject.Inject
 class RemoteControlViewModel @Inject constructor(
 	savedStateHandle: SavedStateHandle,
 	moshi: Moshi,
-	private val btRepository: DeviceConnectionRepository,
+	private val btRepository: GattRepository,
 	private val chatRepository: ChatRepository,
 	private val registrationRepo: RegistrationRepository
 ): ViewModel() {

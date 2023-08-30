@@ -22,7 +22,7 @@ class ImageStoreImpl @Inject constructor() : ImageStore {
 		File(image.filePath)
 			.apply { createNewFile() }
 			.outputStream().use { os ->
-				image.bitmap.compress(Bitmap.CompressFormat.JPEG, 50, os)
+				image.bitmap?.compress(Bitmap.CompressFormat.JPEG, 50, os)
 			}
 	}
 

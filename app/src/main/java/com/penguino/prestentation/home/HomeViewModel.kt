@@ -21,12 +21,11 @@ class HomeViewModel @Inject constructor(
 
 	init {
 		viewModelScope.launch {
-			registrationRepo
-				.getSaved().collectLatest { saved ->
-					_uiState.update { state ->
-						state.copy(savedDevices = saved)
-					}
+			registrationRepo.getSaved().collectLatest { saved ->
+				_uiState.update { state ->
+					state.copy(savedDevices = saved)
 				}
+			}
 		}
 	}
 

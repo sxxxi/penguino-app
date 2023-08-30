@@ -25,12 +25,12 @@ fun PetPic(
 	image: Image? = null
 ) {
 	Box(Modifier.padding(containerPadding)) {
-		image?.let { img ->
+		image?.bitmap?.let { img ->
 			Image(
 				modifier = Modifier
 					.clip(RoundedCornerShape(100))
 					.then(modifier),
-				bitmap = img.bitmap.asImageBitmap(),
+				bitmap = img.asImageBitmap(),
 				contentDescription = "Pet image",
 				contentScale = contentScale
 			)

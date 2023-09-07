@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -33,6 +34,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
 import androidx.exifinterface.media.ExifInterface
+import com.penguino.domain.ImageOrientation
 import com.penguino.domain.forms.PetRegistrationForm
 import com.penguino.domain.models.Image
 import kotlinx.coroutines.CoroutineScope
@@ -61,22 +63,31 @@ fun ImageCapture(
 			if (success) {
 				tempImageCache?.path?.let { path ->
 					val file = File(dataDir, path)
-					val image = BitmapFactory.decodeFile(file.path).let { decoded ->
-						val rotation = file.inputStream().use { iStream ->
-							// Get image orientation in EXIF and return rotation amount
-							ExifInterface(iStream).getAttributeInt(
-								ExifInterface.TAG_ORIENTATION,
-								ExifInterface.ORIENTATION_UNDEFINED
-							).let { orientation ->
-								when (orientation) {
-									ExifInterface.ORIENTATION_ROTATE_90 -> 90f
-									ExifInterface.ORIENTATION_ROTATE_180 -> 180f
-									ExifInterface.ORIENTATION_ROTATE_270 -> 270f
-									else -> 0f
-								}
+					val rotate = file.inputStream().use { iStream ->
+						// Get image orientation in EXIF and return rotation amount
+						ExifInterface(iStream).getAttributeInt(
+							ExifInterface.TAG_ORIENTATION,
+							ExifInterface.ORIENTATION_UNDEFINED
+						).let { orientation ->
+							Log.d("orientation", "$orientation ${ExifInterface.ORIENTATION_TRANSVERSE}")
+							when (orientation) {
+								ExifInterface.ORIENTATION_ROTATE_90 -> ImageOrientation(rotation = 90f)
+								ExifInterface.ORIENTATION_ROTATE_180 -> ImageOrientation(rotation = 180f)
+								ExifInterface.ORIENTATION_ROTATE_270 -> ImageOrientation(rotation = 270f)
+								ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> ImageOrientation(scaleX = -1f)
+								ExifInterface.ORIENTATION_FLIP_VERTICAL -> ImageOrientation(scaleY = -1f)
+								ExifInterface.ORIENTATION_TRANSVERSE -> ImageOrientation(rotation = 270f, scaleY = -1f)
+								ExifInterface.ORIENTATION_TRANSPOSE -> ImageOrientation(rotation = 90f, scaleX = -1f)
+								else -> ImageOrientation()
 							}
 						}
-						val matrix = Matrix().apply { postRotate(rotation) }
+					}
+
+					val image = BitmapFactory.decodeFile(file.path).let { decoded ->
+						val matrix = Matrix().apply {
+							postScale(rotate.scaleX, rotate.scaleY)
+							postRotate(rotate.rotation)
+						}
 						val bitmap = Bitmap.createBitmap(
 							decoded, 0, 0, decoded.width, decoded.height,
 							matrix, true

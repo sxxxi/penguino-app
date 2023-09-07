@@ -23,7 +23,7 @@ class GattServiceManagerImpl @Inject constructor(
 	private val blAdapter: BluetoothAdapter,
 ) : GattServiceManager {
 	private val statusReceiver = GattConnectionStatusReceiver()
-	var mutBleService: LeService? = null
+	private var mutBleService: LeService? = null
 	override val bleService: LeService? = mutBleService
 	override val connectionState: StateFlow<Int> = statusReceiver.connectionStatus
 	// Callbacks for binding BluetoothLeService

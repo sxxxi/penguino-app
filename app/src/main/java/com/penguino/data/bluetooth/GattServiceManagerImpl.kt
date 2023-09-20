@@ -40,6 +40,7 @@ class GattServiceManagerImpl @Inject constructor(
 			try {
 				mutBleService = (service as GattService.BtServiceBinder)
 					.getService(blAdapter)
+				Log.i(TAG, mutBleService.toString())
 			} catch (e: IllegalStateException) {
 				Log.e(TAG, "Unable to initialize service")
 			}
@@ -74,6 +75,6 @@ class GattServiceManagerImpl @Inject constructor(
 	}
 
 	companion object {
-		private const val TAG = "LeServiceManagerImpl"
+		private const val TAG = "GattServiceManagerImpl"
 	}
 }

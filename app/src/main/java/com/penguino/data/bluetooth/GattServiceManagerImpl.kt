@@ -11,7 +11,12 @@ import android.util.Log
 import com.penguino.data.bluetooth.contracts.GattServiceManager
 import com.penguino.data.bluetooth.contracts.LeService
 import com.penguino.data.bluetooth.receiver.GattConnectionStatusReceiver
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -23,8 +28,8 @@ class GattServiceManagerImpl @Inject constructor(
 	private val blAdapter: BluetoothAdapter,
 ) : GattServiceManager {
 	private val statusReceiver = GattConnectionStatusReceiver()
-	private var mutBleService: LeService? = null
-	override val bleService: LeService? = mutBleService
+	private val mutLeService: MutableStateFlow<LeService?> = MutableStateFlow(null)
+	override val leService: StateFlow<LeService?> = mutLeService
 	override val connectionState: StateFlow<Int> = statusReceiver.connectionStatus
 	// Callbacks for binding BluetoothLeService
 	private val gattServiceConn = object : ServiceConnection {
@@ -37,10 +42,11 @@ class GattServiceManagerImpl @Inject constructor(
 				addAction(GattService.ACTION_GATT_DISCONNECTED)
 			}, Context.RECEIVER_NOT_EXPORTED)
 
+
 			try {
-				mutBleService = (service as GattService.BtServiceBinder)
+				mutLeService.value = (service as GattService.BtServiceBinder)
 					.getService(blAdapter)
-				Log.i(TAG, mutBleService.toString())
+				Log.i(TAG, mutLeService.toString())
 			} catch (e: IllegalStateException) {
 				Log.e(TAG, "Unable to initialize service")
 			}

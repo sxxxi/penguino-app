@@ -4,9 +4,11 @@ import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import com.penguino.data.bluetooth.BleScanServiceImpl
+import com.penguino.data.bluetooth.GattService
 import com.penguino.data.bluetooth.GattServiceManagerImpl
 import com.penguino.data.bluetooth.contracts.BleScanService
 import com.penguino.data.bluetooth.contracts.GattServiceManager
+import com.penguino.data.bluetooth.contracts.LeService
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -31,6 +33,9 @@ abstract class BluetoothModule {
 
 	@Binds
 	abstract fun leServiceManager(impl: GattServiceManagerImpl): GattServiceManager
+
+	@Binds
+	abstract fun leService(impl: GattService): LeService
 
 	@Binds
 	abstract fun bleScan(impl: BleScanServiceImpl): BleScanService

@@ -22,6 +22,7 @@ import com.penguino.ui.navigation.navigateToRemoteControl
 import com.penguino.ui.navigation.navigateToScan
 import com.penguino.ui.navigation.registrationScreen
 import com.penguino.ui.navigation.remoteControlScreen
+import com.penguino.ui.navigation.sampleScreen
 import com.penguino.ui.navigation.scanScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -34,7 +35,7 @@ fun MainScreen(
 	Scaffold {
 		NavHost(
 			navController = navController,
-			startDestination = Screen.HomeScreen.route,
+			startDestination = Screen.SampleScreen.route,
 			modifier = modifier.padding(it),
 			enterTransition = {
 				slideInHorizontally(tween(screenTransitionDuration)) +
@@ -45,6 +46,7 @@ fun MainScreen(
 						fadeOut(tween(screenTransitionDuration))
 			}
 		) {
+			sampleScreen()
 			homeScreen(
 				onPetAdd = navController::navigateToScan,
 				onNavigateToRemoteControl = navController::navigateToRemoteControl

@@ -17,10 +17,13 @@ class ChatRepositoryImpl @Inject constructor(
 	private val chatNetworkDataSource: ChatNetworkDataSource,
 ): ChatRepository {
 	private var systemMsg: ChatMessage? = null
+
 	private val _history = FocusedList<ChatMessage>(20)
 	override val history = _history.history
+
 	private val _latestResponse = MutableStateFlow<ChatMessage?>(null)
 	override val latestResponse: StateFlow<ChatMessage?> = _latestResponse
+
 	private val chatCallback = object: Callback<ChatResponse> {
 		override fun onResponse(
 			call: Call<ChatResponse>,

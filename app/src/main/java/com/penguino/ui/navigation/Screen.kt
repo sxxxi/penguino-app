@@ -10,6 +10,7 @@ sealed class Screen(
 	val arguments: List<NamedNavArgument> = listOf()
 ) {
 	object ScanScreen: Screen(route = "scan")
+	object SampleScreen : Screen(route = "samplekjlk")
 	object HomeScreen: Screen(route = "home")
 	object RegistrationScreen: Screen(route = "register")
 	object RemoteControlScreen: Screen(

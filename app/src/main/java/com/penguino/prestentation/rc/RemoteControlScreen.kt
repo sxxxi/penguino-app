@@ -28,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -120,7 +121,7 @@ fun RemoteControlScreen(
 //				speechLaunch.launch(speechRecognizerIntent)
 //			}
 
-			ConnectedIteration2()
+			ConnectedIteration2(btMessageSend)
 		}
 
 		else -> {
@@ -183,8 +184,11 @@ fun ConnectedIteration1(
 }
 
 @Composable
-fun ConnectedIteration2() {
+fun ConnectedIteration2(btMessageSend: (String) -> Unit) {
 	val testList = mutableListOf<@Composable () -> Unit>()
+	var msg by remember {
+		mutableStateOf("ON")
+	}
 	repeat(6) {
 		testList.add {
 			Button(
@@ -192,7 +196,9 @@ fun ConnectedIteration2() {
 					.padding(vertical = 8.dp)
 					.size(width = 160.dp, height = 50.dp),
 				onClick = {
-					Log.d("Row", "Hello")
+
+					btMessageSend(msg)
+					msg = if (msg == "ON") "OFF" else "ON"
 				}
 			) {
 				Text(text = "Tickle")

@@ -5,11 +5,12 @@ import androidx.navigation.NavType
 import androidx.navigation.navArgument
 
 sealed class Screen(
-	val route: String,
-	val routeWithArgs: String = route,
-	val arguments: List<NamedNavArgument> = listOf()
+    val route: String,
+    val routeWithArgs: String = route,
+    val arguments: List<NamedNavArgument> = listOf()
 ) {
 	object ScanScreen: Screen(route = "scan")
+    object ChatScreen : Screen(route = "chat")
 	object SampleScreen : Screen(route = "samplekjlk")
 	object FeedScreen : Screen(route = "feed")
 	object HomeScreen: Screen(route = "home")

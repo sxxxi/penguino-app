@@ -14,76 +14,76 @@ import retrofit2.Response
 import javax.inject.Inject
 
 class ChatRepositoryImpl @Inject constructor(
-	private val chatNetworkDataSource: ChatNetworkDataSource,
-): ChatRepository {
-	private var systemMsg: ChatMessage? = null
+    private val chatNetworkDataSource: ChatNetworkDataSource,
+) : ChatRepository {
+    private var systemMsg: ChatMessage? = null
+    private val _history = FocusedList<ChatMessage>(20)
+    override val history = _history.history
+    private val _latestResponse = MutableStateFlow<ChatMessage?>(null)
+    override val latestResponse: StateFlow<ChatMessage?> = _latestResponse
+    private val chatCallback = object : Callback<ChatResponse> {
+        override fun onResponse(
+            call: Call<ChatResponse>,
+            response: Response<ChatResponse>
+        ) {
+            if (response.isSuccessful) {
+                response.body()?.choices?.first()?.message?.let { message ->
+                    Log.i(TAG, message.content)
+                    _history.addEntry(listOf(message))
+                    _latestResponse.value = message
+                }
+            } else {
+                Log.e(TAG, "Error code: ${response.code()}\nMessage: ${response.message()}")
+            }
+        }
 
-	private val _history = FocusedList<ChatMessage>(20)
-	override val history = _history.history
+        override fun onFailure(call: Call<ChatResponse>, t: Throwable) {
+            Log.e(TAG, t.message.toString())
+        }
+    }
 
-	private val _latestResponse = MutableStateFlow<ChatMessage?>(null)
-	override val latestResponse: StateFlow<ChatMessage?> = _latestResponse
+    override fun setSystemMessage(message: String) {
+        systemMsg = ChatMessage(
+            role = ChatMessage.SYSTEM,
+            content = message
+        )
+    }
 
-	private val chatCallback = object: Callback<ChatResponse> {
-		override fun onResponse(
-			call: Call<ChatResponse>,
-			response: Response<ChatResponse>
-		) {
-			if (response.isSuccessful) {
-				response.body()?.choices?.first()?.message?.let { message ->
-					Log.i(TAG, message.content)
-					_history.addEntry(listOf(message))
-					_latestResponse.value = message
-				}
-			} else {
-				Log.e(TAG, "Error code: ${response.code()}\nMessage: ${response.errorBody()}")
-			}
-		}
-		override fun onFailure(call: Call<ChatResponse>, t: Throwable) {
-			Log.e(TAG, t.message.toString())
-		}
-	}
+    override fun chat(
+        system: String?,
+        message: String,
+    ) {
+        val messages = mutableListOf<ChatMessage>()
 
-	override fun setSystemMessage(message: String) {
-		systemMsg = ChatMessage(
-			role = ChatMessage.SYSTEM,
-			content = message
-		)
-	}
+        // update the system message if necessary
+        system?.let {
+            setSystemMessage(it)
+        }
 
-	override fun chat(
-		system: String?,
-		message: String,
-	) {
-		val messages = mutableListOf<ChatMessage>()
+        // append the system message if not null
+        // history must only contain back and forth between user and assistant
+        systemMsg?.let {
+            messages += it
+        }
 
-		// update the system message if necessary
-		system?.let {
-			setSystemMessage(it)
-		}
+        _history.addEntry(
+            listOf(
+                ChatMessage(
+                    content = message
+                )
+            )
+        )
+        messages += _history.getChunk()
 
-		// append the system message if not null
-		// history must only contain back and forth between user and assistant
-		systemMsg?.let {
-			messages += it
-		}
+        chatNetworkDataSource.sendMessage(
+            ChatRequest(
+                model = "gpt-3.5-turbo",
+                messages = messages
+            )
+        ).enqueue(chatCallback)
+    }
 
-		_history.addEntry(listOf(
-			ChatMessage(
-				content = message
-			)
-		))
-		messages += _history.getChunk()
-
-		chatNetworkDataSource.sendMessage(
-			ChatRequest(
-				model = "gpt-3.5-turbo",
-				messages = messages
-			)
-		).enqueue(chatCallback)
-	}
-
-	companion object {
-		const val TAG = "OPENAI"
-	}
+    companion object {
+        const val TAG = "OPENAI"
+    }
 }

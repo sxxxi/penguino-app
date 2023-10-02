@@ -76,7 +76,8 @@ fun HomePage(
 	onNavigateToScan: () -> Unit = {},
 	onPetDelete: (String) -> Unit = {},
 	setViewablePet: (PetInformation?) -> Unit = {},
-	onNavigateToRemoteControl: (String) -> Unit = {}
+	onNavigateToRemoteControl: (String) -> Unit = {},
+	onNavigateToChat: () -> Unit = {}
 ) {
 	var profileVisibility by rememberSaveable {
 		mutableStateOf(false)
@@ -143,7 +144,8 @@ fun HomePage(
 							},
 						selectedPet = pet,
 						onDismiss = ::hideProfile,
-						onPlayClicked = { onNavigateToRemoteControl(pet.address) }
+						onPlayClicked = { onNavigateToRemoteControl(pet.address) },
+						onChatClicked = { onNavigateToChat() }
 					)
 				}
 			}
@@ -207,9 +209,9 @@ fun ProfileCard(
 							)
 						}",
 						style = MaterialTheme.typography.titleSmall +
-								TextStyle(
-									color = MaterialTheme.colorScheme.onBackground
-								)
+							TextStyle(
+								color = MaterialTheme.colorScheme.onBackground
+							)
 					)
 				}
 			}

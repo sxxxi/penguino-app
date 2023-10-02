@@ -15,13 +15,17 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.penguino.ui.navigation.Screen
+import com.penguino.ui.navigation.chatScreen
+import com.penguino.ui.navigation.feedScreen
 import com.penguino.ui.navigation.homeScreen
+import com.penguino.ui.navigation.navigateToChatScreen
 import com.penguino.ui.navigation.navigateToHome
 import com.penguino.ui.navigation.navigateToRegistration
 import com.penguino.ui.navigation.navigateToRemoteControl
 import com.penguino.ui.navigation.navigateToScan
 import com.penguino.ui.navigation.registrationScreen
 import com.penguino.ui.navigation.remoteControlScreen
+import com.penguino.ui.navigation.sampleScreen
 import com.penguino.ui.navigation.scanScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,10 +49,14 @@ fun MainScreen(
 						fadeOut(tween(screenTransitionDuration))
 			}
 		) {
+			sampleScreen()
+			feedScreen()
 			homeScreen(
 				onPetAdd = navController::navigateToScan,
-				onNavigateToRemoteControl = navController::navigateToRemoteControl
+				onNavigateToRemoteControl = navController::navigateToRemoteControl,
+				onNavigateToChat = navController::navigateToChatScreen
 			)
+			chatScreen()
 			scanScreen(onNavigateToRegistration = navController::navigateToRegistration)
 			remoteControlScreen()
 			registrationScreen(
@@ -58,3 +66,4 @@ fun MainScreen(
 		}
 	}
 }
+

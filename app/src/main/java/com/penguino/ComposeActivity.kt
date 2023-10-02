@@ -26,6 +26,7 @@ class ComposeActivity : ComponentActivity() {
 		setContent {
 			PenguinoTheme {
 				MainScreen(Modifier.fillMaxSize())
+//				FeedScreen()
 			}
 		}
 

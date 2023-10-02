@@ -82,6 +82,7 @@ class GattService : Service(), LeService {
 		}
 	}
 
+	@RequiresPermission(value = Manifest.permission.BLUETOOTH_CONNECT)
 	override fun read() {
 		throw NotImplementedError("Under development :(")
 	}

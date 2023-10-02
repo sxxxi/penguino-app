@@ -29,7 +29,6 @@ fun NavGraphBuilder.remoteControlScreen() {
 		val connectionState by remoteControlViewModel.connectionState.collectAsStateWithLifecycle()
 		RemoteControlScreen(
 			uiState = uiState,
-			chatFunc = remoteControlViewModel::chat,
 			btConnectionState = connectionState,
 			btServiceBind = remoteControlViewModel::bindService,
 			btServiceUnbind = remoteControlViewModel::unbindService,

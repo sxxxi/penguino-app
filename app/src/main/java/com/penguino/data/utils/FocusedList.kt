@@ -16,6 +16,7 @@ class FocusedList<T>(window: Int = 5): Collection<T> {
 		}
 	var ptr = -1
 		private set
+
 	private var _history = MutableStateFlow<List<T>>(listOf())
 	val history: StateFlow<List<T>> = _history	// Let's convert this to a state once we start integrating with the ui.
 

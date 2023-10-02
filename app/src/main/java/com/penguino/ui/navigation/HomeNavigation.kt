@@ -10,8 +10,8 @@ import com.penguino.prestentation.home.HomePage
 import com.penguino.prestentation.home.HomeViewModel
 
 fun NavGraphBuilder.homeScreen(
-//	onSavedPetClicked: (PetInfo) -> Unit,
 	onNavigateToRemoteControl: (String) -> Unit,
+	onNavigateToChat: () -> Unit,
 	onPetAdd: () -> Unit
 ) {
 	composable(Screen.HomeScreen.route) {
@@ -23,7 +23,8 @@ fun NavGraphBuilder.homeScreen(
 			onNavigateToScan = onPetAdd,
 			onPetDelete = homeViewModel::forgetDevice,
 			setViewablePet = homeViewModel::setFocusedPet,
-			onNavigateToRemoteControl = onNavigateToRemoteControl
+			onNavigateToRemoteControl = onNavigateToRemoteControl,
+			onNavigateToChat = onNavigateToChat
 		)
 	}
 }

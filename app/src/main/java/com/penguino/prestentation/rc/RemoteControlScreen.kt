@@ -42,6 +42,8 @@ import com.penguino.data.utils.ObserveLifecycle
 import com.penguino.domain.models.PetInformation
 import com.penguino.prestentation.components.Loader
 import com.penguino.prestentation.rc.RemoteControlViewModel.RemoteControlUiState
+import com.penguino.prestentation.rc.feed.FeedScreen
+import com.penguino.ui.navigation.Screen
 import com.penguino.ui.theme.PenguinoTheme
 import kotlin.math.ceil
 
@@ -65,6 +67,8 @@ fun RemoteControlScreen(
 	var intentionalPause by rememberSaveable {
 		mutableStateOf(false)
 	}
+
+
 
 	ObserveLifecycle(lifecycleOwner = LocalLifecycleOwner.current,
 		observer = { _, event ->
@@ -122,6 +126,7 @@ fun RemoteControlScreen(
 //			}
 
 			ConnectedIteration2(btMessageSend)
+
 		}
 
 		else -> {
@@ -185,6 +190,26 @@ fun ConnectedIteration1(
 
 @Composable
 fun ConnectedIteration2(btMessageSend: (String) -> Unit) {
+
+	val testList = mutableListOf<@Composable () -> Unit>()
+	val buttonTexts = listOf("Tickle", "Feed", "Action 3", "Action 4", "Action 5", "Action 6")
+
+	repeat(6) { index ->
+		testList.add {
+			Button(
+				modifier = Modifier
+					.padding(vertical = 8.dp)
+					.size(width = 160.dp, height = 50.dp),
+				onClick = {
+					Screen.FeedScreen
+				}
+			) {
+				Text(text = buttonTexts[index])
+			}
+		}
+	}
+
+	/*
 	val testList = mutableListOf<@Composable () -> Unit>()
 	var msg by remember {
 		mutableStateOf("ON")
@@ -205,7 +230,7 @@ fun ConnectedIteration2(btMessageSend: (String) -> Unit) {
 			}
 		}
 	}
-
+	*/
 	Column {
 		Spacer(modifier = Modifier.weight(1f))
 		VerticalGrid(columns = 2, items = testList)
@@ -235,7 +260,6 @@ fun VerticalGrid(columns: Int, items: List<@Composable () -> Unit>) {
 	}
 
 }
-
 @Preview
 @Composable
 fun PreviewRcScreen() {

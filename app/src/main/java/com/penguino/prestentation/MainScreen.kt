@@ -15,6 +15,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.penguino.ui.navigation.Screen
+import com.penguino.ui.navigation.feedScreen
 import com.penguino.ui.navigation.homeScreen
 import com.penguino.ui.navigation.navigateToHome
 import com.penguino.ui.navigation.navigateToRegistration
@@ -35,7 +36,7 @@ fun MainScreen(
 	Scaffold {
 		NavHost(
 			navController = navController,
-			startDestination = Screen.SampleScreen.route,
+			startDestination = Screen.FeedScreen.route,
 			modifier = modifier.padding(it),
 			enterTransition = {
 				slideInHorizontally(tween(screenTransitionDuration)) +
@@ -47,6 +48,7 @@ fun MainScreen(
 			}
 		) {
 			sampleScreen()
+			feedScreen()
 			homeScreen(
 				onPetAdd = navController::navigateToScan,
 				onNavigateToRemoteControl = navController::navigateToRemoteControl
@@ -60,3 +62,4 @@ fun MainScreen(
 		}
 	}
 }
+

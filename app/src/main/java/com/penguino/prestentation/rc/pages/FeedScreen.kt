@@ -1,4 +1,4 @@
-package com.penguino.prestentation.rc.feed
+package com.penguino.prestentation.rc.pages
 
 import android.util.Log
 import android.widget.Toast

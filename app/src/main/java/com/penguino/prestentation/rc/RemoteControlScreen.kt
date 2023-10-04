@@ -5,33 +5,33 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
 import com.penguino.data.bluetooth.GattService
 import com.penguino.data.utils.ObserveLifecycle
 import com.penguino.domain.models.PetInformation
 import com.penguino.prestentation.components.Loader
-import com.penguino.prestentation.components.VerticalGrid
 import com.penguino.prestentation.rc.RemoteControlViewModel.RemoteControlUiState
 import com.penguino.ui.navigation.Screen
+import com.penguino.ui.navigation.chatScreen
+import com.penguino.ui.navigation.featuresScreen
+import com.penguino.ui.navigation.feedScreen
+import com.penguino.ui.navigation.navigateToChat
+import com.penguino.ui.navigation.navigateToFeed
 import com.penguino.ui.theme.PenguinoTheme
 
 @Composable
@@ -43,15 +43,18 @@ fun RemoteControlScreen(
 	btServiceUnbind: () -> Unit = {},
 	btConnect: () -> Unit = {},
 	btDisconnect: () -> Unit = {},
-	btMessageSend: (String) -> Unit = {}
+	btMessageSend: (String) -> Unit = {},
+	navHostController: NavHostController = rememberNavController()
 ) {
 	/**
 	 * Use this variable to tell the screen when not to disconnect to the device when an
 	 * action requires to pause. Check the body of ON_RESUME and ON_PAUSE inside the
 	 * ObserveLifecycle composable
 	 */
-	var intentionalPause by rememberSaveable {
-		mutableStateOf(false)
+	var intentionalPause by rememberSaveable { mutableStateOf(false) }
+
+	fun intentionalPauseSwitch(bool: Boolean) {
+		intentionalPause = bool
 	}
 
 	ObserveLifecycle(
@@ -92,7 +95,18 @@ fun RemoteControlScreen(
 		}
 
 		GattService.STATE_GATT_CONNECTED -> {
-			ConnectedIteration2(btMessageSend)
+			NavHost(
+				modifier = Modifier.fillMaxSize(),
+				navController = navHostController,
+				startDestination = Screen.RemoteControlScreen.FeaturesScreen.route
+			) {
+				featuresScreen(
+					onNavigateToFeed = navHostController::navigateToFeed,
+					onNavigateToChat = navHostController::navigateToChat
+				)
+				feedScreen()
+				chatScreen(intentionalPause = ::intentionalPauseSwitch)
+			}
 		}
 
 		else -> {
@@ -107,73 +121,6 @@ fun RemoteControlScreen(
 	}
 }
 
-@Composable
-fun ConnectedIteration2(btMessageSend: (String) -> Unit) {
-
-	val testList = mutableListOf<@Composable () -> Unit>()
-	val buttonTexts = listOf("Tickle", "Feed", "Action 3", "Action 4", "Action 5", "Action 6")
-
-	repeat(6) { index ->
-		testList.add {
-			Button(
-				modifier = Modifier
-					.padding(vertical = 8.dp)
-					.size(width = 160.dp, height = 50.dp),
-				onClick = {
-					Screen.FeedScreen
-				}
-			) {
-				Text(text = buttonTexts[index])
-			}
-		}
-	}
-
-	Column {
-		Spacer(modifier = Modifier.weight(1f))
-		ButtonGrid()
-		Spacer(modifier = Modifier.height(32.dp))
-	}
-
-	/*
-	val testList = mutableListOf<@Composable () -> Unit>()
-	var msg by remember {
-		mutableStateOf("ON")
-	}
-	repeat(6) {
-		testList.add {
-			Button(
-				modifier = Modifier
-					.padding(vertical = 8.dp)
-					.size(width = 160.dp, height = 50.dp),
-				onClick = {
-
-					btMessageSend(msg)
-					msg = if (msg == "ON") "OFF" else "ON"
-				}
-			) {
-				Text(text = "Tickle")
-			}
-		}
-	}
-	*/
-}
-
-@Composable
-private fun ButtonGrid() {
-	val buttons = remember {
-		listOf<@Composable () -> Unit> {
-			GridButton(label = "Test") {}
-		}
-	}
-	VerticalGrid(columns = 2, items = buttons)
-}
-
-@Composable
-private fun GridButton(label: String, onClick: () -> Unit) {
-	Button(onClick = onClick) {
-		Text(text = label)
-	}
-}
 @Preview
 @Composable
 fun PreviewRcScreen() {

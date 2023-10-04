@@ -33,7 +33,7 @@ android {
             useSupportLibrary true
         }
 
-        buildConfigField "String", "GPT_KEY", '"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"';
+        buildConfigField "String", "GPT_KEY", '"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"';
     }
 
     buildTypes {

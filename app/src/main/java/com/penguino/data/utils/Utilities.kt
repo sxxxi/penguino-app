@@ -15,3 +15,19 @@ fun ObserveLifecycle(lifecycleOwner: LifecycleOwner, observer: LifecycleEventObs
 		}
 	}
 }
+
+@Composable
+fun ObserveLifecycle2(
+	key: Any,
+	lifecycleOwner: LifecycleOwner,
+	observer: LifecycleEventObserver,
+	final: () -> Unit = {}
+) {
+	DisposableEffect(key1 = lifecycleOwner, key2 = key) {
+		lifecycleOwner.lifecycle.addObserver(observer)
+		onDispose {
+			lifecycleOwner.lifecycle.removeObserver(observer)
+			final()
+		}
+	}
+}

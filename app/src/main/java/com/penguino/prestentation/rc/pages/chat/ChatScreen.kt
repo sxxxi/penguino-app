@@ -1,4 +1,4 @@
-package com.penguino.prestentation.chat
+package com.penguino.prestentation.rc.pages.chat
 
 import android.content.Intent
 import android.speech.RecognizerIntent
@@ -11,18 +11,20 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.penguino.R
+import kotlinx.coroutines.launch
 
 @Composable
 fun ChatScreen(
     modifier: Modifier = Modifier,
     uiState: ChatViewModel.ChatUiState,
-    chat: (String) -> Unit
-
+    chat: (String) -> Unit,
+    intentionalPause: (Boolean) -> Unit
 ) {
     val speechRecognizerIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
         .putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
@@ -36,6 +38,8 @@ fun ChatScreen(
                     chat(input)
                 }
         })
+
+    val scope = rememberCoroutineScope()
 
     Column(
         modifier = modifier
@@ -51,7 +55,11 @@ fun ChatScreen(
             Text(text = uiState.latestMessage)
         }
         IconButton(onClick = {
-            speechLaunch.launch(speechRecognizerIntent)
+            scope.launch {
+                intentionalPause(true)
+                speechLaunch.launch(speechRecognizerIntent)
+            }
+
         }) {
             Icon(painter = painterResource(id = R.drawable.baseline_mic_24), contentDescription = "Mic")
         }

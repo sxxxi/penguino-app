@@ -81,6 +81,7 @@ class RemoteControlViewModel @Inject constructor(
 		chatRepository.chat(message = message)
 	}
 
+
 	data class RemoteControlUiState (
 		val deviceInfo: PetInformation,
 		val latestResponse: ChatMessage? = null

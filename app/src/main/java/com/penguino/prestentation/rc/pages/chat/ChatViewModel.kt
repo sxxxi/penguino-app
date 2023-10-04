@@ -1,4 +1,4 @@
-package com.penguino.prestentation.chat
+package com.penguino.prestentation.rc.pages.chat
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

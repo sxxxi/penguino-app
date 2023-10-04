@@ -21,5 +21,8 @@ sealed class Screen(
 		arguments = listOf(
 			navArgument(rcDeviceArg) {type = NavType.StringType}
 		)
-	)
+	) {
+		object FeaturesScreen : Screen(route = "rc/features")
+		object FeedScreen : Screen(route = "rc/feed")
+	}
 }

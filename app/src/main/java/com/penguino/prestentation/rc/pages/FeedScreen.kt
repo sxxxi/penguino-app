@@ -16,6 +16,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -23,15 +25,54 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.penguino.R
+import com.penguino.domain.forms.BtRequest
 import com.penguino.prestentation.components.VerticalGrid
 import com.penguino.ui.theme.PenguinoTheme
 
 @Composable
-fun FeedScreen() {
+fun FeedScreen(
+    btSend: (String) -> Unit
+) {
 
-    val foodList = mutableListOf<@Composable () -> Unit>()
-    val foods = listOf("Apple", "Banana", "Mango", "Orange")
+    val foodList = remember { mutableListOf<@Composable () -> Unit>() }
+    val foods = rememberSaveable {
+        listOf("Apple", "Banana", "Mango", "Orange")
+    }
     val context = LocalContext.current
+
+    foods.forEachIndexed { index, food ->
+        foodList.add {
+            Button(
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
+                    .size(width = 160.dp, height = 50.dp),
+                onClick = {
+                    when (index) {
+                        0 -> {
+                            Log.d("Row", "Fed Apple")
+                            Toast.makeText(context, "Yum yum", Toast.LENGTH_SHORT).show()
+                        }
+                        1 -> {
+                            Log.d("Row", "Fed Banana")
+                            Toast.makeText(context, "Delicious", Toast.LENGTH_SHORT).show()
+                        }
+                        2 -> {
+                            Log.d("Row", "Fed Mango")
+                            Toast.makeText(context, "Scrumptious!!", Toast.LENGTH_SHORT).show()
+                        }
+                        3 -> {
+                            Log.d("Row", "Fed Orange")
+                            Toast.makeText(context, "YEEEK!", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    
+                    btSend(BtRequest("feed", food).toString())
+                }
+            ) {
+                Text(text = food)
+            }
+        }
+    }
 
     Column {
         Spacer(modifier = Modifier.weight(.5f))
@@ -39,59 +80,17 @@ fun FeedScreen() {
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            /*
-            Button(
-                modifier = Modifier
-                    .padding(vertical = 8.dp)
-                    .size(width = 160.dp, height = 50.dp),
-                onClick = {
-                    Log.d("Row", "Hello")
-                }
-            ) {
-                Text(text = "Feed")
-            }
-            */
             Image(
                 modifier = Modifier.fillMaxWidth(0.8f),
                 painter = painterResource(id = R.drawable.new_friend_screen),
                 contentDescription = ""
             )
-
         }
-        repeat(4){index->
-            foodList.add {
-                Button(
-                    modifier = Modifier
-                        .padding(vertical = 8.dp)
-                        .size(width = 160.dp, height = 50.dp),
-                    onClick = {
-                        when(index) {
-                            0 -> {
-                                Log.d("Row", "Fed Apple")
-                                Toast.makeText(context, "Yum yum", Toast.LENGTH_SHORT).show()
-                            }
-                            1 -> {
-                                Log.d("Row", "Fed Banana")
-                                Toast.makeText(context, "Delicious", Toast.LENGTH_SHORT).show()
-                            }
-                            2 -> {
-                                Log.d("Row", "Fed Mango")
-                                Toast.makeText(context, "Scrumptious!!", Toast.LENGTH_SHORT).show()
-                            }
-                            3 -> {
-                                Log.d("Row", "Fed Orange")
-                                Toast.makeText(context, "YEEEK!", Toast.LENGTH_SHORT).show()
-                            }
 
-                        }
-                    }
-                ) {
-                    Text(text = foods[index])
-                }
-            }
-        }
-        VerticalGrid(columns = 2, items = foodList)
+        VerticalGrid(
+            columns = 2,
+            items = foodList
+        )
         Spacer(modifier = Modifier.height(12.dp))
     }
 }
@@ -105,7 +104,7 @@ fun PreviewFeedScreen() {
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
         ) {
-            FeedScreen()
+            FeedScreen {}
         }
     }
 }

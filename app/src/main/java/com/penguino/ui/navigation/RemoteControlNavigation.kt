@@ -70,9 +70,11 @@ fun NavGraphBuilder.featuresScreen(
 	}
 }
 
-fun NavGraphBuilder.feedScreen() {
+fun NavGraphBuilder.feedScreen(
+	btSend: (String) -> Unit
+) {
 	composable(route = Screen.RemoteControlScreen.FeedScreen.route) {
-		FeedScreen()
+		FeedScreen(btSend)
 	}
 }
 

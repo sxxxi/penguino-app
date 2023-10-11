@@ -54,7 +54,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-// TODO: EDIT SCREEN
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ScanScreen(

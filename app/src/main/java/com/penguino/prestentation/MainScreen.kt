@@ -15,7 +15,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.penguino.ui.navigation.Screen
-import com.penguino.ui.navigation.feedScreen
 import com.penguino.ui.navigation.homeScreen
 import com.penguino.ui.navigation.navigateToChat
 import com.penguino.ui.navigation.navigateToHome
@@ -49,7 +48,6 @@ fun MainScreen(
 			}
 		) {
 			sampleScreen()
-			feedScreen()
 			homeScreen(
 				onPetAdd = navController::navigateToScan,
 				onNavigateToRemoteControl = navController::navigateToRemoteControl,

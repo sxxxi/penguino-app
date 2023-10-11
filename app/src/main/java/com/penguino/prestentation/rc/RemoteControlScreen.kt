@@ -104,7 +104,7 @@ fun RemoteControlScreen(
 					onNavigateToFeed = navHostController::navigateToFeed,
 					onNavigateToChat = navHostController::navigateToChat
 				)
-				feedScreen()
+				feedScreen(btMessageSend)
 				chatScreen(intentionalPause = ::intentionalPauseSwitch)
 			}
 		}

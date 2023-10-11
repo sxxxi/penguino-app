@@ -15,10 +15,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,11 +34,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.exifinterface.media.ExifInterface
 import com.penguino.domain.ImageOrientation
 import com.penguino.domain.forms.PetRegistrationForm
 import com.penguino.domain.models.Image
+import com.penguino.ui.theme.PenguinoTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -147,6 +152,24 @@ fun ImageCapture(
 					)
 				}
 			} ?: Icon(imageVector = Icons.Default.Add, contentDescription = "add")
+		}
+	}
+}
+
+@Preview
+@Composable
+fun PreviewImageCapture() {
+	PenguinoTheme {
+		Column(
+			modifier = Modifier
+				.fillMaxSize()
+				.background(MaterialTheme.colorScheme.background),
+			horizontalAlignment = Alignment.CenterHorizontally,
+			verticalArrangement = Arrangement.Center
+		) {
+			ImageCapture(
+				Modifier.size(100.dp)
+			)
 		}
 	}
 }

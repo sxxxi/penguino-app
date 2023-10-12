@@ -37,7 +37,7 @@ fun MainScreen(
 	Scaffold {
 		NavHost(
 			navController = navController,
-			startDestination = Screen.HomeScreen.route,
+			startDestination = Screen.ChatScreen.route,
 			modifier = modifier.padding(it),
 			enterTransition = {
 				slideInHorizontally(tween(screenTransitionDuration)) +

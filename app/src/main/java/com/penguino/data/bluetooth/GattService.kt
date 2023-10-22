@@ -57,6 +57,7 @@ class GattService : Service(), LeService {
 			broadcastUpdate(ACTION_GATT_CONNECTING)
 			val device = btAdapter.getRemoteDevice(address)
 			gatt = device.connectGatt(this, autoConnect, gattCallback)
+
 		}
 	}
 
@@ -92,6 +93,7 @@ class GattService : Service(), LeService {
 	 */
 	@RequiresPermission(value = Manifest.permission.BLUETOOTH_CONNECT)
 	override fun write(message: String) {
+//		gatt?.requestMtu(512)
 		val uuidConst = "-0000-1000-8000-00805f9b34fb"
 		val chars = gatt?.getService(UUID.fromString("0000aaa0$uuidConst"))
 			?.getCharacteristic(UUID.fromString("0000aaaa$uuidConst"))

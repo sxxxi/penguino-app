@@ -5,6 +5,6 @@ data class BtRequest(
     val argument: String
 ) {
     override fun toString(): String {
-        return "<mapping>$mapping<mapping><arg>$argument<arg>"
+        return "$mapping>$argument;"
     }
 }

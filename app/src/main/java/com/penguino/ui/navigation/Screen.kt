@@ -24,5 +24,5 @@ sealed class Screen(
 	) {
 		object FeaturesScreen : Screen(route = "rc/features")
 		object FeedScreen : Screen(route = "rc/feed")
-	}
+		object ChatScreen : Screen(route = "chat")	}
 }

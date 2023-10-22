@@ -6,11 +6,15 @@ import com.penguino.data.network.models.ChatRequest
 import com.penguino.data.network.models.ChatResponse
 import com.penguino.data.utils.FocusedList
 import com.penguino.domain.models.ChatMessage
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import retrofit2.awaitResponse
 import javax.inject.Inject
 
 class ChatRepositoryImpl @Inject constructor(
@@ -81,6 +85,43 @@ class ChatRepositoryImpl @Inject constructor(
                 messages = messages
             )
         ).enqueue(chatCallback)
+    }
+
+    override suspend fun asyncChat(message: String, system: String?): Deferred<String?> = GlobalScope.async {
+        val messages = mutableListOf<ChatMessage>()
+
+        // update the system message if necessary
+        system?.let {
+            setSystemMessage(it)
+        }
+
+        // append the system message if not null
+        // history must only contain back and forth between user and assistant
+        systemMsg?.let {
+            messages += it
+        }
+
+        _history.addEntry(
+            listOf(
+                ChatMessage(
+                    content = message
+                )
+            )
+        )
+        messages += _history.getChunk()
+        return@async try {
+            chatNetworkDataSource.sendMessage(
+                ChatRequest(
+                    model = "gpt-3.5-turbo",
+                    messages = messages
+                )
+            ).awaitResponse().let {
+                it.body()?.choices?.first()?.message?.content
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed sending request to OPENAI")
+            null
+        }
     }
 
     companion object {

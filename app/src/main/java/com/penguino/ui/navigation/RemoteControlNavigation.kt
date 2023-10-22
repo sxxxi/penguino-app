@@ -88,6 +88,7 @@ fun NavController.navigateToFeed() {
 
 fun NavGraphBuilder.chatScreen(
 	intentionalPause: (Boolean) -> Unit,
+	sendMessage: (String) -> Unit
 ) {
     composable(route = Screen.ChatScreen.route) {
         val chatViewModel = hiltViewModel<ChatViewModel>()
@@ -95,7 +96,9 @@ fun NavGraphBuilder.chatScreen(
 		ChatScreen(
 			uiState = uiState,
 			chat = chatViewModel::sendMessage,
-			intentionalPause = intentionalPause
+			chat2 = chatViewModel::tts,
+			intentionalPause = intentionalPause,
+			sendMessage = sendMessage
 		)
     }
 }

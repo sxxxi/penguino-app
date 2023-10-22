@@ -33,7 +33,7 @@ android {
             useSupportLibrary true
         }
 
-        buildConfigField "String", "GPT_KEY", '"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"';
+
     }
 
     buildTypes {
@@ -184,6 +184,11 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-params:$junit_version "
 
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.1"
+
+
+    implementation "androidx.media3:media3-exoplayer:1.1.1"
+    implementation "androidx.media3:media3-exoplayer-dash:1.1.1"
+    implementation "androidx.media3:media3-ui:1.1.1"
 }
 
 kapt {

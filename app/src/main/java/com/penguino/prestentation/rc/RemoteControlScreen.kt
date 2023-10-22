@@ -82,7 +82,13 @@ fun RemoteControlScreen(
 			btServiceUnbind()
 		}
 	)
-
+//	NavHost(
+//		modifier = Modifier.fillMaxSize(),
+//		navController = navHostController,
+//		startDestination = Screen.RemoteControlScreen.ChatScreen.route
+//	) {
+//		chatScreen(intentionalPause = ::intentionalPauseSwitch)
+//	}
 	when (btConnectionState) {
 		GattService.STATE_GATT_CONNECTING -> {
 			Column(
@@ -105,7 +111,7 @@ fun RemoteControlScreen(
 					onNavigateToChat = navHostController::navigateToChat
 				)
 				feedScreen(btMessageSend)
-				chatScreen(intentionalPause = ::intentionalPauseSwitch)
+				chatScreen(intentionalPause = ::intentionalPauseSwitch, btMessageSend)
 			}
 		}
 

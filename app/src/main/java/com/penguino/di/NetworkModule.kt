@@ -2,6 +2,7 @@ package com.penguino.di
 
 import com.penguino.data.network.ChatNetworkDataSource
 import com.penguino.data.network.RegistrationNetworkDataSource
+import com.penguino.data.network.tts.TextToSpeechNetworkDataSource
 import com.squareup.moshi.Moshi
 import dagger.Module
 import dagger.Provides
@@ -38,10 +39,22 @@ abstract class NetworkModule {
 			moshi: Moshi
 		): ChatNetworkDataSource {
 			return Retrofit.Builder()
-				.baseUrl("https://api.openai.com/v1/")
+				.baseUrl("https://api.openai.com/")
 				.addConverterFactory(MoshiConverterFactory.create(moshi))
 				.build()
 				.create(ChatNetworkDataSource::class.java)
+		}
+
+		@Provides
+		@Singleton
+		fun elevenLabsApi(
+			moshi: Moshi
+		): TextToSpeechNetworkDataSource {
+			return Retrofit.Builder()
+				.baseUrl("https://api.elevenlabs.io/")
+				.addConverterFactory(MoshiConverterFactory.create(moshi))
+				.build()
+				.create(TextToSpeechNetworkDataSource::class.java)
 		}
 	}
 }

@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,6 +40,8 @@ fun FeedScreen(
         listOf("Apple", "Banana", "Mango", "Orange")
     }
     val context = LocalContext.current
+
+    val scope = rememberCoroutineScope()
 
     foods.forEachIndexed { index, food ->
         foodList.add {
@@ -65,8 +68,32 @@ fun FeedScreen(
                             Toast.makeText(context, "YEEEK!", Toast.LENGTH_SHORT).show()
                         }
                     }
-                    
-                    btSend(BtRequest("feed", food).toString())
+
+
+
+                    btSend(
+                        BtRequest(
+                            "feed",
+                            food
+                        ).toString()
+                    )
+
+
+
+
+
+
+
+
+
+//                    scope.launch {
+//                        val times = bites.length/30;
+//                        repeat(times) {
+//                            Log.d("FOO", it.toString());
+//                            btSend(BtRequest("feed", bites.substring(30 * (it), 30 * (it + 1))).toString())
+//                            delay(1000)
+//                        }
+//                    }
                 }
             ) {
                 Text(text = food)

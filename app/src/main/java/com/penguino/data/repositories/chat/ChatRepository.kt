@@ -1,6 +1,7 @@
 package com.penguino.data.repositories.chat
 
 import com.penguino.domain.models.ChatMessage
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.StateFlow
 
 interface ChatRepository {
@@ -11,4 +12,6 @@ interface ChatRepository {
 		system: String? = null,
 		message: String,
 	)
+
+	suspend fun asyncChat(message: String, system: String? = null): Deferred<String?>
 }

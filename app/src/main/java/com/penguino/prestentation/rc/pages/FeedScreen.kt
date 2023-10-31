@@ -69,18 +69,12 @@ fun FeedScreen(
                         }
                     }
 
-                    val builder = StringBuilder()
-                    repeat(20) {
-                        builder.append("ABCDE")
-                    }
-
-                    Log.d("TEST", builder.toString())
 
 
                     btSend(
                         BtRequest(
                             "feed",
-                            builder.toString()
+                            food
                         ).toString()
                     )
 
